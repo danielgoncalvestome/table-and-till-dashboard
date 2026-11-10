@@ -27,7 +27,7 @@ const C = {
     start: "Começar gratuitamente", seeDemo: "Ver a Casa do Largo", addr: "O seu endereço, para sempre:",
     ideaEy: "A ideia por trás do MenuTap", ideaT: "Um link fixo. Um menu sempre vivo.",
     ideaD: "Cada espaço recebe um endereço próprio. É esse endereço que fica no QR da mesa e na etiqueta NFC do balcão — e é por trás dele que o menu muda sempre que precisar.",
-    ideas: [["Mudou um preço?", "Já está no menu dos clientes. O código impresso continua o mesmo."], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR."]],
+    ideas: [["Mudou um preço?", "Já está no menu dos clientes. O código impresso continua o mesmo."], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
     howEy: "Como funciona", howT: "Do primeiro prato à primeira mesa, em três passos.",
     steps: [["Crie o menu", "Perfil do espaço, logótipo e cores, primeiro menu, pratos."], ["Deixe o cartão na mesa", "Disponibilize o cartão em cada mesa, em cada parede — o cliente toca e o menu abre no telemóvel, sem app nem conta."], ["Receba avaliações", "Preços e pratos sempre atualizados, feedback direto dos clientes para melhorar o serviço e reforçar a reputação."]],
     featEy: "Funcionalidades", featT: "Pensado para quem serve. Claro para quem se senta.", featD: "Um painel privado para a sua equipa gerir tudo, e um menu público que cada cliente percebe em segundos.",

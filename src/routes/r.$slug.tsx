@@ -228,6 +228,8 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
   const [hover, setHover] = useState(0);
   const [done, setDone] = useState(false);
   const top = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     const v = localStorage.getItem(`mt-rate-${d.id}`);
     setMine(v ? Number(v) : null);
@@ -235,10 +237,10 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
     top.current?.parentElement?.scrollTo({ top: 0 });
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeRef.current();
     window.addEventListener("keydown", onKey);
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
-  }, [d.id, onClose]);
+  }, [d.id]);
   const recs = data.recs.filter((x) => x.dish_id === d.id).map((x) => ({ rec: x, dish: data.dishes.find((y) => y.id === x.recommended_dish_id) })).filter((x) => x.dish);
   const desc = tr(d.long_description, d.long_description_i18n, lang) || tr(d.description, d.description_i18n, lang);
   const ingredients = tr(d.ingredients, d.ingredients_i18n, lang);

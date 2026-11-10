@@ -7,7 +7,7 @@ import toastAsset from "@/assets/avocado-toast-square.jpg.asset.json";
 export function PhonePreview() {
   const { lang } = useI18n();
   const dishes = [
-    { img: toastAsset.url, n: lang === "pt" ? "Tosta de abacate e ovo" : "Avocado toast & egg", p: 7.5 },
+    { img: toastAsset.url, n: lang === "pt" ? "Tosta de abacate e ovo" : "Avocado toast & egg", p: 9.5 },
     { img: "/images/demo/polvo.jpg", n: lang === "pt" ? "Polvo à lagareiro" : "Roasted octopus", p: 19.5 },
     { img: "/images/demo/nata.jpg", n: lang === "pt" ? "Pastel de nata" : "Custard tart", p: 2.2 },
     { img: "/images/demo/cover.jpg", n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5 },

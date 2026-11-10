@@ -1,0 +1,266 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+export type Lang = "pt" | "en";
+
+const pt = {
+  "nav.features": "Funcionalidades",
+  "nav.how": "Como funciona",
+  "nav.pricing": "Preço",
+  "nav.faq": "Perguntas",
+  "nav.contact": "Contacto",
+  "nav.demo": "Demonstração",
+  "nav.login": "Entrar",
+  "nav.dashboard": "Painel",
+  "cta.trial": "Experimentar gratuitamente",
+  "cta.demo": "Ver demonstração",
+  "cta.start": "Começar agora",
+  "hero.tagline": "O seu menu. À distância de um toque.",
+  "hero.sub": "Menus digitais elegantes para restaurantes, cafés e bares. Atualize pratos e preços em segundos, traduza para os seus clientes e perceba o que realmente desperta interesse.",
+  "hero.note": "10 dias grátis · Sem cartão · Cancele quando quiser",
+  "home.why": "Porquê MenuTap",
+  "home.v1.t": "Menus bonitos",
+  "home.v1.d": "Modelos editoriais pensados para a sua marca, legíveis em qualquer telemóvel.",
+  "home.v2.t": "Atualizações sem esforço",
+  "home.v2.d": "Mude um preço ou esconda um prato esgotado. O QR code nunca muda.",
+  "home.v3.t": "Clientes de todo o mundo",
+  "home.v3.d": "Traduções por prato e deteção automática do idioma do cliente.",
+  "home.v4.t": "Dados úteis",
+  "home.v4.d": "Visualizações, pratos mais consultados e horas de maior procura — sem inventar vendas.",
+  "home.demoTitle": "Explore um menu real",
+  "home.demoSub": "Casa do Largo é um restaurante de demonstração. Abra o menu como um cliente o faria.",
+  "home.final": "Pronto para pôr o seu menu na mesa?",
+  "features.title": "Tudo o que o seu menu precisa",
+  "features.sub": "Um único plano, todas as funcionalidades incluídas.",
+  "f.menus": "Menus digitais", "f.menus.d": "Vários menus por restaurante: almoço, jantar, brunch, bebidas e sazonais.",
+  "f.qr": "QR & NFC", "f.qr.d": "Um link permanente, gravado em QR (PNG/SVG) e etiquetas NFC NTAG213.",
+  "f.tr": "Traduções", "f.tr.d": "Nomes, descrições e categorias traduzidos de forma independente.",
+  "f.al": "Alergénios", "f.al.d": "Os 14 alergénios regulamentados na UE, verificados pelo restaurante.",
+  "f.rec": "Recomendações", "f.rec.d": "Associe pratos complementares: polvo → vinho verde, nata → café.",
+  "f.sch": "Horários", "f.sch.d": "Mostre o menu certo à hora certa, no fuso horário de Lisboa.",
+  "f.an": "Análise", "f.an.d": "Visualizações, sessões únicas, pesquisas, idiomas e horas de pico.",
+  "f.rate": "Avaliações", "f.rate.d": "Os clientes avaliam cada prato de 1 a 5 estrelas, sem registo.",
+  "how.title": "Como funciona",
+  "how.1": "Crie o seu menu", "how.1d": "Categorias, pratos, preços e fotografias num painel simples.",
+  "how.2": "Personalize", "how.2d": "Logótipo, cores, tipografia e modelo.",
+  "how.3": "Gere o link permanente", "how.3d": "Um QR code e uma etiqueta NFC que nunca precisam de ser reimpressos.",
+  "how.4": "Os clientes leem ou tocam", "how.4d": "Abre de imediato no telemóvel, sem app.",
+  "how.5": "Gere tudo em tempo real", "how.5d": "As alterações aparecem logo no mesmo endereço.",
+  "pricing.title": "Um plano. Tudo incluído.",
+  "pricing.per": "/mês",
+  "pricing.vat": "IVA incluído quando aplicável",
+  "pricing.items": "Alojamento|Link QR & NFC permanente|Menus, categorias e pratos ilimitados|Traduções|Alergénios e etiquetas alimentares|Recomendações|Análise e Menu Intelligence|Personalização completa",
+  "pricing.trial": "10 dias grátis, contados apenas a partir da publicação do seu menu. Sem cartão. Nada é cobrado sem a sua autorização expressa.",
+  "faq.title": "Perguntas frequentes",
+  "contact.title": "Fale connosco",
+  "contact.sub": "Respondemos em dias úteis, normalmente em menos de 24 horas.",
+  "contact.send": "Abrir email",
+  "footer.privacy": "Privacidade", "footer.terms": "Termos", "footer.rights": "Todos os direitos reservados.",
+  "auth.login": "Entrar", "auth.signup": "Criar conta", "auth.email": "Email", "auth.password": "Palavra-passe",
+  "auth.name": "O seu nome", "auth.forgot": "Esqueceu-se da palavra-passe?", "auth.noAccount": "Ainda não tem conta?",
+  "auth.hasAccount": "Já tem conta?", "auth.checkEmail": "Enviámos um email de confirmação. Abra-o para ativar a conta.",
+  "auth.resetSent": "Se existir uma conta, enviámos um link para redefinir a palavra-passe.",
+  "auth.sendReset": "Enviar link", "auth.newPassword": "Nova palavra-passe", "auth.save": "Guardar",
+  "auth.google": "Continuar com Google", "auth.or": "ou", "auth.back": "Voltar a entrar",
+  "auth.updated": "Palavra-passe atualizada.",
+  "common.save": "Guardar", "common.saved": "Guardado", "common.cancel": "Cancelar", "common.delete": "Eliminar",
+  "common.edit": "Editar", "common.add": "Adicionar", "common.duplicate": "Duplicar", "common.archive": "Arquivar",
+  "common.restore": "Restaurar", "common.loading": "A carregar…", "common.error": "Ocorreu um erro. Tente novamente.",
+  "common.confirmDelete": "Tem a certeza? Esta ação não pode ser desfeita.", "common.signout": "Sair",
+  "common.open": "Abrir", "common.copy": "Copiar", "common.copied": "Copiado", "common.empty": "Ainda não há nada aqui.",
+  "common.demo": "Demonstração",
+  "dash.overview": "Visão geral", "dash.menus": "Menus e pratos", "dash.recs": "Recomendações",
+  "dash.analytics": "Análise", "dash.design": "Design", "dash.qr": "QR & NFC", "dash.team": "Equipa e locais",
+  "dash.sub": "Subscrição", "dash.settings": "Restaurante", "dash.help": "Ajuda", "dash.admin": "Administração",
+  "dash.viewMenu": "Ver menu público",
+  "dash.published": "Publicado", "dash.unpublished": "Não publicado", "dash.publish": "Publicar menu",
+  "dash.unpublish": "Despublicar",
+  "ov.views": "Visualizações (30 dias)", "ov.sessions": "Sessões únicas", "ov.topDishes": "Pratos mais vistos",
+  "ov.topCats": "Categorias populares", "ov.langs": "Idiomas", "ov.activity": "Atividade recente",
+  "ov.noData": "Ainda sem dados. Partilhe o seu QR code para começar a recolher visitas.",
+  "onb.title": "Vamos criar o seu restaurante", "onb.sub": "Pode alterar tudo mais tarde.",
+  "onb.create": "Criar restaurante",
+  "f.name": "Nome", "f.slug": "Endereço do menu", "f.description": "Descrição", "f.address": "Morada",
+  "f.phone": "Telefone", "f.email": "Email", "f.website": "Website", "f.instagram": "Link do Instagram",
+  "f.reviews": "Link Google Reviews", "f.hours": "Horário", "f.logo": "Logótipo", "f.cover": "Imagem de capa",
+  "f.languages": "Idiomas do menu", "f.defaultLang": "Idioma original",
+  "menu.new": "Novo menu", "menu.kind": "Tipo", "menu.newCat": "Nova categoria", "menu.newDish": "Novo prato",
+  "menu.noMenus": "Crie o seu primeiro menu.", "menu.noCats": "Adicione uma categoria (ex.: Entradas).",
+  "menu.noDishes": "Sem pratos nesta categoria.", "menu.schedule": "Horário de apresentação",
+  "menu.allDay": "Todo o dia", "menu.days": "Dias", "menu.from": "Das", "menu.to": "Às",
+  "dish.price": "Preço (€)", "dish.promo": "Preço promocional (€)", "dish.image": "Fotografia",
+  "dish.allergens": "Alergénios", "dish.allergensVerified": "Confirmo que a informação de alergénios foi verificada pelo restaurante",
+  "dish.dietary": "Etiquetas alimentares", "dish.featured": "Destaque", "dish.available": "Disponível",
+  "dish.unavailable": "Esgotado", "dish.prep": "Tempo de preparação (min)", "dish.calories": "Calorias (kcal)",
+  "dish.translations": "Tradução (EN)", "dish.nameEn": "Nome em inglês", "dish.descEn": "Descrição em inglês",
+  "dish.archived": "Arquivado", "dish.category": "Categoria",
+  "rec.title": "Recomendações", "rec.sub": "Associe pratos que combinam. São mostrados no detalhe de cada prato.",
+  "rec.dish": "Quando o cliente vê", "rec.suggest": "Sugerir", "rec.label": "Etiqueta",
+  "an.title": "Análise", "an.note": "Estes números são visualizações e cliques no menu — não são encomendas nem vendas.",
+  "an.hours": "Horas de maior procura", "an.days": "Dias da semana", "an.searches": "Pesquisas",
+  "an.recs": "Recomendações", "an.impr": "impressões", "an.clicks": "cliques", "an.insights": "Menu Intelligence",
+  "an.sources": "Origem", "an.ratings": "Avaliações",
+  "design.title": "Design e marca", "design.primary": "Cor principal", "design.bg": "Cor de fundo",
+  "design.accent": "Cor de destaque", "design.font": "Tipografia", "design.template": "Modelo",
+  "qr.title": "QR & NFC", "qr.url": "Link permanente", "qr.png": "Descarregar PNG", "qr.svg": "Descarregar SVG",
+  "qr.print": "Imprimir cartão", "qr.nfc": "Etiquetas NFC",
+  "qr.nfcHelp": "Grave apenas este link (registo NDEF URI) numa etiqueta NTAG213 ou compatível, com uma app como NFC Tools. Nunca grave o conteúdo do menu na etiqueta — assim as alterações aparecem automaticamente.",
+  "qr.test": "Testar link",
+  "team.title": "Equipa", "team.sub": "Pessoas com acesso a este restaurante.",
+  "team.locations": "Locais", "team.addLocation": "Adicionar local",
+  "sub.title": "Subscrição", "sub.trial": "Período experimental", "sub.trialNot": "O período experimental de 10 dias começa quando publicar o menu pela primeira vez.",
+  "sub.trialEnds": "Termina a", "sub.notConfigured": "Os pagamentos ainda não estão ativos na plataforma. Nenhum valor será cobrado até que o pagamento seja configurado e autorizado por si.",
+  "sub.keep": "Se a subscrição terminar, os seus dados e menus são preservados.",
+  "help.title": "Ajuda",
+  "pub.search": "Pesquisar", "pub.featured": "Recomendados", "pub.allergens": "Alergénios",
+  "pub.rate": "Avaliar", "pub.ratings": "avaliações", "pub.pairs": "Combina bem com", "pub.unavailable": "Esgotado",
+  "pub.hours": "Horário", "pub.contact": "Contacto", "pub.notFound": "Menu não encontrado.",
+  "pub.thanks": "Obrigado pela avaliação!", "pub.noResults": "Sem resultados.", "pub.demoBanner": "Restaurante de demonstração",
+  "pub.allergenNote": "Informação fornecida pelo restaurante. Em caso de alergia, confirme com a equipa.",
+  "pub.unverified": "Alergénios por confirmar com o restaurante",
+  "admin.title": "Administração da plataforma", "admin.price": "Preço mensal (cêntimos)", "admin.trial": "Dias de experiência",
+  "admin.grace": "Dias de carência", "admin.restaurants": "Restaurantes", "admin.audit": "Registo de auditoria",
+};
+
+type Key = keyof typeof pt;
+
+const en: Record<Key, string> = {
+  "nav.features": "Features", "nav.how": "How it works", "nav.pricing": "Pricing", "nav.faq": "FAQ",
+  "nav.contact": "Contact", "nav.demo": "Demo", "nav.login": "Sign in", "nav.dashboard": "Dashboard",
+  "cta.trial": "Try it free", "cta.demo": "See the demo", "cta.start": "Get started",
+  "hero.tagline": "Your menu. One tap away.",
+  "hero.sub": "Elegant digital menus for restaurants, cafés and bars. Update dishes and prices in seconds, translate for your guests, and learn what actually draws attention.",
+  "hero.note": "10 days free · No card · Cancel anytime",
+  "home.why": "Why MenuTap",
+  "home.v1.t": "Beautiful menus", "home.v1.d": "Editorial templates designed around your brand, readable on any phone.",
+  "home.v2.t": "Effortless updates", "home.v2.d": "Change a price or hide a sold-out dish. The QR code never changes.",
+  "home.v3.t": "Guests from everywhere", "home.v3.d": "Per-dish translations and automatic language detection.",
+  "home.v4.t": "Useful data", "home.v4.d": "Views, most-viewed dishes and peak hours — no invented sales figures.",
+  "home.demoTitle": "Explore a real menu", "home.demoSub": "Casa do Largo is a demo restaurant. Open the menu just like a guest would.",
+  "home.final": "Ready to put your menu on the table?",
+  "features.title": "Everything your menu needs", "features.sub": "One plan, every feature included.",
+  "f.menus": "Digital menus", "f.menus.d": "Multiple menus per restaurant: lunch, dinner, brunch, drinks and seasonal.",
+  "f.qr": "QR & NFC", "f.qr.d": "One permanent link, written to QR (PNG/SVG) and NTAG213 NFC tags.",
+  "f.tr": "Translations", "f.tr.d": "Names, descriptions and categories translated independently.",
+  "f.al": "Allergens", "f.al.d": "All 14 EU-regulated allergens, verified by the restaurant.",
+  "f.rec": "Recommendations", "f.rec.d": "Pair complementary dishes: octopus → vinho verde, custard tart → coffee.",
+  "f.sch": "Scheduling", "f.sch.d": "Show the right menu at the right time, in Lisbon time.",
+  "f.an": "Analytics", "f.an.d": "Views, unique sessions, searches, languages and peak hours.",
+  "f.rate": "Ratings", "f.rate.d": "Guests rate each dish from 1 to 5 stars, no sign-up needed.",
+  "how.title": "How it works",
+  "how.1": "Build your menu", "how.1d": "Categories, dishes, prices and photos in a simple dashboard.",
+  "how.2": "Customise", "how.2d": "Logo, colours, typography and template.",
+  "how.3": "Get your permanent link", "how.3d": "A QR code and NFC tag you never need to reprint.",
+  "how.4": "Guests scan or tap", "how.4d": "Opens instantly on their phone, no app.",
+  "how.5": "Manage everything live", "how.5d": "Changes show up immediately at the same address.",
+  "pricing.title": "One plan. Everything included.", "pricing.per": "/month", "pricing.vat": "VAT included where applicable",
+  "pricing.items": "Hosting|Permanent QR & NFC link|Unlimited menus, categories and dishes|Translations|Allergens and dietary labels|Recommendations|Analytics and Menu Intelligence|Full customisation",
+  "pricing.trial": "10 days free, counted only from when your menu is published. No card. Nothing is charged without your explicit authorisation.",
+  "faq.title": "Frequently asked questions",
+  "contact.title": "Talk to us", "contact.sub": "We reply on business days, usually within 24 hours.", "contact.send": "Open email",
+  "footer.privacy": "Privacy", "footer.terms": "Terms", "footer.rights": "All rights reserved.",
+  "auth.login": "Sign in", "auth.signup": "Create account", "auth.email": "Email", "auth.password": "Password",
+  "auth.name": "Your name", "auth.forgot": "Forgot your password?", "auth.noAccount": "No account yet?",
+  "auth.hasAccount": "Already have an account?", "auth.checkEmail": "We sent you a confirmation email. Open it to activate your account.",
+  "auth.resetSent": "If an account exists, we sent a link to reset your password.",
+  "auth.sendReset": "Send link", "auth.newPassword": "New password", "auth.save": "Save",
+  "auth.google": "Continue with Google", "auth.or": "or", "auth.back": "Back to sign in", "auth.updated": "Password updated.",
+  "common.save": "Save", "common.saved": "Saved", "common.cancel": "Cancel", "common.delete": "Delete",
+  "common.edit": "Edit", "common.add": "Add", "common.duplicate": "Duplicate", "common.archive": "Archive",
+  "common.restore": "Restore", "common.loading": "Loading…", "common.error": "Something went wrong. Please try again.",
+  "common.confirmDelete": "Are you sure? This cannot be undone.", "common.signout": "Sign out",
+  "common.open": "Open", "common.copy": "Copy", "common.copied": "Copied", "common.empty": "Nothing here yet.",
+  "common.demo": "Demo",
+  "dash.overview": "Overview", "dash.menus": "Menus & dishes", "dash.recs": "Recommendations",
+  "dash.analytics": "Analytics", "dash.design": "Design", "dash.qr": "QR & NFC", "dash.team": "Team & locations",
+  "dash.sub": "Subscription", "dash.settings": "Restaurant", "dash.help": "Help", "dash.admin": "Admin",
+  "dash.viewMenu": "View public menu", "dash.published": "Published", "dash.unpublished": "Not published",
+  "dash.publish": "Publish menu", "dash.unpublish": "Unpublish",
+  "ov.views": "Views (30 days)", "ov.sessions": "Unique sessions", "ov.topDishes": "Most viewed dishes",
+  "ov.topCats": "Popular categories", "ov.langs": "Languages", "ov.activity": "Recent activity",
+  "ov.noData": "No data yet. Share your QR code to start collecting visits.",
+  "onb.title": "Let's create your restaurant", "onb.sub": "You can change everything later.", "onb.create": "Create restaurant",
+  "f.name": "Name", "f.slug": "Menu address", "f.description": "Description", "f.address": "Address",
+  "f.phone": "Phone", "f.email": "Email", "f.website": "Website", "f.instagram": "Instagram link",
+  "f.reviews": "Google Reviews link", "f.hours": "Opening hours", "f.logo": "Logo", "f.cover": "Cover image",
+  "f.languages": "Menu languages", "f.defaultLang": "Original language",
+  "menu.new": "New menu", "menu.kind": "Type", "menu.newCat": "New category", "menu.newDish": "New dish",
+  "menu.noMenus": "Create your first menu.", "menu.noCats": "Add a category (e.g. Starters).",
+  "menu.noDishes": "No dishes in this category.", "menu.schedule": "Display schedule",
+  "menu.allDay": "All day", "menu.days": "Days", "menu.from": "From", "menu.to": "To",
+  "dish.price": "Price (€)", "dish.promo": "Promo price (€)", "dish.image": "Photo",
+  "dish.allergens": "Allergens", "dish.allergensVerified": "I confirm the allergen information was verified by the restaurant",
+  "dish.dietary": "Dietary labels", "dish.featured": "Featured", "dish.available": "Available",
+  "dish.unavailable": "Sold out", "dish.prep": "Prep time (min)", "dish.calories": "Calories (kcal)",
+  "dish.translations": "Translation (EN)", "dish.nameEn": "English name", "dish.descEn": "English description",
+  "dish.archived": "Archived", "dish.category": "Category",
+  "rec.title": "Recommendations", "rec.sub": "Pair dishes that go well together. Shown on each dish's detail.",
+  "rec.dish": "When a guest views", "rec.suggest": "Suggest", "rec.label": "Label",
+  "an.title": "Analytics", "an.note": "These numbers are menu views and clicks — not orders or sales.",
+  "an.hours": "Peak hours", "an.days": "Days of the week", "an.searches": "Searches",
+  "an.recs": "Recommendations", "an.impr": "impressions", "an.clicks": "clicks", "an.insights": "Menu Intelligence",
+  "an.sources": "Source", "an.ratings": "Ratings",
+  "design.title": "Design & branding", "design.primary": "Primary colour", "design.bg": "Background colour",
+  "design.accent": "Accent colour", "design.font": "Typography", "design.template": "Template",
+  "qr.title": "QR & NFC", "qr.url": "Permanent link", "qr.png": "Download PNG", "qr.svg": "Download SVG",
+  "qr.print": "Print card", "qr.nfc": "NFC tags",
+  "qr.nfcHelp": "Write only this link (NDEF URI record) to an NTAG213 or compatible tag using an app like NFC Tools. Never write menu content to the tag — that way changes appear automatically.",
+  "qr.test": "Test link",
+  "team.title": "Team", "team.sub": "People with access to this restaurant.",
+  "team.locations": "Locations", "team.addLocation": "Add location",
+  "sub.title": "Subscription", "sub.trial": "Free trial", "sub.trialNot": "Your 10-day trial starts when you publish your menu for the first time.",
+  "sub.trialEnds": "Ends on", "sub.notConfigured": "Payments are not active on the platform yet. Nothing will be charged until payment is configured and authorised by you.",
+  "sub.keep": "If your subscription ends, your data and menus are preserved.",
+  "help.title": "Help",
+  "pub.search": "Search", "pub.featured": "Recommended", "pub.allergens": "Allergens",
+  "pub.rate": "Rate", "pub.ratings": "ratings", "pub.pairs": "Pairs well with", "pub.unavailable": "Sold out",
+  "pub.hours": "Opening hours", "pub.contact": "Contact", "pub.notFound": "Menu not found.",
+  "pub.thanks": "Thanks for rating!", "pub.noResults": "No results.", "pub.demoBanner": "Demo restaurant",
+  "pub.allergenNote": "Information provided by the restaurant. If you have an allergy, please check with staff.",
+  "pub.unverified": "Allergens to be confirmed with the restaurant",
+  "admin.title": "Platform administration", "admin.price": "Monthly price (cents)", "admin.trial": "Trial days",
+  "admin.grace": "Grace days", "admin.restaurants": "Restaurants", "admin.audit": "Audit log",
+};
+
+const dicts: Record<Lang, Record<Key, string>> = { pt, en };
+
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: Key) => string };
+const I18nContext = createContext<Ctx>({ lang: "pt", setLang: () => {}, t: (k) => pt[k] });
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("pt");
+  useEffect(() => {
+    const saved = localStorage.getItem("mt-lang");
+    if (saved === "pt" || saved === "en") setLangState(saved);
+  }, []);
+  useEffect(() => {
+    document.documentElement.lang = lang === "pt" ? "pt-PT" : "en";
+  }, [lang]);
+  const setLang = (l: Lang) => {
+    localStorage.setItem("mt-lang", l);
+    setLangState(l);
+  };
+  return <I18nContext.Provider value={{ lang, setLang, t: (k) => dicts[lang][k] }}>{children}</I18nContext.Provider>;
+}
+
+export const useI18n = () => useContext(I18nContext);
+
+export function LangSwitch({ className = "" }: { className?: string }) {
+  const { lang, setLang } = useI18n();
+  return (
+    <div className={`inline-flex items-center gap-1 text-xs font-semibold tracking-wider ${className}`}>
+      {(["pt", "en"] as const).map((l, i) => (
+        <span key={l} className="flex items-center gap-1">
+          {i > 0 && <span className="text-muted-foreground">|</span>}
+          <button
+            type="button"
+            onClick={() => setLang(l)}
+            className={lang === l ? "text-primary underline underline-offset-4" : "text-muted-foreground hover:text-foreground"}
+            aria-pressed={lang === l}
+          >
+            {l.toUpperCase()}
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}

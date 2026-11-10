@@ -3,5 +3,7 @@
 - [x] Remove email confirmation at signup
 - [x] Dashboard pages
 - [x] Enable Stripe payments and create existing monthly product
-- [ ] Confirm purchase, subscription start/cancellation and plan-change business rules (waiting for user answers)
-- [ ] Implement embedded checkout and subscription lifecycle based on confirmed rules
+- [x] Confirm account-wide access, cancellation at period end, remaining free trial and one plan
+- [x] Implement embedded checkout and subscription lifecycle based on confirmed rules
+- [ ] Complete end-to-end test purchase (isolated test account sign-in did not persist; no purchase verified)
+- [ ] Accept real payments (awaiting Stripe go-live onboarding)

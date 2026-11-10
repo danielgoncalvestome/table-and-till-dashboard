@@ -8,7 +8,7 @@ import { BarList, Columns, PageTitle, Panel, Stat } from "@/components/dash/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { WEEKDAYS } from "@/lib/menu";
 
-export const Route = createFileRoute("/_authenticated/dashboard/analytics")({ component: Analytics });
+export const Route = createFileRoute("/_authenticated/dashboard/analytics")({ head: () => ({ meta: [{ title: "Estatísticas — MenuTap" }, { name: "description", content: "Consulte as visitas e avaliações do menu." }, { property: "og:title", content: "Estatísticas — MenuTap" }, { property: "og:description", content: "Consulte as visitas e avaliações do menu." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Analytics });
 
 function Analytics() {
   const { t, lang } = useI18n();

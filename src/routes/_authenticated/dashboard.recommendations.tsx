@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { useCatalog } from "@/lib/use-catalog";
 
-export const Route = createFileRoute("/_authenticated/dashboard/recommendations")({ component: Recs });
+export const Route = createFileRoute("/_authenticated/dashboard/recommendations")({ head: () => ({ meta: [{ title: "Recomendações — MenuTap" }, { name: "description", content: "Gira as recomendações entre pratos." }, { property: "og:title", content: "Recomendações — MenuTap" }, { property: "og:description", content: "Gira as recomendações entre pratos." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Recs });
 
 function Recs() {
   const { t } = useI18n();

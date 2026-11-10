@@ -8,7 +8,7 @@ import { PageTitle, Panel } from "@/components/dash/ui";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 
-export const Route = createFileRoute("/_authenticated/dashboard/qr")({ component: Qr });
+export const Route = createFileRoute("/_authenticated/dashboard/qr")({ head: () => ({ meta: [{ title: "QR e NFC — MenuTap" }, { name: "description", content: "Gira o acesso ao menu com QR code e NFC." }, { property: "og:title", content: "QR e NFC — MenuTap" }, { property: "og:description", content: "Gira o acesso ao menu com QR code e NFC." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Qr });
 
 function Qr() {
   const { t } = useI18n();

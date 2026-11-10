@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { audit, useRestaurant } from "@/lib/restaurant";
 
-export const Route = createFileRoute("/_authenticated/dashboard/settings")({ component: Settings });
+export const Route = createFileRoute("/_authenticated/dashboard/settings")({ head: () => ({ meta: [{ title: "Restaurante — MenuTap" }, { name: "description", content: "Atualize os dados do restaurante." }, { property: "og:title", content: "Restaurante — MenuTap" }, { property: "og:description", content: "Atualize os dados do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Settings });
 
 function Settings() {
   const { t } = useI18n();

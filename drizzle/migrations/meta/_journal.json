@@ -22,6 +22,20 @@
       "when": 1794328486172,
       "tag": "0002_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794330561436,
+      "tag": "0003_account_billing",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794330963336,
+      "tag": "0004_account_trial_on_first_publish",
+      "breakpoints": true
     }
   ]
 }

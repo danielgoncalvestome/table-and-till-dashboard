@@ -12,7 +12,7 @@ import { audit, useIsAdmin } from "@/lib/restaurant";
 import { formatDate } from "@/lib/menu";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Administração — MenuTap" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Administração — MenuTap" }, { name: "description", content: "Administração da plataforma MenuTap." }, { property: "og:title", content: "Administração — MenuTap" }, { property: "og:description", content: "Administração da plataforma MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Admin,
 });
 

@@ -1,0 +1,2 @@
+drop policy "public read published" on public.restaurants;
+create policy "public read published" on public.restaurants for select to anon, authenticated using (published = true or created_by = auth.uid() or public.is_member(id));

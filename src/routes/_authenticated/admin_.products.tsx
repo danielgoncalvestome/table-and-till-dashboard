@@ -54,7 +54,7 @@ function Products() {
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from("shop_orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["admin-shop-orders"] });
+    qc.invalidateQueries({ queryKey: ["admin-shop-orders"] }); qc.invalidateQueries({ queryKey: ["admin-alerts"] });
   }
 
   return (
@@ -94,7 +94,7 @@ function Products() {
             <span className="text-muted-foreground">{formatPrice(o.amount_cents / 100, lang)} · {formatDate(o.created_at, lang)}</span>
             {o.shipping && <span className="w-full text-xs text-muted-foreground">{(() => { const sh = o.shipping as { name?: string; address?: Record<string, string | null> }; return [sh.name, sh.address?.line1, sh.address?.line2, sh.address?.postal_code, sh.address?.city, sh.address?.country].filter(Boolean).join(", "); })()}</span>}
             <select className="rounded border bg-card px-2 py-1" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>
-              {["paid", "shipped", "cancelled", "failed"].map((s) => <option key={s} value={s}>{t(`cards.st.${s}` as never)}</option>)}
+              {["paid", "preparing", "shipped", "cancelled", "failed"].map((s) => <option key={s} value={s}>{t(`cards.st.${s}` as never)}</option>)}
             </select>
           </li>))}</ul>
       </Panel>

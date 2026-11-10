@@ -12,6 +12,8 @@ import { audit, useIsAdmin } from "@/lib/restaurant";
 import { formatDate } from "@/lib/menu";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { applyMonthlyPriceToSubscriptions } from "@/utils/payments.functions";
+import { Bell } from "lucide-react";
+import { AlertDot, useAdminAlerts } from "@/hooks/use-admin-alerts";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Administração — MenuTap" }, { name: "description", content: "Administração da plataforma MenuTap." }, { property: "og:title", content: "Administração — MenuTap" }, { property: "og:description", content: "Administração da plataforma MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -25,6 +27,7 @@ function Admin() {
   const { data: s } = useQuery({ queryKey: ["platform_settings"], queryFn: async () => (await supabase.from("platform_settings").select("*").eq("id", 1).single()).data, enabled: !!isAdmin });
   const { data: rs } = useQuery({ queryKey: ["admin-restaurants"], queryFn: async () => (await supabase.from("restaurants").select("*").order("created_at", { ascending: false })).data ?? [], enabled: !!isAdmin });
   const { data: logs } = useQuery({ queryKey: ["admin-audit"], queryFn: async () => (await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(30)).data ?? [], enabled: !!isAdmin });
+  const { data: al } = useAdminAlerts(!!isAdmin);
   const [f, setF] = useState({ monthly_price_cents: 990, trial_days: 10 });
   useEffect(() => { if (s) setF({ monthly_price_cents: s.monthly_price_cents, trial_days: s.trial_days }); }, [s]);
 
@@ -46,7 +49,7 @@ function Admin() {
   return (
     <div className="mx-auto max-w-6xl p-8">
       <Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link>
-      <PageTitle title={t("admin.title")} action={<div className="flex gap-2"><Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}</Link><Link to="/admin/products" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.shop")}</Link></div>} />
+      <PageTitle title={t("admin.title")} action={<div className="flex items-center gap-2">{!!al && al.messages + al.orders > 0 && <span className="relative mr-1" title="Alertas"><Bell className="h-5 w-5 text-destructive" /><span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-destructive" /></span>}<Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}<AlertDot n={al?.messages ?? 0} /></Link><Link to="/admin/products" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.shop")}<AlertDot n={al?.orders ?? 0} /></Link></div>} />
       <Panel>
         <div className="grid items-end gap-4 md:grid-cols-3">
           <div><Label>{t("admin.price")}</Label><Input type="number" min={0} value={f.monthly_price_cents} onChange={(e) => setF({ ...f, monthly_price_cents: Number(e.target.value) })} /></div>

@@ -130,7 +130,7 @@ const pt = {
   "admin.grace": "Dias de carência", "admin.restaurants": "Restaurantes", "admin.audit": "Registo de auditoria",
   "dash.cards": "Cartões", "cards.sub": "Encomende cartões e materiais MenuTap para o seu restaurante.", "cards.empty": "Ainda não há produtos disponíveis.",
   "cards.buy": "Comprar", "cards.qty": "Quantidade", "cards.pay": "Pagamento", "cards.orders": "As minhas encomendas", "cards.paid": "Encomenda paga, obrigado!",
-  "cards.st.pending": "Pendente", "cards.st.paid": "Paga", "cards.st.shipped": "Enviada", "cards.st.cancelled": "Cancelada", "cards.st.failed": "Pagamento falhado", "admin.priceApplied": "Novo preço aplicado a {n} subscrições na próxima renovação",
+  "cards.st.pending": "Pendente", "cards.st.paid": "Paga", "cards.st.preparing": "Em preparação", "cards.st.shipped": "Enviada", "cards.st.cancelled": "Cancelada", "cards.st.failed": "Pagamento falhado", "admin.priceApplied": "Novo preço aplicado a {n} subscrições na próxima renovação",
   "admin.shop": "Produtos (Cartões)", "admin.newProduct": "Novo produto", "admin.pName": "Nome", "admin.pDesc": "Descrição", "admin.pPrice": "Preço (€)",
   "admin.pImage": "Imagem", "admin.pActive": "Visível para restaurantes", "admin.orders": "Encomendas", "admin.edit": "Editar", "admin.delete": "Apagar",
 };
@@ -247,7 +247,7 @@ const en: Record<Key, string> = {
   "admin.grace": "Grace days", "admin.restaurants": "Restaurants", "admin.audit": "Audit log",
   "dash.cards": "Cards", "cards.sub": "Order MenuTap cards and materials for your restaurant.", "cards.empty": "No products available yet.",
   "cards.buy": "Buy", "cards.qty": "Quantity", "cards.pay": "Payment", "cards.orders": "My orders", "cards.paid": "Order paid, thank you!",
-  "cards.st.pending": "Pending", "cards.st.paid": "Paid", "cards.st.shipped": "Shipped", "cards.st.cancelled": "Cancelled", "cards.st.failed": "Payment failed", "admin.priceApplied": "New price applied to {n} subscriptions from next renewal",
+  "cards.st.pending": "Pending", "cards.st.paid": "Paid", "cards.st.preparing": "Preparing", "cards.st.shipped": "Shipped", "cards.st.cancelled": "Cancelled", "cards.st.failed": "Payment failed", "admin.priceApplied": "New price applied to {n} subscriptions from next renewal",
   "admin.shop": "Products (Cards)", "admin.newProduct": "New product", "admin.pName": "Name", "admin.pDesc": "Description", "admin.pPrice": "Price (€)",
   "admin.pImage": "Image", "admin.pActive": "Visible to restaurants", "admin.orders": "Orders", "admin.edit": "Edit", "admin.delete": "Delete",
 };

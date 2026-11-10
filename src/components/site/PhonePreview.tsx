@@ -2,13 +2,14 @@ import { Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/menu";
 import toastAsset from "@/assets/avocado-toast-square.jpg.asset.json";
+import eggsAsset from "@/assets/eggs-benedict-square.jpg.asset.json";
 
 /** Static product illustration of the demo menu (Casa do Largo). */
 export function PhonePreview() {
   const { lang } = useI18n();
   const dishes = [
     { img: toastAsset.url, n: lang === "pt" ? "Tosta de abacate e ovo" : "Avocado toast & egg", p: 9.5 },
-    { img: "/images/demo/polvo.jpg", n: lang === "pt" ? "Ovos Benedict" : "Roasted octopus", p: 8.5 },
+    { img: eggsAsset.url, n: lang === "pt" ? "Ovos Benedict" : "Eggs Benedict", p: 8.5 },
     { img: "/images/demo/nata.jpg", n: lang === "pt" ? "Croissant" : "Custard tart", p: 2.2 },
     { img: "/images/demo/cover.jpg", n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5 },
   ];

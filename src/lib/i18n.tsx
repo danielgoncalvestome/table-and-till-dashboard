@@ -57,7 +57,7 @@ const pt = {
   "contact.title": "Fale connosco",
   "contact.sub": "Respondemos em dias úteis, normalmente em menos de 24 horas.",
   "contact.send": "Enviar mensagem", "contact.message": "Mensagem", "contact.thanks": "Obrigado! Recebemos a sua mensagem e responderemos em breve.", "admin.messages": "Mensagens", "admin.noMessages": "Ainda não há mensagens.", "admin.markRead": "Marcar como lida", "admin.markUnread": "Marcar como não lida",
-  "footer.privacy": "Privacidade", "footer.terms": "Termos", "footer.rights": "Todos os direitos reservados.",
+  "footer.privacy": "Privacidade", "footer.terms": "Termos e Condições", "footer.rights": "Todos os direitos reservados.",
   "auth.login": "Entrar", "auth.signup": "Criar conta", "auth.email": "Email", "auth.password": "Palavra-passe",
   "auth.name": "O seu nome", "auth.forgot": "Esqueceu-se da palavra-passe?", "auth.noAccount": "Ainda não tem conta?",
   "auth.hasAccount": "Já tem conta?", "auth.checkEmail": "Enviámos um email de confirmação. Abra-o para ativar a conta.",

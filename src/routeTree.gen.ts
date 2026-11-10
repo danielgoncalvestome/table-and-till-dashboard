@@ -22,6 +22,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin_.messages'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin_.products'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_authenticated/dashboard.analytics'
@@ -100,6 +101,12 @@ const RSlugRoute = RSlugRouteImport.update({
   path: '/r/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/admin_/messages',
+    path: '/admin/messages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminProductsRoute =
   AuthenticatedAdminProductsRouteImport.update({
     id: '/admin_/products',
@@ -192,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/r/$slug': typeof RSlugRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/r/$slug': typeof RSlugRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
@@ -247,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/r/$slug': typeof RSlugRoute
+  '/_authenticated/admin_/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin_/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/_authenticated/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/r/$slug'
+    | '/admin/messages'
     | '/admin/products'
     | '/dashboard/analytics'
     | '/dashboard/cards'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/r/$slug'
+    | '/admin/messages'
     | '/admin/products'
     | '/dashboard/analytics'
     | '/dashboard/cards'
@@ -330,6 +342,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/r/$slug'
+    | '/_authenticated/admin_/messages'
     | '/_authenticated/admin_/products'
     | '/_authenticated/dashboard/analytics'
     | '/_authenticated/dashboard/cards'
@@ -452,6 +465,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/r/$slug'
       preLoaderRoute: typeof RSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin_/messages': {
+      id: '/_authenticated/admin_/messages'
+      path: '/admin/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin_/products': {
       id: '/_authenticated/admin_/products'
@@ -586,12 +606,14 @@ const AuthenticatedDashboardRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
 }
 

@@ -33,7 +33,7 @@ const C = {
     featEy: "Funcionalidades", featT: "Pensado para quem serve. Claro para quem se senta.", featD: "Um painel privado para a sua equipa gerir tudo, e um menu público que cada cliente percebe em segundos.",
     feats: [
       ["Vários menus, a sua ordem", "Almoço, jantar, bebidas — cada menu com as suas categorias e pratos. Reordene e arquive o que já não está em uso.", ["Entradas", "Pratos de peixe", "Sobremesas"]],
-      ["Disponível ou não, num toque", "Qualquer membro da equipa marca um prato como indisponível. Os clientes veem-no logo.", ["Caldo verde", "Bacalhau à Brás", "!polvo à lagareiro", "!sopa da pedra"]],
+      ["Disponível ou não, num toque", "Qualquer membro da equipa marca um prato como indisponível. Os clientes veem-no logo.", ["Caldo verde", "Bacalhau à Brás", "!Polvo à lagareiro", "!Sopa da pedra"]],
       ["Os 14 alergénios da UE", "Indique-os em cada prato. No menu, o cliente exclui os que não pode comer e vê apenas o que lhe serve.", ["Glúten", "Crustáceos", "Ovos", "Peixe", "Amendoins", "Soja", "Leite", "Frutos de casca rija", "Aipo", "Mostarda", "Sésamo", "Sulfitos", "Tremoço", "Moluscos"]],
       ["Etiquetas dietéticas bem visíveis", "Distintivos de alto contraste em cada prato, e filtros que se mantêm enquanto o cliente navega.", ["Vegetariano", "Vegan", "Sem glúten", "Sem lactose", "Picante", "Biológico"]],
       ["Tradução em inglês", "Cada prato tem campos próprios para o nome e a descrição também em inglês. Se faltar uma tradução, o menu mostra o português.", ["Nome EN", "Descrição EN"]],

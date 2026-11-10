@@ -22,7 +22,7 @@ export function PhonePreview() {
         <div className="px-4 pb-5 pt-3">
           <p className="font-display text-xl text-primary">Casa do Largo</p>
           <div className="mt-2 flex gap-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            <span className="text-primary">{lang === "pt" ? "Petiscos" : "Small plates"}</span>
+            <span className="text-primary">{lang === "pt" ? "BRUNCH" : "Small plates"}</span>
             <span>{lang === "pt" ? "Pratos" : "Mains"}</span>
             <span>{lang === "pt" ? "Sobremesas" : "Desserts"}</span>
           </div>

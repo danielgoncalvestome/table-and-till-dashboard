@@ -28,11 +28,11 @@ function Features() {
     <SitePage>
       <PageIntro eyebrow={t("nav.features")} title={t("features.title")} sub={t("features.sub")} />
       <section className="mx-auto mb-10 grid max-w-6xl gap-4 px-5 md:grid-cols-3">
-        {[
+        {([
           [UtensilsCrossed, "f.h1"],
           [RefreshCw, "f.h2"],
           [TrendingUp, "f.h3"],
-        ].map(([Icon, k], i) => (
+        ] as const).map(([Icon, k], i) => (
           <div key={k} className="rounded-md bg-primary p-6 text-primary-foreground">
             <div className="flex items-center justify-between">
               <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-foreground/10">

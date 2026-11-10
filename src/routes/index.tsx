@@ -33,10 +33,10 @@ const C = {
     featEy: "Funcionalidades", featT: "Pensado para quem serve. Claro para quem se senta.", featD: "Um painel privado para a sua equipa gerir tudo, e um menu público que cada cliente percebe em segundos.",
     feats: [
       ["Vários menus, a sua ordem", "Almoço, jantar, bebidas — cada menu com as suas categorias e pratos. Reordene e arquive o que já não está em uso.", ["Entradas", "Pratos de peixe", "Sobremesas"]],
-      ["Disponível ou não, num toque", "Qualquer membro da equipa marca um prato como indisponível. Os clientes veem-no logo.", ["Caldo verde", "Bacalhau à Brás"]],
+      ["Disponível ou não, num toque", "Qualquer membro da equipa marca um prato como indisponível. Os clientes veem-no logo.", ["Caldo verde", "Bacalhau à Brás", "!polvo à lagareiro", "!sopa da pedra"]],
       ["Os 14 alergénios da UE", "Indique-os em cada prato. No menu, o cliente exclui os que não pode comer e vê apenas o que lhe serve.", ["Glúten", "Crustáceos", "Ovos", "Peixe", "Amendoins", "Soja", "Leite", "Frutos de casca rija", "Aipo", "Mostarda", "Sésamo", "Sulfitos", "Tremoço", "Moluscos"]],
       ["Etiquetas dietéticas bem visíveis", "Distintivos de alto contraste em cada prato, e filtros que se mantêm enquanto o cliente navega.", ["Vegetariano", "Vegan", "Sem glúten", "Sem lactose", "Picante", "Biológico"]],
-      ["Vários idiomas", "Campos de tradução próprios para o nome e a descrição de cada prato. Se faltar uma tradução, o menu mostra o português.", ["PT", "EN", "ES", "FR", "DE"]],
+      ["Tradução em inglês", "Cada prato tem campos próprios para o nome e a descrição também em inglês. Se faltar uma tradução, o menu mostra o português.", ["Nome EN", "Descrição EN"]],
       ["Fotos que carregam depressa", "Carregue fotos dos pratos, logótipo e imagem de capa, otimizadas para abrir rápido no telemóvel.", []],
       ["A sua equipa, só no seu espaço", "Vários colaboradores, cada um com acesso apenas ao espaço onde trabalha.", []],
     ] as [string, string, string[]][],
@@ -60,10 +60,10 @@ const C = {
     featEy: "Features", featT: "Built for those who serve. Clear for those who sit.", featD: "A private dashboard for your team, and a public menu every guest understands in seconds.",
     feats: [
       ["Multiple menus, your order", "Lunch, dinner, drinks — each with its own categories and dishes. Reorder and archive.", ["Starters", "Fish dishes", "Desserts"]],
-      ["Available or not, in one tap", "Any team member can mark a dish unavailable. Guests see it right away.", ["Caldo verde", "Bacalhau à Brás"]],
+      ["Available or not, in one tap", "Any team member can mark a dish unavailable. Guests see it right away.", ["Caldo verde", "Bacalhau à Brás", "!polvo à lagareiro", "!sopa da pedra"]],
       ["The 14 EU allergens", "Set them per dish. Guests exclude what they can't eat.", ["Gluten", "Crustaceans", "Eggs", "Fish", "Peanuts", "Soy", "Milk", "Tree nuts", "Celery", "Mustard", "Sesame", "Sulphites", "Lupin", "Molluscs"]],
       ["Clear dietary labels", "High-contrast badges on every dish, with filters that persist.", ["Vegetarian", "Vegan", "Gluten-free", "Lactose-free", "Spicy", "Organic"]],
-      ["Multiple languages", "Translation fields for each dish's name and description, falling back to Portuguese.", ["PT", "EN", "ES", "FR", "DE"]],
+      ["English translation", "Each dish has its own fields for the name and description in English too. If a translation is missing, the menu shows Portuguese.", ["Name EN", "Description EN"]],
       ["Fast-loading photos", "Upload dish photos, logo and cover, optimised for mobile.", []],
       ["Your team, only your venue", "Multiple staff, each with access only to their venue.", []],
     ] as [string, string, string[]][],
@@ -145,7 +145,10 @@ function Index() {
                 <p className="mt-2 text-sm text-muted-foreground">{d}</p>
                 {tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
-                    {tags.map((x) => <span key={x} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">{x}</span>)}
+                    {tags.map((x) => {
+                      const off = x.startsWith("!");
+                      return <span key={x} className={off ? "rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs text-destructive line-through" : "rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground"}>{off ? x.slice(1) : x}</span>;
+                    })}
                   </div>
                 )}
               </div>

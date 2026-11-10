@@ -189,7 +189,7 @@ function PublicMenu() {
                       {d.description && <p className="mt-0.5 line-clamp-2 text-xs opacity-70">{tr(d.description, d.description_i18n, lang)}</p>}
                       <div className="mt-1 flex items-center justify-between gap-2 text-sm">
                         <span>
-                          {d.promo_price != null ? (<><span className="font-semibold text-[var(--m-accent)]">{formatPrice(d.promo_price, lang)}</span> <s className="text-xs opacity-50">{formatPrice(d.price, lang)}</s></>) : formatPrice(d.price, lang)}
+                          {d.promo_price != null ? (<><span className="font-semibold text-[var(--m-accent)]">{noEuro(formatPrice(d.promo_price, lang))}</span> <s className="text-xs opacity-50">{noEuro(formatPrice(d.price, lang))}</s></>) : noEuro(formatPrice(d.price, lang))}
                         </span>
                         {!d.available ? <span className="text-[10px] font-semibold uppercase">{u.sold}</span> : rt ? <span className="flex items-center gap-0.5 text-xs opacity-80"><Star className="h-3 w-3 fill-star text-star" />{Number(rt.avg_stars).toFixed(1)}</span> : null}
                       </div>
@@ -304,7 +304,7 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
               {recs.map(({ dish }) => (
                 <button key={dish!.id} onClick={() => onOpen(dish!)} className="flex items-center gap-2 text-left">
                   {dish!.image_url ? <img src={dish!.image_url} alt="" className="h-12 w-12 rounded object-cover" /> : <div className="h-12 w-12 rounded bg-[var(--m-primary)]/10" />}
-                  <span className="text-sm leading-tight">{tr(dish!.name, dish!.name_i18n, lang)}<br /><span className="text-xs opacity-70">{formatPrice(dish!.promo_price ?? dish!.price, lang)}</span></span>
+                  <span className="text-sm leading-tight">{tr(dish!.name, dish!.name_i18n, lang)}<br /><span className="text-xs opacity-70">{noEuro(formatPrice(dish!.promo_price ?? dish!.price, lang))}</span></span>
                 </button>
               ))}
             </div>

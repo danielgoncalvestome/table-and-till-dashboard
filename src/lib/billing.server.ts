@@ -33,7 +33,7 @@ export async function syncSubscription(subscription: Stripe.Subscription, enviro
   const { error } = await supabaseAdmin.from('account_subscriptions').upsert({
     user_id: userId, environment, stripe_subscription_id: subscription.id,
     stripe_customer_id: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
-    price_id: item.price.lookup_key ?? item.price.metadata.lovable_external_id ?? item.price.id,
+    price_id: subscription.metadata.priceId ?? item.price.lookup_key ?? item.price.metadata.lovable_external_id ?? item.price.id,
     status: subscription.status,
     current_period_end: item.current_period_end ? new Date(item.current_period_end * 1000).toISOString() : null,
     cancel_at_period_end: subscription.cancel_at_period_end, updated_at: new Date().toISOString(),

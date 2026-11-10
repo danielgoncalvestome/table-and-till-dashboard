@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import type Stripe from 'stripe';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { MONTHLY_PRICE_ID, hasPaidAccess, remainingTrialEnd } from '@/lib/billing-rules';
+import { BILLING_QUANTITY, MONTHLY_PRICE_ID, hasPaidAccess, remainingTrialEnd } from '@/lib/billing-rules';
 const input = z.object({ environment: z.enum(['sandbox', 'live']), origin: z.string().url(), lang: z.enum(['pt','en']) });
 function returnUrl(origin: string) {
   const url = new URL(origin);
@@ -19,9 +19,9 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       const { userId, supabase } = context;
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Authentication required');
-      const { data: restaurants, error: rError } = await supabase.from('restaurants').select('trial_ends_at,created_by').eq('created_by',userId).eq('is_demo',false);
+      const { data: restaurants, error: rError } = await supabase.from('restaurants').select('trial_started_at,trial_ends_at,created_by').eq('created_by',userId).eq('is_demo',false);
       if (rError) throw rError;
-      if (!restaurants?.length) throw new Error('Create and publish your restaurant first');
+      if (!restaurants?.some(r=>r.trial_started_at)) throw new Error('Create and publish your restaurant first');
       const { data: rows, error } = await supabase.from('account_subscriptions').select('*').eq('user_id',userId).eq('environment',data.environment);
       if (error) throw error;
       if (rows?.some(s => hasPaidAccess(s.status,s.current_period_end))) throw new Error('An account subscription already exists');
@@ -48,7 +48,7 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       const product = typeof price.product === 'string' ? price.product : price.product.id;
       const trialEnd = rows?.length ? undefined : remainingTrialEnd([account.trial_ends_at, ...restaurants.map(r=>r.trial_ends_at)]);
       const session = await stripe.checkout.sessions.create({
-        line_items:[{price_data:{product,currency:'eur',unit_amount:settings.monthly_price_cents,recurring:{interval:'month'},tax_behavior:'inclusive'},quantity:1}],
+        line_items:[{price_data:{product,currency:'eur',unit_amount:settings.monthly_price_cents,recurring:{interval:'month'},tax_behavior:'inclusive'},quantity:BILLING_QUANTITY}],
         mode:'subscription',ui_mode:'embedded_page',locale:data.lang,
         customer:customerId,return_url:`${returnUrl(data.origin)}?session_id={CHECKOUT_SESSION_ID}`,
         managed_payments:{enabled:true},metadata:{userId,managed_payments:'true'},

@@ -31,7 +31,6 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const links = [
     { to: "/features", label: t("nav.features") },
-    { to: "/how-it-works", label: t("nav.how") },
     { to: "/pricing", label: t("nav.pricing") },
     { to: "/faq", label: t("nav.faq") },
     { to: "/contact", label: t("nav.contact") },

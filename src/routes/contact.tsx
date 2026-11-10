@@ -29,17 +29,12 @@ function Contact() {
   return (
     <SitePage>
       <PageIntro eyebrow={t("nav.contact")} title={t("contact.title")} sub={t("contact.sub")} />
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-2">
+      <div className="mx-auto w-full max-w-xl px-5">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); window.location.href = href; }}>
           <div><Label>{t("auth.name")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
           <div><Label>{t("f.description")}</Label><Textarea rows={6} value={msg} onChange={(e) => setMsg(e.target.value)} required /></div>
           <Button type="submit">{t("contact.send")}</Button>
         </form>
-        <div className="space-y-2 text-sm">
-          <p className="eyebrow">Email</p>
-          <a className="font-display text-2xl text-primary" href="mailto:ola@menutap.pt">ola@menutap.pt</a>
-          <p className="text-muted-foreground">Lisboa, Portugal · Europe/Lisbon</p>
-        </div>
       </div>
     </SitePage>
   );

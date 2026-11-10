@@ -247,7 +247,6 @@ function Index() {
           <h2 className="mt-3 text-4xl">{c.ctaT}</h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" variant="secondary"><Link to="/auth" search={{ mode: "signup" }}>{c.start}</Link></Button>
-            <Button asChild size="lg" variant="ghost"><Link to="/demo">{c.demo} <ArrowRight /></Link></Button>
           </div>
         </div>
       </section>

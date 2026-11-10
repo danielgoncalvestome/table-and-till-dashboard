@@ -1,3 +1,4 @@
+import { AlertDot, useAdminAlerts } from "@/hooks/use-admin-alerts";
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -73,7 +74,7 @@ function DashboardLayout() {
         </Link>
       ))}
       {isAdmin && (
-        <Link to="/admin" className="mt-2 flex items-center gap-3 rounded px-3 py-2 text-sm hover:bg-sidebar-accent"><Shield className="h-4 w-4" />{t("dash.admin")}</Link>
+        <Link to="/admin" className="mt-2 flex items-center gap-3 rounded px-3 py-2 text-sm hover:bg-sidebar-accent"><Shield className="h-4 w-4" />{t("dash.admin")}<AdminBadge /></Link>
       )}
       <div className="mt-auto space-y-3 border-t pt-4">
         <LangSwitch className="px-3" />
@@ -155,4 +156,10 @@ function Onboarding() {
       </form>
     </div>
   );
+}
+
+
+function AdminBadge() {
+  const { data } = useAdminAlerts(true);
+  return <AlertDot n={(data?.messages ?? 0) + (data?.orders ?? 0)} />;
 }

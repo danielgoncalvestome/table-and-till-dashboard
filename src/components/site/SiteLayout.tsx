@@ -92,7 +92,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="font-display text-2xl">MenuTap</p>
+          <Logo variant="light" height="h-9" />
           <p className="mt-2 text-sm opacity-75">{t("hero.tagline")}</p>
         </div>
         <div className="flex flex-col gap-2 text-sm opacity-90">

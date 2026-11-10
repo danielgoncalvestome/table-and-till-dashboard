@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Phone, Instagram, Star, Search, X, MapPin, Clock } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
@@ -213,27 +212,37 @@ function PublicMenu() {
         )}
       </main>
 
-      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto border-0 bg-[var(--m-bg)] p-0 text-[var(--m-primary)]" style={style}>
-          {open && <DishDetail dish={open} data={data} lang={lang} onOpen={(d) => { track(r.id, "rec_click", { dish_id: d.id, lang }); openDish(d); }} onRated={() => qc.invalidateQueries({ queryKey: ["public-menu", slug] })} />}
-        </DialogContent>
-      </Dialog>
+      {open && (
+        <div style={style} className="fixed inset-0 z-50 overflow-y-auto bg-[var(--m-bg)] text-[var(--m-primary)]" role="dialog" aria-modal="true">
+          <DishDetail key={open.id} dish={open} data={data} lang={lang} onClose={() => setOpen(null)} onOpen={(d) => { track(r.id, "rec_click", { dish_id: d.id, lang }); openDish(d); }} onRated={() => qc.invalidateQueries({ queryKey: ["public-menu", slug] })} />
+        </div>
+      )}
     </div>
   );
 }
 
-function DishDetail({ dish: d, data, lang, onOpen, onRated }: { dish: Dish; data: Data; lang: Lang; onOpen: (d: Dish) => void; onRated: () => void }) {
+function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: Dish; data: Data; lang: Lang; onOpen: (d: Dish) => void; onRated: () => void; onClose: () => void }) {
   const u = UI[lang];
   const rt = data.ratings.find((x) => x.dish_id === d.id);
   const [mine, setMine] = useState<number | null>(null);
   const [hover, setHover] = useState(0);
   const [done, setDone] = useState(false);
+  const top = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const v = localStorage.getItem(`mt-rate-${d.id}`);
     setMine(v ? Number(v) : null);
     setDone(false);
-  }, [d.id]);
+    top.current?.parentElement?.scrollTo({ top: 0 });
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [d.id, onClose]);
   const recs = data.recs.filter((x) => x.dish_id === d.id).map((x) => ({ rec: x, dish: data.dishes.find((y) => y.id === x.recommended_dish_id) })).filter((x) => x.dish);
+  const desc = tr(d.long_description, d.long_description_i18n, lang) || tr(d.description, d.description_i18n, lang);
+  const ingredients = tr(d.ingredients, d.ingredients_i18n, lang);
+  const gallery = (d.gallery ?? []).filter(Boolean);
 
   async function rate(n: number) {
     setMine(n);
@@ -243,22 +252,47 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated }: { dish: Dish; data
   }
 
   return (
-    <div>
-      {d.image_url && <img src={d.image_url} alt="" className="aspect-[4/3] w-full object-cover" />}
-      <div className="p-6">
-        <DialogTitle className="text-2xl font-normal" style={{ fontFamily: "var(--m-font)" }}>{tr(d.name, d.name_i18n, lang)}</DialogTitle>
-        <p className="mt-1 text-lg">
-          {d.promo_price != null ? (<><span className="text-[var(--m-accent)]">{formatPrice(d.promo_price, lang)}</span> <s className="text-sm opacity-50">{formatPrice(d.price, lang)}</s></>) : formatPrice(d.price, lang)}
-          {!d.available && <span className="ml-2 text-xs font-semibold uppercase">{u.sold}</span>}
-        </p>
-        {d.description && <p className="mt-3 text-sm opacity-80">{tr(d.description, d.description_i18n, lang)}</p>}
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {d.dietary.map((x) => <span key={x} className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{labelOf(DIETARY, x, lang)}</span>)}
-          {d.prep_minutes && <span className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{d.prep_minutes} {u.prep}</span>}
-          {d.calories && <span className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{d.calories} kcal</span>}
+    <div ref={top}>
+      <button onClick={onClose} aria-label="Voltar" className="fixed left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/40 text-white backdrop-blur"><ChevronLeft className="h-5 w-5" /></button>
+      <section className="relative h-[100svh] w-full overflow-hidden bg-[var(--m-primary)]">
+        {d.image_url && <img src={d.image_url} alt={tr(d.name, d.name_i18n, lang)} className="absolute inset-0 h-full w-full object-cover" />}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-black/70" />
+        <div className="relative mx-auto max-w-3xl px-6 pt-20 text-white">
+          <h2 className="text-3xl font-bold leading-tight md:text-5xl" style={{ fontFamily: "var(--m-font)" }}>{tr(d.name, d.name_i18n, lang)}</h2>
+          <p className="mt-2 text-lg">
+            {d.promo_price != null ? (<><span className="font-semibold">{formatPrice(d.promo_price, lang)}</span> <s className="text-sm opacity-70">{formatPrice(d.price, lang)}</s></>) : formatPrice(d.price, lang)}
+            {!d.available && <span className="ml-2 text-xs font-semibold uppercase">{u.sold}</span>}
+          </p>
+          {desc && <p className="mt-3 max-w-xl whitespace-pre-line text-sm leading-relaxed opacity-90">{desc}</p>}
+          <div className="mt-4 flex items-center gap-3">
+            <div className="flex gap-1" onMouseLeave={() => setHover(0)}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} aria-label={`${n}`} onMouseEnter={() => setHover(n)} onClick={() => rate(n)}>
+                  <Star className={`h-7 w-7 ${(hover || mine || 0) >= n ? "fill-star text-star" : "text-white/60"}`} />
+                </button>
+              ))}
+            </div>
+            {rt && <span className="text-xs opacity-90">{Number(rt.avg_stars).toFixed(1)} · {rt.total} {u.ratings}</span>}
+          </div>
+          {done && <p className="mt-1 text-xs opacity-90">{u.thanks}</p>}
         </div>
+      </section>
 
-        <div className="mt-5">
+      {gallery.map((g) => (
+        <section key={g} className="h-[100svh] w-full overflow-hidden">
+          <img src={g} alt="" loading="lazy" className="h-full w-full object-cover" />
+        </section>
+      ))}
+
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        {(d.dietary.length > 0 || d.prep_minutes || d.calories) && (
+          <div className="flex flex-wrap gap-1.5">
+            {d.dietary.map((x) => <span key={x} className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{labelOf(DIETARY, x, lang)}</span>)}
+            {d.prep_minutes && <span className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{d.prep_minutes} {u.prep}</span>}
+            {d.calories && <span className="rounded-full border border-[var(--m-primary)]/25 px-2 py-0.5 text-[11px]">{d.calories} kcal</span>}
+          </div>
+        )}
+        <div className="mt-6">
           <p className="text-xs font-semibold uppercase tracking-wider opacity-70">{u.allergens}</p>
           {d.allergens_verified ? (
             <p className="mt-1 text-sm">{d.allergens.length ? d.allergens.map((a) => labelOf(ALLERGENS, a, lang)).join(" · ") : "—"}</p>
@@ -267,24 +301,8 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated }: { dish: Dish; data
           )}
           <p className="mt-1 text-[11px] opacity-60">{u.note}</p>
         </div>
-
-        <div className="mt-5 border-t border-[var(--m-primary)]/15 pt-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wider opacity-70">{u.rate}</p>
-            {rt && <p className="flex items-center gap-1 text-xs"><Star className="h-3 w-3 fill-star text-star" />{Number(rt.avg_stars).toFixed(1)} · {rt.total} {u.ratings}</p>}
-          </div>
-          <div className="mt-2 flex gap-1" onMouseLeave={() => setHover(0)}>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} aria-label={`${n}`} onMouseEnter={() => setHover(n)} onClick={() => rate(n)}>
-                <Star className={`h-7 w-7 ${(hover || mine || 0) >= n ? "fill-star text-star" : "opacity-30"}`} />
-              </button>
-            ))}
-          </div>
-          {done && <p className="mt-1 text-xs opacity-70">{u.thanks}</p>}
-        </div>
-
         {recs.length > 0 && (
-          <div className="mt-5 border-t border-[var(--m-primary)]/15 pt-4">
+          <div className="mt-6 border-t border-[var(--m-primary)]/15 pt-4">
             <p className="text-xs font-semibold uppercase tracking-wider opacity-70">{tr(recs[0].rec.label, recs[0].rec.label_i18n, lang) || u.pairs}</p>
             <div className="mt-3 grid grid-cols-2 gap-3">
               {recs.map(({ dish }) => (
@@ -295,6 +313,11 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated }: { dish: Dish; data
               ))}
             </div>
           </div>
+        )}
+        {ingredients && (
+          <p className="mt-10 text-xs leading-relaxed opacity-50">
+            <span className="uppercase tracking-wider">{lang === "pt" ? "Ingredientes" : "Ingredients"}:</span> {ingredients}
+          </p>
         )}
       </div>
     </div>

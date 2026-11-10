@@ -3,8 +3,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
-import heroImg from "@/assets/hero-menutap.png";
-import statsImg from "@/assets/stats-menutap.png";
+import { PhonePreview } from "@/components/site/PhonePreview";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -98,9 +97,7 @@ function Index() {
           <p className="mt-6 text-sm text-muted-foreground">{c.addr}</p>
           <p className="mt-1 font-mono text-sm">menutap.pt/r/o-seu-restaurante</p>
         </div>
-        <div className="relative rounded-[2rem] bg-primary p-6 md:p-8">
-          <img src={heroImg} alt="Telemóvel com menu, suporte QR e cartão NFC MenuTap" width={1024} height={1024} className="mx-auto w-full max-w-md" />
-        </div>
+        <PhonePreview />
       </section>
 
       <section className="bg-primary text-primary-foreground">
@@ -157,7 +154,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 md:grid-cols-2">
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 ">
         <div>
           <Eyebrow>{c.anEy}</Eyebrow>
           <h2 className="mt-3 text-4xl">{c.anT}</h2>
@@ -166,7 +163,6 @@ function Index() {
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">{c.anNote}</p>
         </div>
-        <img src={statsImg} alt="Ilustração das estatísticas MenuTap" width={591} height={422} loading="lazy" className="mx-auto w-full max-w-md" />
       </section>
 
       <section className="border-y bg-card">

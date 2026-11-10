@@ -42,6 +42,10 @@ const C = {
     ] as [string, string, string[]][],
     anEy: "ANÁLISES E ESTATÍSTICA", anT: "Perceba o que os clientes procuram.",
     an: ["Visualizações do menu por dia, semana e mês e os pratos mais vistos", "Avaliações rápidas que permitem melhorar o serviço e reforçar a reputação"], anNote: "Sem cookies de rastreio. Sem dados pessoais de quem consulta o menu.",
+    anStats: [["66%", "preferem menus com fotografias dos pratos"], ["59%", "consultam frequentemente ou sempre o menu antes"], ["77%", "dos 18-24 anos preferem menus com fotografias"]] as [string, string][],
+    anBarsT: "O que os clientes valorizam",
+    anBars: [["Preferem fotografias", 66, "forest"], ["Já utilizaram menus QR", 65, "clay"]] as [string, number, string][],
+    anSrc: "Inquérito Toast a 850 pessoas, novembro de 2024.",
     prEy: "PREÇO", prT: "Um plano simples, tudo incluído.", prNote: "10 dias grátis, sem cartão. Cancele quando quiser.", prLink: "Experimentar",
     faqEy: "Perguntas frequentes", faqT: "Antes de começar.",
     faqs: [["Os meus clientes precisam de instalar alguma app?", "Não. O menu abre diretamente no navegador do telemóvel, sem app e sem criar conta."], ["Se mudar um preço, tenho de reimprimir o QR?", "Não. O QR e a etiqueta NFC apontam sempre para o mesmo endereço; as alterações aparecem de imediato."], ["Como funciona o NFC?", "O cliente aproxima o telemóvel do cartão MenuTap e o menu abre automaticamente."], ["Que dados recolhem de quem consulta o menu?", "Apenas estatísticas anónimas, sem cookies de rastreio nem dados pessoais."], ["A minha equipa pode ajudar a gerir o menu?", "Sim. Convide colaboradores, cada um com acesso apenas ao seu espaço."]],
@@ -69,6 +73,10 @@ const C = {
     ] as [string, string, string[]][],
     anEy: "Analytics", anT: "Understand what your guests look for.",
     an: ["Menu views by day, week and month", "Sessions and chosen languages", "Most-viewed dishes"], anNote: "No tracking cookies. No personal data from menu visitors.",
+    anStats: [["66%", "prefer menus with photos of the dishes"], ["59%", "check the menu often or always beforehand"], ["77%", "of 18-24s prefer menus with photos"]] as [string, string][],
+    anBarsT: "What guests value",
+    anBars: [["Prefer photos", 66, "forest"], ["Have used QR menus", 65, "clay"]] as [string, number, string][],
+    anSrc: "Toast survey of 850 people, November 2024.",
     prEy: "Pricing", prT: "One simple plan, everything included.", prNote: "10 days free, no card. Cancel anytime.", prLink: "See pricing",
     faqEy: "FAQ", faqT: "Before you start.",
     faqs: [["Do my guests need to install an app?", "No. The menu opens straight in the phone browser, no app or account."], ["If I change a price, do I reprint the QR?", "No. The QR and NFC tag always point to the same address; changes show instantly."], ["How does NFC work?", "Guests hold their phone near the MenuTap card and the menu opens."], ["What data do you collect from visitors?", "Only anonymous statistics, no tracking cookies or personal data."], ["Can my team help manage the menu?", "Yes. Invite staff, each with access only to your venue."]],
@@ -164,6 +172,31 @@ function Index() {
             {c.an.map((x) => <li key={x} className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-primary" />{x}</li>)}
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">{c.anNote}</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {c.anStats.map(([n, d]) => (
+            <div key={n} className="rounded-md border bg-card p-6">
+              <p className="font-display text-5xl text-primary">{n}</p>
+              <p className="mt-3 text-sm leading-snug text-muted-foreground">{d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-md border bg-card p-6">
+          <p className="eyebrow">{c.anBarsT}</p>
+          <div className="mt-5 space-y-4">
+            {c.anBars.map(([label, pct, tone]) => (
+              <div key={label}>
+                <div className="flex items-baseline justify-between gap-4 text-sm">
+                  <span>{label}</span>
+                  <span className={tone === "clay" ? "font-semibold text-chart-3" : "font-semibold text-primary"}>{pct}%</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-muted">
+                  <div className={tone === "clay" ? "h-2 rounded-full bg-chart-3" : "h-2 rounded-full bg-primary"} style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-xs text-muted-foreground">{c.anSrc}</p>
         </div>
       </section>
 

@@ -9,7 +9,7 @@ import eggsAsset from "@/assets/eggs-benedict-square.jpg.asset.json";
 export function PhonePreview() {
   const { lang } = useI18n();
   const dishes = [
-    { img: omeletAsset.url, n: lang === "pt" ? "Tosta de abacate e ovo" : "Avocado toast & egg", p: 9.5 },
+    { img: omeletAsset.url, n: lang === "pt" ? "Tosta de abacate" : "Avocado toast & egg", p: 9.5 },
     { img: eggsAsset.url, n: lang === "pt" ? "Ovos Benedict" : "Eggs Benedict", p: 8.5 },
     { img: salmonAsset.url, n: lang === "pt" ? "Croissant" : "Custard tart", p: 2.2 },
     { img: "/images/demo/cover.jpg", n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5 },

@@ -256,7 +256,7 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
   return (
     <div ref={top}>
       <button onClick={onClose} aria-label="Voltar" className="fixed left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/40 text-white backdrop-blur"><ChevronLeft className="h-5 w-5" /></button>
-      <section className="relative h-[75svh] w-full overflow-hidden bg-[var(--m-primary)]">
+      <section className="relative h-[100svh] w-full overflow-hidden bg-[var(--m-primary)]">
         {d.image_url && <img src={d.image_url} alt={tr(d.name, d.name_i18n, lang)} className="absolute inset-0 h-full w-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/5 to-black/55" />
         <div className="relative mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 text-white">
@@ -281,7 +281,7 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
       </section>
 
       {gallery.map((g) => (
-        <section key={g} className="h-[75svh] w-full overflow-hidden">
+        <section key={g} className="h-[100svh] w-full overflow-hidden">
           <img src={g} alt="" loading="lazy" className="h-full w-full object-cover" />
         </section>
       ))}

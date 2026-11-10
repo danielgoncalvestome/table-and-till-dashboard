@@ -23,13 +23,13 @@ const C = {
   pt: {
     eyebrow: "Menus digitais por QR e NFC",
     h1a: "O seu menu digital. Simples, elegante e", h1b: "sempre atualizado.",
-    sub: "Crie o menu do seu restaurante, café ou bar uma vez e partilhe-o num link que nunca muda. Os clientes leem o QR ou tocam na etiqueta NFC e abrem-no no telemóvel — sem app, sem registo.",
+    sub: "Crie o seu menu online e partilhe-o através do dispositivo personalizado a pensar no seu negócio, que se encontra anexado a esta carta. Os clientes leem o QR code ou encostam o telemóvel, por NFC, e abrem o menu num segundo — sem app, sem registo, sem complicações",
     start: "Começar gratuitamente", seeDemo: "Ver a Casa do Largo", addr: "O seu endereço, para sempre:",
-    ideaEy: "A ideia por trás do MenuTap", ideaT: "Um link fixo. Um menu sempre vivo.",
-    ideaD: "Cada espaço recebe um endereço próprio. É esse endereço que fica no QR da mesa e na etiqueta NFC do balcão — e é por trás dele que o menu muda sempre que precisar.",
-    ideas: [["Mudou um preço?", "Já está no menu dos clientes. O código impresso continua o mesmo."], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
+    ideaEy: "A ideia por trás do MenuTap", ideaT: "Um identificador fixo.\u00a0Um menu sempre vivo.",
+    ideaD: "Cada espaço recebe um dispositivo próprio —\u00a0coloque na mesa, no balcão ou na parede — e é por trás dele que o menu muda sempre que precisar.",
+    ideas: [["Mudou um preço?", "Já está no menu dos clientes.\u00a0"], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
     howEy: "Como funciona", howT: "Do primeiro prato à primeira mesa, em três passos.",
-    steps: [["Crie o menu", "Perfil do espaço, logótipo e cores, primeiro menu, pratos."], ["Deixe o cartão na mesa", "Disponibilize o cartão em cada mesa, em cada parede — o cliente toca e o menu abre no telemóvel, sem app nem conta."], ["Receba avaliações", "Preços e pratos sempre atualizados, feedback direto dos clientes para melhorar o serviço e reforçar a reputação."]],
+    steps: [["Crie o menu", "Perfil do espaço, logótipo e cores, primeiro menu, pratos.\nAlergénios, etiquetas, fotos profissionais.\nTudo num clique."], ["Deixe o dispositivo na mesa", "Disponibilize-o em cada mesa, em cada parede — o cliente toca e o menu abre no telemóvel, sem app nem conta. Pode encomendar quantos dispositivos quiser, o primeiro é sempre gratuito."], ["Receba avaliações", "Preços e pratos sempre atualizados, feedback direto dos clientes para melhorar o serviço e reforçar a reputação."]],
     featEy: "Funcionalidades", featT: "Pensado para quem serve. Claro para quem se senta.", featD: "Um painel privado para a sua equipa gerir tudo, e um menu público que cada cliente percebe em segundos.",
     feats: [
       ["Vários menus, a sua ordem", "Almoço, jantar, bebidas — cada menu com as suas categorias e pratos. Reordene e arquive o que já não está em uso.", ["Entradas", "Pratos de peixe", "Sobremesas"]],
@@ -106,7 +106,7 @@ function Index() {
             <p className="text-xs font-medium uppercase tracking-[0.2em] opacity-80">— {c.ideaEy}</p>
             <h2 className="mt-3 text-4xl">{c.ideaT}</h2>
             <p className="mt-4 opacity-85">{c.ideaD}</p>
-            <p className="mt-6 inline-block rounded-md bg-primary-foreground/10 px-4 py-2 font-mono text-sm">menutap.pt/r/casa-do-largo</p>
+            <p className="mt-6 inline-block rounded-md bg-primary-foreground/10 px-4 py-2 font-mono text-sm">menutap.pt/r/o-seu-restaurante</p>
           </div>
           <div className="space-y-6">
             {c.ideas.map(([q, a]) => (

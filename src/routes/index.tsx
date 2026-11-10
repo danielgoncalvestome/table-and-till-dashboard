@@ -24,7 +24,7 @@ const C = {
     eyebrow: "Menus digitais por QR e NFC",
     h1a: "O seu menu digital. Simples, elegante e", h1b: "sempre atualizado.",
     sub: "Crie o seu menu online e partilhe-o através do dispositivo personalizado. Os clientes leem o QR code ou encostam o telemóvel, por NFC, e abrem o menu num segundo — sem app, sem registo, sem complicações",
-    start: "Começar gratuitamente", addr: "O seu endereço, para sempre:",
+    start: "Começar gratuitamente", seeFeatures: "Funcionalidades", addr: "O seu endereço, para sempre:",
     ideaEy: "A ideia por trás do MenuTap", ideaT: "Um identificador fixo.\u00a0Um menu sempre vivo.",
     ideaD: "Cada espaço recebe um dispositivo próprio —\u00a0coloque na mesa, no balcão ou na parede — e é por trás dele que o menu muda sempre que precisar.",
     ideas: [["Mudou um preço?", "Já está no menu dos clientes.\u00a0"], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
@@ -59,7 +59,7 @@ const C = {
     eyebrow: "Digital menus via QR and NFC",
     h1a: "Your digital menu. Simple, elegant and", h1b: "always up to date.",
     sub: "Create your restaurant, café or bar menu once and share it on a link that never changes. Guests scan the QR or tap the NFC tag and open it on their phone — no app, no sign-up.",
-    start: "Start for free", addr: "Your address, forever:",
+    start: "Start for free", seeFeatures: "Features", addr: "Your address, forever:",
     ideaEy: "The idea behind MenuTap", ideaT: "One fixed link. A menu that's always alive.",
     ideaD: "Every venue gets its own address. That address lives on the table QR and the NFC tag — and behind it, your menu changes whenever you need.",
     ideas: [["Changed a price?", "It's already on your guests' menu. The printed code stays the same."], ["Out of octopus?", "Mark the dish unavailable and the public menu reflects it instantly."], ["New dinner menu?", "Create it in the dashboard. No re-writing NFC tags, no reprinting QR codes."]],
@@ -108,6 +108,7 @@ function Index() {
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">{c.sub}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg"><Link to="/auth" search={{ mode: "signup" }}>{c.start}</Link></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/features">{c.seeFeatures}</Link></Button>
           </div>
           <p className="mt-6 text-sm text-muted-foreground">{c.addr}</p>
           <p className="mt-1 font-mono text-sm">menutap.pt/r/o-seu-restaurante</p>

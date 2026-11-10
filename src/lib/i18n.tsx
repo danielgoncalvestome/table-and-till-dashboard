@@ -5,7 +5,7 @@ export type Lang = "pt" | "en";
 const pt = {
   "nav.features": "Funcionalidades",
   "nav.how": "Como funciona",
-  "nav.pricing": "Preço",
+  "nav.pricing": "Subscrever",
   "nav.faq": "Perguntas",
   "nav.contact": "Contacto",
   "nav.login": "Entrar",

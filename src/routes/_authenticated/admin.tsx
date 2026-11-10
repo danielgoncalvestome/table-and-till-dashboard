@@ -46,7 +46,7 @@ function Admin() {
   return (
     <div className="mx-auto max-w-6xl p-8">
       <Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link>
-      <PageTitle title={t("admin.title")} action={<Link to="/admin/products" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.shop")}</Link>} />
+      <PageTitle title={t("admin.title")} action={<div className="flex gap-2"><Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}</Link><Link to="/admin/products" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.shop")}</Link></div>} />
       <Panel>
         <div className="grid items-end gap-4 md:grid-cols-3">
           <div><Label>{t("admin.price")}</Label><Input type="number" min={0} value={f.monthly_price_cents} onChange={(e) => setF({ ...f, monthly_price_cents: Number(e.target.value) })} /></div>

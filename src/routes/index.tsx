@@ -23,7 +23,7 @@ const C = {
   pt: {
     eyebrow: "Menus digitais por QR e NFC",
     h1a: "O seu menu digital. Simples, elegante e", h1b: "sempre atualizado.",
-    sub: "Crie o seu menu online e partilhe-o através do dispositivo personalizado a pensar no seu negócio, que se encontra anexado a esta carta. Os clientes leem o QR code ou encostam o telemóvel, por NFC, e abrem o menu num segundo — sem app, sem registo, sem complicações",
+    sub: "Crie o seu menu online e partilhe-o através do dispositivo personalizado. Os clientes leem o QR code ou encostam o telemóvel, por NFC, e abrem o menu num segundo — sem app, sem registo, sem complicações",
     start: "Começar gratuitamente", addr: "O seu endereço, para sempre:",
     ideaEy: "A ideia por trás do MenuTap", ideaT: "Um identificador fixo.\u00a0Um menu sempre vivo.",
     ideaD: "Cada espaço recebe um dispositivo próprio —\u00a0coloque na mesa, no balcão ou na parede — e é por trás dele que o menu muda sempre que precisar.",

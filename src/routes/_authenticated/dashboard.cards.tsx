@@ -31,6 +31,11 @@ function Cards() {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [secret, setSecret] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [useDefault, setUseDefault] = useState(true);
+  const [addr, setAddr] = useState({ name: "", line1: "", postalCode: "", city: "", country: "PT" as "PT" | "ES" });
+  const hasDefault = !!r.address?.trim();
+  const ownAddr = !useDefault || !hasDefault;
+  const addrOk = !ownAddr || (addr.name.trim() && addr.line1.trim() && addr.postalCode.trim() && addr.city.trim());
   const [error, setError] = useState<string | null>(null);
   const { data: products } = useQuery({ queryKey: ["shop-products"], queryFn: async () => {
     const { data, error } = await supabase.from("shop_products").select("*").eq("active", true).order("position").order("created_at");
@@ -52,7 +57,7 @@ function Cards() {
     if (!environment) return;
     setBusy(productId); setError(null);
     try {
-      const res = await checkout({ data: { environment, origin: window.location.origin, lang, productId, restaurantId: r.id, quantity: qty[productId] ?? 1 } });
+      const res = await checkout({ data: { environment, origin: window.location.origin, lang, productId, restaurantId: r.id, quantity: qty[productId] ?? 1, shipping: { useDefault: !ownAddr, ...(ownAddr && addr) } } });
       if ("error" in res) throw new Error(res.error);
       setSecret(res.clientSecret);
     } catch (e) { setError(e instanceof Error ? e.message : t("common.error")); } finally { setBusy(null); }
@@ -70,6 +75,18 @@ function Cards() {
           <EmbeddedCheckoutProvider stripe={getStripe()} options={{ clientSecret: secret }}><EmbeddedCheckout /></EmbeddedCheckoutProvider>
         </section>
       ) : !products?.length ? <p className="text-sm text-muted-foreground">{t("cards.empty")}</p> : (
+        <>
+        <section className="mb-6 rounded-md border bg-card p-4">
+          <h2 className="mb-3 text-lg">{t("cards.ship")}</h2>
+          {hasDefault && <label className="flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1" checked={useDefault} onChange={(e) => setUseDefault(e.target.checked)} /><span>{t("cards.shipDefault")}<span className="block text-muted-foreground">{r.address}</span></span></label>}
+          {ownAddr && <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <Input placeholder={t("cards.shipName")} value={addr.name} onChange={(e) => setAddr({ ...addr, name: e.target.value })} />
+            <Input placeholder={t("cards.shipLine")} value={addr.line1} onChange={(e) => setAddr({ ...addr, line1: e.target.value })} />
+            <Input placeholder={t("cards.shipPostal")} value={addr.postalCode} onChange={(e) => setAddr({ ...addr, postalCode: e.target.value })} />
+            <Input placeholder={t("cards.shipCity")} value={addr.city} onChange={(e) => setAddr({ ...addr, city: e.target.value })} />
+            <select className="h-9 rounded-md border bg-background px-3 text-sm" value={addr.country} onChange={(e) => setAddr({ ...addr, country: e.target.value as "PT" | "ES" })}><option value="PT">Portugal</option><option value="ES">España</option></select>
+          </div>}
+        </section>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => (
             <article key={p.id} className="flex flex-col overflow-hidden rounded-md border bg-card">
@@ -80,12 +97,13 @@ function Cards() {
                 <p className="mt-3 font-display text-2xl text-primary">{formatPrice(p.price_cents / 100, lang)}</p>
                 <div className="mt-auto flex items-end gap-2 pt-4">
                   <label className="text-xs text-muted-foreground">{t("cards.qty")}<Input type="number" min={1} max={100} className="w-20" value={qty[p.id] ?? 1} onChange={(e) => setQty({ ...qty, [p.id]: Math.max(1, Math.min(100, Number(e.target.value) || 1)) })} /></label>
-                  <Button className="flex-1" disabled={!!busy || !environment} onClick={() => buy(p.id)}><ShoppingCart />{busy === p.id ? t("common.loading") : t("cards.buy")}</Button>
+                  <Button className="flex-1" disabled={!!busy || !environment || !addrOk} onClick={() => buy(p.id)}><ShoppingCart />{busy === p.id ? t("common.loading") : t("cards.buy")}</Button>
                 </div>
               </div>
             </article>
           ))}
         </div>
+        </>
       )}
       {!!orders?.length && (
         <Panel title={t("cards.orders")} className="mt-8">

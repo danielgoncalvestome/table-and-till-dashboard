@@ -13,6 +13,7 @@ export const createShopCheckout = createServerFn({ method: 'POST' }).middleware(
   .inputValidator(z.object({
     environment: z.enum(['sandbox', 'live']), origin: z.string().url(), lang: z.enum(['pt', 'en']),
     productId: z.string().uuid(), restaurantId: z.string().uuid(), quantity: z.number().int().min(1).max(100),
+    shipping: z.object({ useDefault: z.boolean(), name: z.string().trim().max(120).optional(), line1: z.string().trim().max(200).optional(), postalCode: z.string().trim().max(20).optional(), city: z.string().trim().max(100).optional(), country: z.enum(['PT', 'ES']).optional() }),
   }))
   .handler(async ({ data, context }) => {
     const { createStripeClient, getStripeErrorMessage } = await import('@/lib/stripe.server');
@@ -21,13 +22,23 @@ export const createShopCheckout = createServerFn({ method: 'POST' }).middleware(
       const { data: { user } } = await supabase.auth.getUser();
       const { data: member } = await supabase.from('restaurant_members').select('id').eq('restaurant_id', data.restaurantId).eq('user_id', userId).maybeSingle();
       if (!member) throw new Error('Not a member of this restaurant');
+      const { data: rest } = await supabase.from('restaurants').select('name, address').eq('id', data.restaurantId).single();
+      const sh = data.shipping;
+      let shipping;
+      if (sh.useDefault) {
+        if (!rest?.address?.trim()) throw new Error('Restaurant has no default address');
+        shipping = { name: rest.name, address: { line1: rest.address.trim(), country: 'PT' } };
+      } else {
+        if (!sh.name || !sh.line1 || !sh.postalCode || !sh.city || !sh.country) throw new Error('Shipping address is incomplete');
+        shipping = { name: sh.name, address: { line1: sh.line1, postal_code: sh.postalCode, city: sh.city, country: sh.country } };
+      }
       const { data: product, error } = await supabase.from('shop_products').select('*').eq('id', data.productId).eq('active', true).single();
       if (error || !product) throw new Error('Product not available');
       if (product.price_cents < 50) throw new Error('Product price too low');
       const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
       const { data: order, error: oErr } = await supabaseAdmin.from('shop_orders').insert({
         user_id: userId, restaurant_id: data.restaurantId, product_id: product.id, product_name: product.name,
-        quantity: data.quantity, amount_cents: product.price_cents * data.quantity, environment: data.environment,
+        quantity: data.quantity, amount_cents: product.price_cents * data.quantity, environment: data.environment, shipping,
       }).select('id').single();
       if (oErr) throw oErr;
       const stripe = createStripeClient(data.environment);
@@ -37,7 +48,6 @@ export const createShopCheckout = createServerFn({ method: 'POST' }).middleware(
         mode: 'payment', ui_mode: 'embedded_page', locale: data.lang, customer,
         line_items: [{ quantity: data.quantity, price_data: { currency: 'eur', unit_amount: product.price_cents, tax_behavior: 'inclusive',
           product_data: { name: product.name, ...(product.description && { description: product.description.slice(0, 500) }), ...(product.image_url && { images: [product.image_url] }) } } }],
-        shipping_address_collection: { allowed_countries: ['PT', 'ES'] },
         payment_intent_data: { description: product.name },
         metadata: { userId, orderId: order.id },
         return_url: `${safeOrigin(data.origin)}/dashboard/cards?session_id={CHECKOUT_SESSION_ID}`,

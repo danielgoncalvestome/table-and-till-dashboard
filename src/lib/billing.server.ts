@@ -49,9 +49,8 @@ export async function verifyPaymentEvent(request: Request, environment: StripeEn
 }
 export async function markShopOrder(session: Stripe.Checkout.Session, environment: StripeEnv) {
   if (session.payment_status === 'unpaid') return;
-  const shipping = session.collected_information?.shipping_details ?? null;
   const { error } = await supabaseAdmin.from('shop_orders').update({
-    status: 'paid', shipping: shipping as never, updated_at: new Date().toISOString(),
+    status: 'paid', updated_at: new Date().toISOString(),
   }).eq('id', session.metadata!.orderId).eq('stripe_session_id', session.id).eq('environment', environment).eq('status', 'pending');
   if (error) throw error;
 }

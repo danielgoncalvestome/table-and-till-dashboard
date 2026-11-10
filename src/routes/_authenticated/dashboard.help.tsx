@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/_authenticated/dashboard/help")({ component: Help });
+export const Route = createFileRoute("/_authenticated/dashboard/help")({ head: () => ({ meta: [{ title: "Ajuda — MenuTap" }, { name: "description", content: "Encontre apoio para gerir o MenuTap." }, { property: "og:title", content: "Ajuda — MenuTap" }, { property: "og:description", content: "Encontre apoio para gerir o MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Help });
 
 function Help() {
   const { t, lang } = useI18n();

@@ -10,7 +10,7 @@ import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { FONTS, TEMPLATES, uploadImage } from "@/lib/menu";
 
-export const Route = createFileRoute("/_authenticated/dashboard/design")({ component: Design });
+export const Route = createFileRoute("/_authenticated/dashboard/design")({ head: () => ({ meta: [{ title: "Aparência — MenuTap" }, { name: "description", content: "Personalize a aparência do seu menu digital." }, { property: "og:title", content: "Aparência — MenuTap" }, { property: "og:description", content: "Personalize a aparência do seu menu digital." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Design });
 
 function Design() {
   const { t, lang } = useI18n();

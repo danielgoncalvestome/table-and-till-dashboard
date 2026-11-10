@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 
-export const Route = createFileRoute("/_authenticated/dashboard/team")({ component: Team });
+export const Route = createFileRoute("/_authenticated/dashboard/team")({ head: () => ({ meta: [{ title: "Equipa e locais — MenuTap" }, { name: "description", content: "Gira a equipa e os locais do restaurante." }, { property: "og:title", content: "Equipa e locais — MenuTap" }, { property: "og:description", content: "Gira a equipa e os locais do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Team });
 
 function Team() {
   const { t, lang } = useI18n();

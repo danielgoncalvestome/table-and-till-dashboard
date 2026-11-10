@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/menu";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/dashboard/")({ component: Overview });
+export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Visão geral — MenuTap" }, { name: "description", content: "Consulte o estado e atividade do restaurante." }, { property: "og:title", content: "Visão geral — MenuTap" }, { property: "og:description", content: "Consulte o estado e atividade do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
 function Overview() {
   const { t, lang } = useI18n();

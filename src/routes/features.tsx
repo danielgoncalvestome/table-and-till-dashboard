@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, QrCode, Languages, ShieldAlert, Sparkles, Clock, BarChart3, Star } from "lucide-react";
+import { BookOpen, QrCode, Languages, ShieldAlert, Sparkles, Clock, BarChart3, Star, UtensilsCrossed, RefreshCw, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageIntro, SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
@@ -27,6 +27,24 @@ function Features() {
   return (
     <SitePage>
       <PageIntro eyebrow={t("nav.features")} title={t("features.title")} sub={t("features.sub")} />
+      <section className="mx-auto mb-10 grid max-w-6xl gap-4 px-5 md:grid-cols-3">
+        {([
+          [UtensilsCrossed, "f.h1"],
+          [RefreshCw, "f.h2"],
+          [TrendingUp, "f.h3"],
+        ] as const).map(([Icon, k], i) => (
+          <div key={k} className="rounded-md bg-primary p-6 text-primary-foreground">
+            <div className="flex items-center justify-between">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-foreground/10">
+                <Icon className="h-4 w-4 text-sage" />
+              </span>
+              <span className="font-display text-sm text-primary-foreground/50">0{i + 1}</span>
+            </div>
+            <h3 className="mt-5 text-xl">{t(k)}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-primary-foreground/75">{t(`${k}.d` as never)}</p>
+          </div>
+        ))}
+      </section>
       <section className="mx-auto grid max-w-6xl gap-px overflow-hidden rounded-md border bg-border px-0 md:grid-cols-2">
         {items.map(([Icon, k]) => (
           <div key={k} className="bg-card p-8">

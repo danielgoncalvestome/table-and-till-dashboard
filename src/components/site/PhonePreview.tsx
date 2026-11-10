@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/menu";
+import toastAsset from "@/assets/avocado-toast-square.jpg.asset.json";
 
 /** Static product illustration of the demo menu (Casa do Largo). */
 export function PhonePreview() {

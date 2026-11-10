@@ -644,6 +644,105 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_orders: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          environment: string
+          id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          restaurant_id: string | null
+          shipping: Json | null
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          environment: string
+          id?: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          restaurant_id?: string | null
+          shipping?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          environment?: string
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          restaurant_id?: string | null
+          shipping?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "shop_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_orders_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_products: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          position: number
+          price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          position?: number
+          price_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          position?: number
+          price_cents?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean

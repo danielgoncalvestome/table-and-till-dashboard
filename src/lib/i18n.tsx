@@ -38,7 +38,7 @@ const pt = {
   "f.h3": "Perceber o que desperta interesse",
   "f.h3.d": "Consultar os pratos mais visualizados, categorias mais populares e interações com recomendações.",
   "f.menus": "Menus digitais", "f.menus.d": "Vários menus por restaurante: almoço, jantar, brunch, bebidas e sazonais.",
-  "f.qr": "QR & NFC", "f.qr.d": "Um link permanente, gravado em QR e etiquetas NFC.",
+  "f.qr": "QR & NFC", "f.qr.d": "Um link permanente, gravado em QR e no dispositivo NFC.",
   "f.tr": "Traduções", "f.tr.d": "Campos pré-definidos para que possa inserir a tradução do nome e descrição dos pratos em inglês, tornando o menu mais acessível.",
   "f.al": "Alergénios", "f.al.d": "Os 14 alergénios regulamentados na UE, verificados pelo restaurante.",
   "f.rec": "Recomendações", "f.rec.d": "Associe pratos complementares: polvo → vinho verde, nata → café.",

@@ -1,3 +1,4 @@
+import type Stripe from 'stripe';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
@@ -47,11 +48,13 @@ export const createShopCheckout = createServerFn({ method: 'POST' }).middleware(
       const session = await stripe.checkout.sessions.create({
         mode: 'payment', ui_mode: 'embedded_page', locale: data.lang, customer,
         line_items: [{ quantity: data.quantity, price_data: { currency: 'eur', unit_amount: product.price_cents, tax_behavior: 'inclusive',
-          product_data: { name: product.name, ...(product.description && { description: product.description.slice(0, 500) }), ...(product.image_url && { images: [product.image_url] }) } } }],
+          product_data: { name: product.name, tax_code: 'txcd_99999999', ...(product.description && { description: product.description.slice(0, 500) }), ...(product.image_url && { images: [product.image_url] }) } } }],
         payment_intent_data: { description: product.name },
         metadata: { userId, orderId: order.id },
         return_url: `${safeOrigin(data.origin)}/dashboard/cards?session_id={CHECKOUT_SESSION_ID}`,
-      });
+        // Physical NFC goods are not eligible for Managed Payments: force a conventional checkout for this session only.
+        managed_payments: { enabled: false },
+      } as Stripe.Checkout.SessionCreateParams);
       await supabaseAdmin.from('shop_orders').update({ stripe_session_id: session.id }).eq('id', order.id);
       if (!session.client_secret) throw new Error('Checkout did not return a payment form');
       return { clientSecret: session.client_secret };

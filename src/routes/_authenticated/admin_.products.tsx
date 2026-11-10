@@ -92,6 +92,7 @@ function Products() {
           <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
             <span>{o.quantity}× {o.product_name} · {(o.restaurant as { name: string } | null)?.name ?? "—"} · {o.environment === "sandbox" ? "teste" : ""}</span>
             <span className="text-muted-foreground">{formatPrice(o.amount_cents / 100, lang)} · {formatDate(o.created_at, lang)}</span>
+            {o.shipping && <span className="w-full text-xs text-muted-foreground">{(() => { const sh = o.shipping as { name?: string; address?: Record<string, string | null> }; return [sh.name, sh.address?.line1, sh.address?.line2, sh.address?.postal_code, sh.address?.city, sh.address?.country].filter(Boolean).join(", "); })()}</span>}
             <select className="rounded border bg-card px-2 py-1" value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>
               {["paid", "shipped", "cancelled"].map((s) => <option key={s} value={s}>{t(`cards.st.${s}` as never)}</option>)}
             </select>

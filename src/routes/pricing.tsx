@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageIntro, SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
@@ -31,6 +31,12 @@ function Pricing() {
   return (
     <SitePage>
       <PageIntro eyebrow={t("nav.pricing")} title={t("pricing.title")} />
+      <div className="mx-auto mb-6 max-w-xl px-5">
+        <div className="flex items-center justify-center gap-3 rounded-md border border-primary/25 bg-secondary px-5 py-4 text-sm font-medium text-secondary-foreground">
+          <Gift className="h-5 w-5 shrink-0 text-primary" />
+          <span>{t("pricing.nfcBanner")}</span>
+        </div>
+      </div>
       <section className="mx-auto max-w-xl px-5">
         <div className="rounded-md border bg-card p-10">
           <p className="eyebrow">MenuTap</p>

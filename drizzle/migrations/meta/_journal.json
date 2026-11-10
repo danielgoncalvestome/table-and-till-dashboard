@@ -43,6 +43,13 @@
       "when": 1794331520074,
       "tag": "0005_shop_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794333129544,
+      "tag": "0006_dish_details_gallery",
+      "breakpoints": true
     }
   ]
 }

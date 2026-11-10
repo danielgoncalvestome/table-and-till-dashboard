@@ -257,8 +257,13 @@ export type Database = {
           description_i18n: Json
           dietary: string[]
           featured: boolean
+          gallery: string[]
           id: string
           image_url: string | null
+          ingredients: string | null
+          ingredients_i18n: Json
+          long_description: string | null
+          long_description_i18n: Json
           name: string
           name_i18n: Json
           position: number
@@ -280,8 +285,13 @@ export type Database = {
           description_i18n?: Json
           dietary?: string[]
           featured?: boolean
+          gallery?: string[]
           id?: string
           image_url?: string | null
+          ingredients?: string | null
+          ingredients_i18n?: Json
+          long_description?: string | null
+          long_description_i18n?: Json
           name: string
           name_i18n?: Json
           position?: number
@@ -303,8 +313,13 @@ export type Database = {
           description_i18n?: Json
           dietary?: string[]
           featured?: boolean
+          gallery?: string[]
           id?: string
           image_url?: string | null
+          ingredients?: string | null
+          ingredients_i18n?: Json
+          long_description?: string | null
+          long_description_i18n?: Json
           name?: string
           name_i18n?: Json
           position?: number

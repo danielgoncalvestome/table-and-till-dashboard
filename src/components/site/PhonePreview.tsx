@@ -1,12 +1,13 @@
 import { Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/menu";
+import toastAsset from "@/assets/avocado-toast-square.jpg.asset.json";
 
 /** Static product illustration of the demo menu (Casa do Largo). */
 export function PhonePreview() {
   const { lang } = useI18n();
   const dishes = [
-    { img: "/images/demo/pasteis.jpg", n: lang === "pt" ? "Pastéis de bacalhau" : "Salt cod fritters", p: 7.5 },
+    { img: toastAsset.url, n: lang === "pt" ? "Pastéis de bacalhau" : "Salt cod fritters", p: 7.5 },
     { img: "/images/demo/polvo.jpg", n: lang === "pt" ? "Polvo à lagareiro" : "Roasted octopus", p: 19.5 },
     { img: "/images/demo/nata.jpg", n: lang === "pt" ? "Pastel de nata" : "Custard tart", p: 2.2 },
     { img: "/images/demo/cover.jpg", n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5 },

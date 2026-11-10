@@ -37,8 +37,8 @@ const TERMS_PT = `Termos e Condições de Utilização — MenuTap
 
 O presente website e a plataforma MenuTap são operados por:
 
-Titular: MenuTap
-
+Titular: MenuTap 
+ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração. 
 Website: https://menutap.pt
 
 Neste documento, a expressão «MenuTap» refere-se ao titular e operador da plataforma e a expressão «Cliente» refere-se ao restaurante ou entidade que cria uma conta e utiliza os serviços disponibilizados.

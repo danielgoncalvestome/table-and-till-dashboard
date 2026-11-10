@@ -55,7 +55,10 @@ export const confirmShopCheckout = createServerFn({ method: 'POST' }).middleware
     try {
       const session = await createStripeClient(data.environment).checkout.sessions.retrieve(data.sessionId);
       if (session.metadata?.userId !== context.userId) throw new Error('Checkout does not belong to this account');
-      if (session.metadata?.orderId) { const { markShopOrder } = await import('@/lib/billing.server'); await markShopOrder(session, data.environment); }
+      if (session.metadata?.orderId) {
+        const { markShopOrder, markShopOrderFailed } = await import('@/lib/billing.server');
+        if (session.status === 'expired') await markShopOrderFailed(session, data.environment); else await markShopOrder(session, data.environment);
+      }
       return { paid: session.payment_status !== 'unpaid' };
     } catch (error) { return { error: getStripeErrorMessage(error) }; }
   });

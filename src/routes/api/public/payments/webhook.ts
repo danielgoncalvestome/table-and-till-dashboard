@@ -15,6 +15,9 @@ export const Route = createFileRoute('/api/public/payments/webhook')({server:{ha
       const session=event.data.object;
       if(session.mode==='payment' && session.metadata?.orderId) {const {markShopOrder}=await import('@/lib/billing.server');await markShopOrder(session,environment);}
       if(session.payment_status!=='unpaid' && session.subscription) await syncSubscription(await stripe.subscriptions.retrieve(typeof session.subscription==='string'?session.subscription:session.subscription.id),environment);
+    } else if(event.type==='checkout.session.expired' || event.type==='checkout.session.async_payment_failed') {
+      const session=event.data.object;
+      if(session.mode==='payment') {const {markShopOrderFailed}=await import('@/lib/billing.server');await markShopOrderFailed(session,environment);}
     } else if(event.type==='invoice.paid' || event.type==='invoice.payment_failed') {
       const sub=event.data.object.parent?.subscription_details?.subscription;
       if(sub) await syncSubscription(await stripe.subscriptions.retrieve(typeof sub==='string'?sub:sub.id),environment);

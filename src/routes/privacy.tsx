@@ -40,11 +40,13 @@ A presente Política de Privacidade explica como o MenuTap recolhe, utiliza, con
 O MenuTap compromete-se a tratar os dados pessoais de forma transparente, segura e responsável, em conformidade com o Regulamento Geral sobre a Proteção de Dados (Regulamento UE 2016/679 — RGPD) e demais legislação aplicável.
 
 2. Responsável pelo tratamento
+ 
 
-O responsável pelo tratamento dos dados pessoais é:
+Identificação: MenuTap
 
-Titular: MenuTap
+ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração.
 
+ 
 3. Que dados pessoais recolhemos?
 
 Dependendo da forma como utiliza o MenuTap, poderemos recolher diferentes categorias de dados.

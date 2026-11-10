@@ -5,6 +5,8 @@ import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft } from "l
 import { supabase } from "@/integrations/supabase/client";
 import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
+import logoDark from "@/assets/menutap-logo.png.asset.json";
+import logoLight from "@/assets/menutap-logo-light.png.asset.json";
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params }) => ({
@@ -39,6 +41,13 @@ async function loadMenu(slug: string) {
 }
 type Data = NonNullable<Awaited<ReturnType<typeof loadMenu>>>;
 type Dish = Data["dishes"][number];
+
+function isDarkColor(hex?: string | null) {
+  const h = (hex ?? "").replace("#", "");
+  if (h.length < 6) return false;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.45;
+}
 
 function GoogleG() {
   return <span className="text-sm font-bold">G</span>;
@@ -207,7 +216,11 @@ function PublicMenu() {
             {r.opening_hours && <p className="flex items-center gap-2"><Clock className="h-4 w-4" />{r.opening_hours}</p>}
             {r.phone && <p className="mt-1">{r.phone}</p>}
             {r.email && <p className="mt-1">{r.email}</p>}
-            <p className="mt-6 text-xs opacity-60">MenuTap</p>
+            <img
+              src={isDarkColor(r.background_color) ? logoLight.url : logoDark.url}
+              alt="MenuTap"
+              className="mt-6 h-4 w-auto opacity-60"
+            />
           </footer>
         )}
       </main>

@@ -6,11 +6,25 @@ import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
-export function Logo({ className = "" }: { className?: string }) {
+import logoDark from "@/assets/menutap-logo.png.asset.json";
+import logoLight from "@/assets/menutap-logo-light.png.asset.json";
+
+export function Logo({
+  className = "",
+  variant = "dark",
+  height = "h-7",
+}: {
+  className?: string;
+  variant?: "dark" | "light";
+  height?: string;
+}) {
   return (
-    <Link to="/" className={`flex items-center gap-2 font-display text-xl font-semibold text-primary ${className}`}>
-      <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-sans font-bold text-primary-foreground">M</span>
-      MenuTap
+    <Link to="/" aria-label="MenuTap" className={`inline-flex items-center ${className}`}>
+      <img
+        src={variant === "light" ? logoLight.url : logoDark.url}
+        alt="MenuTap"
+        className={`${height} w-auto max-w-none`}
+      />
     </Link>
   );
 }
@@ -78,7 +92,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="font-display text-2xl">MenuTap</p>
+          <Logo variant="light" height="h-9" />
           <p className="mt-2 text-sm opacity-75">{t("hero.tagline")}</p>
         </div>
         <div className="flex flex-col gap-2 text-sm opacity-90">

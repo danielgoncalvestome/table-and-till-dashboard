@@ -6,6 +6,7 @@ import { PageIntro, SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/menu";
+import logoDark from "@/assets/menutap-logo.png.asset.json";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -39,7 +40,7 @@ function Pricing() {
       </div>
       <section className="mx-auto max-w-xl px-5">
         <div className="rounded-md border bg-card p-10">
-          <p className="eyebrow">MenuTap</p>
+          <img src={logoDark.url} alt="MenuTap" className="h-5 w-auto" />
           <p className="mt-4 font-display text-6xl text-primary">{formatPrice(price, lang)}<span className="text-xl text-muted-foreground">{t("pricing.per")}</span></p>
           <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
           <ul className="mt-8 space-y-3">

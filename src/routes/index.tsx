@@ -46,6 +46,10 @@ const C = {
     anBarsT: "O que os clientes valorizam",
     anBars: [["Preferem fotografias", 66, "forest"], ["Já utilizaram menus QR", 65, "clay"]] as [string, number, string][],
     anSrc: "Inquérito Toast a 850 pessoas, novembro de 2024.",
+    anStudyEy: "Estudo publicado",
+    anStudyT: "Com nomes descritivos comuns, acrescentar fotografias melhorou:",
+    anStudy: ["A avaliação dos pratos pelos consumidores", "A intenção de compra", "A disposição para pagar"],
+    anStudySrc: "Hou, Yang & Sun (2017), “Do pictures help? The effects of pictures and food names on menu evaluations”, International Journal of Hospitality Management, 60, 94–103.",
     prEy: "PREÇO", prT: "Um plano simples, tudo incluído.", prNote: "10 dias grátis, sem cartão. Cancele quando quiser.", prLink: "Experimentar",
     faqEy: "Perguntas frequentes", faqT: "Antes de começar.",
     faqs: [["Os meus clientes precisam de instalar alguma app?", "Não. O menu abre diretamente no navegador do telemóvel, sem app e sem criar conta."], ["Se mudar um preço, tenho de reimprimir o QR?", "Não. O QR e a etiqueta NFC apontam sempre para o mesmo endereço; as alterações aparecem de imediato."], ["Como funciona o NFC?", "O cliente aproxima o telemóvel do cartão MenuTap e o menu abre automaticamente."], ["Que dados recolhem de quem consulta o menu?", "Apenas estatísticas anónimas, sem cookies de rastreio nem dados pessoais."], ["A minha equipa pode ajudar a gerir o menu?", "Sim. Convide colaboradores, cada um com acesso apenas ao seu espaço."]],
@@ -77,6 +81,10 @@ const C = {
     anBarsT: "What guests value",
     anBars: [["Prefer photos", 66, "forest"], ["Have used QR menus", 65, "clay"]] as [string, number, string][],
     anSrc: "Toast survey of 850 people, November 2024.",
+    anStudyEy: "Published study",
+    anStudyT: "With common descriptive names, adding photos improved:",
+    anStudy: ["Consumers' evaluation of the dishes", "Purchase intention", "Willingness to pay"],
+    anStudySrc: "Hou, Yang & Sun (2017), “Do pictures help? The effects of pictures and food names on menu evaluations”, International Journal of Hospitality Management, 60, 94–103.",
     prEy: "Pricing", prT: "One simple plan, everything included.", prNote: "10 days free, no card. Cancel anytime.", prLink: "See pricing",
     faqEy: "FAQ", faqT: "Before you start.",
     faqs: [["Do my guests need to install an app?", "No. The menu opens straight in the phone browser, no app or account."], ["If I change a price, do I reprint the QR?", "No. The QR and NFC tag always point to the same address; changes show instantly."], ["How does NFC work?", "Guests hold their phone near the MenuTap card and the menu opens."], ["What data do you collect from visitors?", "Only anonymous statistics, no tracking cookies or personal data."], ["Can my team help manage the menu?", "Yes. Invite staff, each with access only to your venue."]],
@@ -197,6 +205,14 @@ function Index() {
             ))}
           </div>
           <p className="mt-5 text-xs text-muted-foreground">{c.anSrc}</p>
+        </div>
+        <div className="rounded-md border bg-card p-6">
+          <p className="eyebrow">{c.anStudyEy}</p>
+          <p className="mt-3 text-lg font-semibold leading-snug">{c.anStudyT}</p>
+          <ul className="mt-4 space-y-2">
+            {c.anStudy.map((x) => <li key={x} className="flex gap-3 text-sm"><Check className="h-4 w-4 shrink-0 text-primary" />{x}</li>)}
+          </ul>
+          <p className="mt-5 text-xs text-muted-foreground">{c.anStudySrc}</p>
         </div>
       </section>
 

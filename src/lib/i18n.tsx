@@ -44,7 +44,7 @@ const pt = {
   "how.2": "Personalize", "how.2d": "Logótipo, cores, tipografia e modelo.",
   "how.3": "Gere o link permanente", "how.3d": "Um QR code e uma etiqueta NFC que nunca precisam de ser reimpressos.",
   "how.4": "Os clientes leem ou tocam", "how.4d": "Abre de imediato no telemóvel, sem app.",
-  "how.5": "Gere tudo em tempo real", "how.5d": "As alterações aparecem logo no mesmo endereço.",
+  "how.5": "Gere tudo em tempo real", "how.5d": "As alterações aparecem logo no mesmo endereço. Receba de volta avaliações e estatística.",
   "pricing.title": "Um plano. Tudo incluído.",
   "pricing.per": "/mês",
   "pricing.vat": "IVA incluído quando aplicável",

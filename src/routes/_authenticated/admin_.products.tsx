@@ -54,7 +54,7 @@ function Products() {
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from("shop_orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["admin-shop-orders"] });
+    qc.invalidateQueries({ queryKey: ["admin-shop-orders"] }); qc.invalidateQueries({ queryKey: ["admin-alerts"] });
   }
 
   return (

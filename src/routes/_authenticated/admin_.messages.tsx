@@ -21,12 +21,12 @@ function Messages() {
   if (!isAdmin) return <div className="p-10 text-center"><p>403</p></div>;
   async function toggle(id: string, read: boolean) {
     await supabase.from("contact_submissions").update({ read }).eq("id", id);
-    qc.invalidateQueries({ queryKey: ["admin-messages"] });
+    qc.invalidateQueries({ queryKey: ["admin-messages"] }); qc.invalidateQueries({ queryKey: ["admin-alerts"] });
   }
   async function remove(id: string) {
     if (!confirm(t("admin.delete") + "?")) return;
     await supabase.from("contact_submissions").delete().eq("id", id);
-    qc.invalidateQueries({ queryKey: ["admin-messages"] });
+    qc.invalidateQueries({ queryKey: ["admin-messages"] }); qc.invalidateQueries({ queryKey: ["admin-alerts"] });
   }
   return (
     <div className="mx-auto max-w-4xl p-8">

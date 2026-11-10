@@ -173,6 +173,31 @@ function Index() {
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">{c.anNote}</p>
         </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {c.anStats.map(([n, d]) => (
+            <div key={n} className="rounded-md border bg-card p-6">
+              <p className="font-display text-5xl text-primary">{n}</p>
+              <p className="mt-3 text-sm leading-snug text-muted-foreground">{d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-md border bg-card p-6">
+          <p className="eyebrow">{c.anBarsT}</p>
+          <div className="mt-5 space-y-4">
+            {c.anBars.map(([label, pct, tone]) => (
+              <div key={label}>
+                <div className="flex items-baseline justify-between gap-4 text-sm">
+                  <span>{label}</span>
+                  <span className={tone === "clay" ? "font-semibold text-chart-3" : "font-semibold text-primary"}>{pct}%</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-muted">
+                  <div className={tone === "clay" ? "h-2 rounded-full bg-chart-3" : "h-2 rounded-full bg-primary"} style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-xs text-muted-foreground">{c.anSrc}</p>
+        </div>
       </section>
 
       <section className="border-y bg-card">

@@ -32,7 +32,7 @@ export function PhonePreview() {
                 <img src={d.img} alt="" width={816} height={816} className="aspect-square w-full rounded object-cover" />
                 <p className="mt-1 text-[11px] font-semibold leading-tight">{d.n}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-primary">{formatPrice(d.p, lang)}</span>
+                  <span className="text-[11px] text-primary">{formatPrice(d.p, lang).replace("€", "")}</span>
                   <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><Star className="h-2.5 w-2.5 fill-star text-star" />{d.rating ?? 4.8}</span>
                 </div>
               </div>

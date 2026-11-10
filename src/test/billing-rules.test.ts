@@ -20,4 +20,10 @@ describe('account subscription rules',()=>{
     expect(paymentEnvironment('pk_test_example')).toBe('sandbox');
     expect(paymentEnvironment('pk_live_example')).toBe('live');
   });
+});import {shopOrderOutcome} from '@/lib/billing-rules';
+describe('shop order outcome', () => {
+  it('marks expired checkouts as failed', () => expect(shopOrderOutcome('expired','unpaid')).toBe('failed'));
+  it('marks declined delayed payments as failed', () => expect(shopOrderOutcome('complete','unpaid',true)).toBe('failed'));
+  it('marks completed paid checkouts as paid', () => expect(shopOrderOutcome('complete','paid')).toBe('paid'));
+  it('keeps open checkouts waiting', () => expect(shopOrderOutcome('open','unpaid')).toBe(null));
 });

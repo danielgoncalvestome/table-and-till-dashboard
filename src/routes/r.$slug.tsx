@@ -256,17 +256,17 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
   return (
     <div ref={top}>
       <button onClick={onClose} aria-label="Voltar" className="fixed left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/40 text-white backdrop-blur"><ChevronLeft className="h-5 w-5" /></button>
-      <section className="relative h-[100svh] w-full overflow-hidden bg-[var(--m-primary)]">
+      <section className="relative h-[75svh] w-full overflow-hidden bg-[var(--m-primary)]">
         {d.image_url && <img src={d.image_url} alt={tr(d.name, d.name_i18n, lang)} className="absolute inset-0 h-full w-full object-cover" />}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-black/70" />
-        <div className="relative mx-auto max-w-3xl px-6 pt-20 text-white">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/5 to-black/55" />
+        <div className="relative mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 text-white">
           <h2 className="text-3xl font-bold leading-tight md:text-5xl" style={{ fontFamily: "var(--m-font)" }}>{tr(d.name, d.name_i18n, lang)}</h2>
-          <p className="mt-2 text-lg">
+          <p className="mt-1 text-lg leading-tight">
             {d.promo_price != null ? (<><span className="font-semibold">{formatPrice(d.promo_price, lang)}</span> <s className="text-sm opacity-70">{formatPrice(d.price, lang)}</s></>) : formatPrice(d.price, lang)}
             {!d.available && <span className="ml-2 text-xs font-semibold uppercase">{u.sold}</span>}
           </p>
-          {desc && <p className="mt-3 max-w-xl whitespace-pre-line text-sm leading-relaxed opacity-90">{desc}</p>}
-          <div className="mt-4 flex items-center gap-3">
+          {desc && <p className="mt-1.5 max-w-xl whitespace-pre-line text-sm leading-snug opacity-90">{desc}</p>}
+          <div className="mt-2.5 flex items-center gap-3">
             <div className="flex gap-1" onMouseLeave={() => setHover(0)}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <button key={n} aria-label={`${n}`} onMouseEnter={() => setHover(n)} onClick={() => rate(n)}>
@@ -281,7 +281,7 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
       </section>
 
       {gallery.map((g) => (
-        <section key={g} className="h-[100svh] w-full overflow-hidden">
+        <section key={g} className="h-[75svh] w-full overflow-hidden">
           <img src={g} alt="" loading="lazy" className="h-full w-full object-cover" />
         </section>
       ))}

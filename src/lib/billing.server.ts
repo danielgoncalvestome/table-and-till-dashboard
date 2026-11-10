@@ -55,3 +55,9 @@ export async function markShopOrder(session: Stripe.Checkout.Session, environmen
   }).eq('id', session.metadata!.orderId).eq('stripe_session_id', session.id).eq('environment', environment).eq('status', 'pending');
   if (error) throw error;
 }
+export async function markShopOrderFailed(session: Stripe.Checkout.Session, environment: StripeEnv) {
+  if (!session.metadata?.orderId) return;
+  const { error } = await supabaseAdmin.from('shop_orders').update({ status: 'failed', updated_at: new Date().toISOString() })
+    .eq('id', session.metadata.orderId).eq('stripe_session_id', session.id).eq('environment', environment).eq('status', 'pending');
+  if (error) throw error;
+}

@@ -91,3 +91,28 @@ export const createPortalSession = createServerFn({method:'POST'}).middleware([r
     return {url:portal.url};
   }catch(error){return {error:getStripeErrorMessage(error)};}
  });
+/** Admin only: move every running subscription to the current admin price from its next renewal (no proration). */
+export const applyMonthlyPriceToSubscriptions = createServerFn({method:'POST'}).middleware([requireSupabaseAuth])
+ .inputValidator(z.object({environment:z.enum(['sandbox','live'])}))
+ .handler(async ({data,context})=> {
+  const {createStripeClient,getStripeErrorMessage}=await import('@/lib/stripe.server');
+  try {
+    const {data:isAdmin,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
+    if(roleError || !isAdmin) throw new Error('Admin only');
+    const {data:settings,error}=await context.supabase.from('platform_settings').select('monthly_price_cents').eq('id',1).single();
+    if(error) throw error;
+    const stripe=createStripeClient(data.environment);
+    let updated=0;
+    for (const status of ['active','trialing','past_due'] as const) {
+      for await (const sub of stripe.subscriptions.list({status,limit:100})) {
+        if(!sub.metadata?.userId) continue;
+        const item=sub.items.data[0];
+        if(!item || item.price.unit_amount===settings.monthly_price_cents) continue;
+        const product=typeof item.price.product==='string'?item.price.product:item.price.product.id;
+        await stripe.subscriptions.update(sub.id,{proration_behavior:'none',items:[{id:item.id,price_data:{product,currency:'eur',unit_amount:settings.monthly_price_cents,recurring:{interval:'month'},tax_behavior:'inclusive'}}]});
+        updated++;
+      }
+    }
+    return {updated};
+  } catch(error){return {error:getStripeErrorMessage(error)};}
+ });

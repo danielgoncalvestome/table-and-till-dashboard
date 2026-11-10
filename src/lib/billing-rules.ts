@@ -13,3 +13,9 @@ export function paymentEnvironment(token: string | undefined): 'sandbox' | 'live
   if (token?.startsWith('pk_live_')) return 'live';
   return null;
 }
+/** Shop order outcome from a Checkout Session: paid, failed (expired/declined) or still waiting. */
+export function shopOrderOutcome(sessionStatus: string | null, paymentStatus: string, asyncFailed = false): 'paid' | 'failed' | null {
+  if (asyncFailed || sessionStatus === 'expired') return 'failed';
+  if (sessionStatus === 'complete' && paymentStatus !== 'unpaid') return 'paid';
+  return null;
+}

@@ -41,7 +41,7 @@ const C = {
       ["A sua equipa, só no seu espaço", "Vários colaboradores, cada um com acesso apenas ao espaço onde trabalha.", []],
     ] as [string, string, string[]][],
     anEy: "ANÁLISES E ESTATÍSTICA", anT: "Perceba o que os clientes procuram.",
-    an: ["Visualizações do menu por dia, semana e mês e os pratos mais vistos", "Sessões e idiomas escolhidos"], anNote: "Sem cookies de rastreio. Sem dados pessoais de quem consulta o menu.",
+    an: ["Visualizações do menu por dia, semana e mês e os pratos mais vistos", "Avaliações rápidas que permitem melhorar o serviço e reforçar a reputação"], anNote: "Sem cookies de rastreio. Sem dados pessoais de quem consulta o menu.",
     prEy: "PREÇO", prT: "Um plano simples, tudo incluído.", prNote: "10 dias grátis, sem cartão. Cancele quando quiser.", prLink: "Experimentar",
     faqEy: "Perguntas frequentes", faqT: "Antes de começar.",
     faqs: [["Os meus clientes precisam de instalar alguma app?", "Não. O menu abre diretamente no navegador do telemóvel, sem app e sem criar conta."], ["Se mudar um preço, tenho de reimprimir o QR?", "Não. O QR e a etiqueta NFC apontam sempre para o mesmo endereço; as alterações aparecem de imediato."], ["Como funciona o NFC?", "O cliente aproxima o telemóvel do cartão MenuTap e o menu abre automaticamente."], ["Que dados recolhem de quem consulta o menu?", "Apenas estatísticas anónimas, sem cookies de rastreio nem dados pessoais."], ["A minha equipa pode ajudar a gerir o menu?", "Sim. Convide colaboradores, cada um com acesso apenas ao seu espaço."]],

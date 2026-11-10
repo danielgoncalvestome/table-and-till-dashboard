@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          environment: string
+          id: string
+          price_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          environment: string
+          id?: string
+          price_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          environment?: string
+          id?: string
+          price_id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           category_id: string | null
@@ -85,6 +127,33 @@ export type Database = {
           details?: Json
           id?: never
           restaurant_id?: string | null
+        }
+        Relationships: []
+      }
+      billing_accounts: {
+        Row: {
+          checkout_expires_at: string | null
+          checkout_session_id: string | null
+          environment: string
+          stripe_customer_id: string | null
+          trial_ends_at: string | null
+          user_id: string
+        }
+        Insert: {
+          checkout_expires_at?: string | null
+          checkout_session_id?: string | null
+          environment: string
+          stripe_customer_id?: string | null
+          trial_ends_at?: string | null
+          user_id: string
+        }
+        Update: {
+          checkout_expires_at?: string | null
+          checkout_session_id?: string | null
+          environment?: string
+          stripe_customer_id?: string | null
+          trial_ends_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -653,6 +722,10 @@ export type Database = {
           total: number
         }[]
       }
+      has_account_access: {
+        Args: { _environment: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -670,6 +743,7 @@ export type Database = {
         Args: { _dish_id: string; _session_id: string; _stars: number }
         Returns: undefined
       }
+      restaurant_billing_access: { Args: { _id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

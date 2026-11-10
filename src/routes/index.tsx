@@ -28,8 +28,8 @@ const C = {
     ideaEy: "A ideia por trás do MenuTap", ideaT: "Um identificador fixo.\u00a0Um menu sempre vivo.",
     ideaD: "Cada espaço recebe um dispositivo próprio —\u00a0coloque na mesa, no balcão ou na parede — e é por trás dele que o menu muda sempre que precisar.",
     ideas: [["Mudou um preço?", "Já está no menu dos clientes.\u00a0"], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
-    howEy: "Como funciona", howT: "Do primeiro prato à primeira mesa, em três passos.",
-    steps: [["Crie o menu", "Perfil do espaço, logótipo e cores, primeiro menu, pratos.\nAlergénios, etiquetas, fotos profissionais.\nTudo num clique."], ["Deixe o dispositivo na mesa", "Disponibilize-o em cada mesa, em cada parede — o cliente toca e o menu abre no telemóvel, sem app nem conta. Pode encomendar quantos dispositivos quiser, o primeiro é sempre gratuito."], ["Receba avaliações", "Preços e pratos sempre atualizados, feedback direto dos clientes para melhorar o serviço e reforçar a reputação."]],
+    howEy: "Como funciona", howT: "Do primeiro prato à primeira mesa, em seis passos simples.",
+    steps: [["Crie a sua conta", "Registo em segundos, sem cartão. Os 10 dias grátis só começam quando publicar o menu."], ["Crie o menu", "Categorias, pratos, preços e fotografias num painel simples. Alergénios, etiquetas alimentares e tradução para inglês — tudo num clique."], ["Personalize", "Logótipo, cores e perfil do espaço: telefone, Instagram e avaliações Google ao alcance do cliente."], ["Receba o seu dispositivo", "Um link permanente, gravado em QR code e no dispositivo NFC, que nunca precisa de ser reimpresso. O primeiro dispositivo é sempre gratuito."], ["Os clientes leem ou tocam", "Coloque-o na mesa, no balcão ou na parede — o menu abre de imediato no telemóvel, sem app nem conta."], ["Gira tudo em tempo real", "Preços, pratos e disponibilidade atualizados no mesmo endereço. Receba avaliações e estatísticas para melhorar o serviço e reforçar a reputação."]],
     featEy: "Funcionalidades", featT: "Pensado para quem serve. Claro para quem se senta.", featD: "Um painel privado para a sua equipa gerir tudo, e um menu público que cada cliente percebe em segundos.",
     feats: [
       ["Vários menus, a sua ordem", "Almoço, jantar, bebidas — cada menu com as suas categorias e pratos. Reordene e arquive o que já não está em uso.", ["Entradas", "Pratos de peixe", "Sobremesas"]],
@@ -64,8 +64,8 @@ const C = {
     ideaEy: "The idea behind MenuTap", ideaT: "One fixed link. A menu that's always alive.",
     ideaD: "Every venue gets its own address. That address lives on the table QR and the NFC tag — and behind it, your menu changes whenever you need.",
     ideas: [["Changed a price?", "It's already on your guests' menu. The printed code stays the same."], ["Out of octopus?", "Mark the dish unavailable and the public menu reflects it instantly."], ["New dinner menu?", "Create it in the dashboard. No re-writing NFC tags, no reprinting QR codes."]],
-    howEy: "How it works", howT: "From first dish to first table, in three steps.",
-    steps: [["Create the menu", "Venue profile, logo and colours, first menu, dishes."], ["Leave the card on the table", "Place the card on every table — guests tap and the menu opens, no app or account."], ["Get reviews", "Always up-to-date dishes and prices, plus direct guest feedback to improve service."]],
+    howEy: "How it works", howT: "From first dish to first table, in six simple steps.",
+    steps: [["Create your account", "Sign up in seconds, no card. The 10 free days only start when you publish your menu."], ["Build the menu", "Categories, dishes, prices and photos in a simple dashboard. Allergens, dietary tags and English translation — all in one click."], ["Customise", "Logo, colours and venue profile: phone, Instagram and Google reviews within the guest's reach."], ["Get your device", "A permanent link, stored in a QR code and NFC device you never need to reprint. Your first device is always free."], ["Guests scan or tap", "Place it on the table, counter or wall — the menu opens instantly on the phone, no app or account."], ["Manage everything live", "Prices, dishes and availability update at the same address. Get reviews and stats to improve service and reputation."]],
     featEy: "Features", featT: "Built for those who serve. Clear for those who sit.", featD: "A private dashboard for your team, and a public menu every guest understands in seconds.",
     feats: [
       ["Multiple menus, your order", "Lunch, dinner, drinks — each with its own categories and dishes. Reorder and archive.", ["Starters", "Fish dishes", "Desserts"]],
@@ -140,12 +140,12 @@ function Index() {
       <section className="mx-auto max-w-6xl px-5 py-20">
         <Eyebrow>{c.howEy}</Eyebrow>
         <h2 className="mt-3 max-w-2xl text-4xl">{c.howT}</h2>
-        <div className="mt-10 grid gap-8 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {c.steps.map(([t, d], i) => (
             <div key={t} className="rounded-md border bg-card p-6">
               <p className="font-mono text-sm text-primary">0{i + 1}</p>
               <h3 className="mt-3 text-xl">{t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{d}</p>
+              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{d}</p>
             </div>
           ))}
         </div>

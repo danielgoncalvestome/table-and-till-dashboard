@@ -34,3 +34,4 @@ use the editor.
 - UI strings live in src/lib/i18n.tsx (pt default, en); restaurant content translations live in `*_i18n` jsonb columns. Why: keep interface and menu translations separate.
 - Stripe uses the gateway utility in stripe.server.ts, authenticated server functions, and signature-verified public webhooks; account_subscriptions stores environment-scoped account billing. Why: prevent leaked credentials, duplicate billing and test payments granting live access.
 - Public menu access is checked by restaurant_billing_access through RLS, while members retain draft and expired-menu read access. Why: enforce expiry without deleting restaurant content.
+- Card shop: admin-managed `shop_products` sold as one-time Stripe Embedded Checkout with inline price_data; `shop_orders` are created server-side and marked paid by webhook/return confirmation; shop images live under the all-zero UUID folder in `menu-images`. Why: catalog edits need no Stripe product sync.

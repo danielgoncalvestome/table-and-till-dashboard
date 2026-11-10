@@ -36,6 +36,13 @@
       "when": 1794330963336,
       "tag": "0004_account_trial_on_first_publish",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794331520074,
+      "tag": "0005_shop_cards",
+      "breakpoints": true
     }
   ]
 }

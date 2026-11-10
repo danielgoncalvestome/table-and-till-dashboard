@@ -13,6 +13,7 @@ export const Route = createFileRoute('/api/public/payments/webhook')({server:{ha
       if('id' in object && typeof object.id==='string') await syncSubscription(await stripe.subscriptions.retrieve(object.id),environment);
     } else if(event.type==='checkout.session.completed' || event.type==='checkout.session.async_payment_succeeded') {
       const session=event.data.object;
+      if(session.mode==='payment' && session.metadata?.orderId) {const {markShopOrder}=await import('@/lib/billing.server');await markShopOrder(session,environment);}
       if(session.payment_status!=='unpaid' && session.subscription) await syncSubscription(await stripe.subscriptions.retrieve(typeof session.subscription==='string'?session.subscription:session.subscription.id),environment);
     } else if(event.type==='invoice.paid' || event.type==='invoice.payment_failed') {
       const sub=event.data.object.parent?.subscription_details?.subscription;

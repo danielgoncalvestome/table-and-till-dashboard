@@ -125,6 +125,11 @@ const pt = {
   "pub.unverified": "Alergénios por confirmar com o restaurante",
   "admin.title": "Administração da plataforma", "admin.price": "Preço mensal (cêntimos)", "admin.trial": "Dias de experiência",
   "admin.grace": "Dias de carência", "admin.restaurants": "Restaurantes", "admin.audit": "Registo de auditoria",
+  "dash.cards": "Cartões", "cards.sub": "Encomende cartões e materiais MenuTap para o seu restaurante.", "cards.empty": "Ainda não há produtos disponíveis.",
+  "cards.buy": "Comprar", "cards.qty": "Quantidade", "cards.pay": "Pagamento", "cards.orders": "As minhas encomendas", "cards.paid": "Encomenda paga, obrigado!",
+  "cards.st.pending": "Pendente", "cards.st.paid": "Paga", "cards.st.shipped": "Enviada", "cards.st.cancelled": "Cancelada",
+  "admin.shop": "Produtos (Cartões)", "admin.newProduct": "Novo produto", "admin.pName": "Nome", "admin.pDesc": "Descrição", "admin.pPrice": "Preço (€)",
+  "admin.pImage": "Imagem", "admin.pActive": "Visível para restaurantes", "admin.orders": "Encomendas", "admin.edit": "Editar", "admin.delete": "Apagar",
 };
 
 type Key = keyof typeof pt;
@@ -231,6 +236,11 @@ const en: Record<Key, string> = {
   "pub.unverified": "Allergens to be confirmed with the restaurant",
   "admin.title": "Platform administration", "admin.price": "Monthly price (cents)", "admin.trial": "Trial days",
   "admin.grace": "Grace days", "admin.restaurants": "Restaurants", "admin.audit": "Audit log",
+  "dash.cards": "Cards", "cards.sub": "Order MenuTap cards and materials for your restaurant.", "cards.empty": "No products available yet.",
+  "cards.buy": "Buy", "cards.qty": "Quantity", "cards.pay": "Payment", "cards.orders": "My orders", "cards.paid": "Order paid, thank you!",
+  "cards.st.pending": "Pending", "cards.st.paid": "Paid", "cards.st.shipped": "Shipped", "cards.st.cancelled": "Cancelled",
+  "admin.shop": "Products (Cards)", "admin.newProduct": "New product", "admin.pName": "Name", "admin.pDesc": "Description", "admin.pPrice": "Price (€)",
+  "admin.pImage": "Image", "admin.pActive": "Visible to restaurants", "admin.orders": "Orders", "admin.edit": "Edit", "admin.delete": "Delete",
 };
 
 const dicts: Record<Lang, Record<Key, string>> = { pt, en };

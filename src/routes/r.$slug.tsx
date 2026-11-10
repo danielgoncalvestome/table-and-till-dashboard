@@ -27,7 +27,7 @@ const UI = {
 };
 
 async function loadMenu(slug: string) {
-  const { data: r } = await supabase.from("restaurants").select("*").eq("slug", slug).eq("published", true).maybeSingle();
+  const { data: r } = await supabase.from("restaurants").select("*").eq("slug", slug).maybeSingle(); // RLS: anon sees published only; members can preview drafts
   if (!r) return null;
   const [menus, cats, dishes, recs, ratings] = await Promise.all([
     supabase.from("menus").select("*").eq("restaurant_id", r.id).eq("published", true).order("position"),

@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/menu";
 import omeletAsset from "@/assets/omelet-avocado-square.jpg.asset.json";
 import salmonAsset from "@/assets/salmon-toast-square.jpg.asset.json";
 import eggsAsset from "@/assets/eggs-benedict-square.jpg.asset.json";
+import steakAsset from "@/assets/steak-eggs-square.jpg.asset.json";
 
 /** Static product illustration of the demo menu (Casa do Largo). */
 export function PhonePreview() {
@@ -12,7 +13,7 @@ export function PhonePreview() {
     { img: omeletAsset.url, n: lang === "pt" ? "Tosta de abacate" : "Avocado toast & egg", p: 9.5, rating: 4.5 },
     { img: eggsAsset.url, n: lang === "pt" ? "Ovos Benedict" : "Eggs Benedict", p: 8.5 },
     { img: salmonAsset.url, n: lang === "pt" ? "Sanduíche de salmão" : "Custard tart", p: 12.2, rating: 4.9 },
-    { img: "/images/demo/cover.jpg", n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5, rating: 4.2 },
+    { img: steakAsset.url, n: lang === "pt" ? "Vinho verde" : "Vinho verde", p: 4.5, rating: 4.2 },
   ];
   return (
     <div className="mx-auto w-[300px] rounded-[2.2rem] border-8 border-charcoal bg-cream shadow-2xl">

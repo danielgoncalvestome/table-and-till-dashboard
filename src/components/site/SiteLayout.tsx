@@ -92,7 +92,7 @@ export function SiteFooter() {
           <Link to="/contact">{t("nav.contact")}</Link>
           <Link to="/privacy">{t("footer.privacy")}</Link>
           <Link to="/terms">{t("footer.terms")}</Link>
-          <a href="mailto:ola@menutap.pt">ola@menutap.pt</a>
+          <a href="mailto:ola@menutap.pt">{"\n"}</a>
         </div>
       </div>
       <div className="mx-auto max-w-6xl px-5 pb-8 text-xs opacity-60">© {new Date().getFullYear()} MenuTap. {t("footer.rights")}</div>

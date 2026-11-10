@@ -180,7 +180,7 @@ function PublicMenu() {
           return (
             <section key={c.id} id={`c-${c.id}`} className="scroll-mt-14 pt-8">
               <h2 className="text-2xl" style={{ fontFamily: "var(--m-font)" }}>{tr(c.name, c.name_i18n, lang)}</h2>
-              <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3">
+              <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-8">
                 {list.map((d) => {
                   const rt = ratingOf(d.id);
                   return (

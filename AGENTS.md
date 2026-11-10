@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Data access is client-side Supabase with RLS (is_member/is_owner helpers); public menu reads rely on anon SELECT policies gated by `published`. Why: one permission model for dashboard and public menus.
+- Menu images go to the private `menu-images` bucket (public buckets are blocked) and are stored as 10-year signed URLs. Why: public menus need anonymous image access.
+- UI strings live in src/lib/i18n.tsx (pt default, en); restaurant content translations live in `*_i18n` jsonb columns. Why: keep interface and menu translations separate.

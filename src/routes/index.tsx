@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
@@ -51,6 +51,7 @@ const C = {
     anStudy: ["A avaliação dos pratos pelos consumidores", "A intenção de compra", "A disposição para pagar"],
     anStudySrc: "Hou, Yang & Sun (2017), “Do pictures help? The effects of pictures and food names on menu evaluations”, International Journal of Hospitality Management, 60, 94–103.",
     prEy: "PREÇO", prT: "Um plano simples, tudo incluído.", prNote: "10 dias grátis, sem cartão. Cancele quando quiser.", prLink: "Experimentar",
+    prBanner: "Na adesão ao plano, oferecemos um dispositivo NFC gratuito.",
     faqEy: "Perguntas frequentes", faqT: "Antes de começar.",
     faqs: [["Os meus clientes precisam de instalar alguma app?", "Não. O menu abre diretamente no navegador do telemóvel, sem app e sem criar conta."], ["Se mudar um preço, tenho de reimprimir o QR?", "Não. O QR e a etiqueta NFC apontam sempre para o mesmo endereço; as alterações aparecem de imediato."], ["Como funciona o NFC?", "O cliente aproxima o telemóvel do cartão MenuTap e o menu abre automaticamente."], ["Que dados recolhem de quem consulta o menu?", "Apenas estatísticas anónimas, sem cookies de rastreio nem dados pessoais."], ["A minha equipa pode ajudar a gerir o menu?", "Sim. Convide colaboradores, cada um com acesso apenas ao seu espaço."]],
     more: "Ver todas as perguntas", ctaEy: "Comece hoje", ctaT: "Um atalho para o seu menu. Para sempre.",
@@ -86,6 +87,7 @@ const C = {
     anStudy: ["Consumers' evaluation of the dishes", "Purchase intention", "Willingness to pay"],
     anStudySrc: "Hou, Yang & Sun (2017), “Do pictures help? The effects of pictures and food names on menu evaluations”, International Journal of Hospitality Management, 60, 94–103.",
     prEy: "Pricing", prT: "One simple plan, everything included.", prNote: "10 days free, no card. Cancel anytime.", prLink: "See pricing",
+    prBanner: "A free NFC device is included when you join the plan.",
     faqEy: "FAQ", faqT: "Before you start.",
     faqs: [["Do my guests need to install an app?", "No. The menu opens straight in the phone browser, no app or account."], ["If I change a price, do I reprint the QR?", "No. The QR and NFC tag always point to the same address; changes show instantly."], ["How does NFC work?", "Guests hold their phone near the MenuTap card and the menu opens."], ["What data do you collect from visitors?", "Only anonymous statistics, no tracking cookies or personal data."], ["Can my team help manage the menu?", "Yes. Invite staff, each with access only to your venue."]],
     more: "See all questions", ctaEy: "Start today", ctaT: "One link for your menu. Forever.",
@@ -219,6 +221,10 @@ function Index() {
 
       <section className="border-y bg-card">
         <div className="mx-auto max-w-6xl px-5 py-20 text-center">
+          <div className="mx-auto mb-10 flex max-w-2xl items-center justify-center gap-3 rounded-md border border-primary/25 bg-secondary px-5 py-4 text-sm font-medium text-secondary-foreground">
+            <Gift className="h-5 w-5 shrink-0 text-primary" />
+            <span>{c.prBanner}</span>
+          </div>
           <Eyebrow>{c.prEy}</Eyebrow>
           <h2 className="mt-3 text-4xl">{c.prT}</h2>
           <p className="mt-6 text-5xl">9,90 € <span className="text-lg text-muted-foreground">/ {lang === "en" ? "month" : "mês"}</span></p>

@@ -53,7 +53,7 @@ const C = {
     prEy: "PREÇO", prT: "Um plano simples, tudo incluído.", prNote: "10 dias grátis, sem cartão. Cancele quando quiser.", prLink: "Experimentar",
     faqEy: "Perguntas frequentes", faqT: "Antes de começar.",
     faqs: [["Os meus clientes precisam de instalar alguma app?", "Não. O menu abre diretamente no navegador do telemóvel, sem app e sem criar conta."], ["Se mudar um preço, tenho de reimprimir o QR?", "Não. O QR e a etiqueta NFC apontam sempre para o mesmo endereço; as alterações aparecem de imediato."], ["Como funciona o NFC?", "O cliente aproxima o telemóvel do cartão MenuTap e o menu abre automaticamente."], ["Que dados recolhem de quem consulta o menu?", "Apenas estatísticas anónimas, sem cookies de rastreio nem dados pessoais."], ["A minha equipa pode ajudar a gerir o menu?", "Sim. Convide colaboradores, cada um com acesso apenas ao seu espaço."]],
-    more: "Ver todas as perguntas", ctaEy: "Comece hoje", ctaT: "Um atalho para o seu menu. Para sempre.", demo: "Explorar",
+    more: "Ver todas as perguntas", ctaEy: "Comece hoje", ctaT: "Um atalho para o seu menu. Para sempre.",
   },
   en: {
     eyebrow: "Digital menus via QR and NFC",
@@ -88,7 +88,7 @@ const C = {
     prEy: "Pricing", prT: "One simple plan, everything included.", prNote: "10 days free, no card. Cancel anytime.", prLink: "See pricing",
     faqEy: "FAQ", faqT: "Before you start.",
     faqs: [["Do my guests need to install an app?", "No. The menu opens straight in the phone browser, no app or account."], ["If I change a price, do I reprint the QR?", "No. The QR and NFC tag always point to the same address; changes show instantly."], ["How does NFC work?", "Guests hold their phone near the MenuTap card and the menu opens."], ["What data do you collect from visitors?", "Only anonymous statistics, no tracking cookies or personal data."], ["Can my team help manage the menu?", "Yes. Invite staff, each with access only to your venue."]],
-    more: "See all questions", ctaEy: "Start today", ctaT: "One link for your menu. Forever.", demo: "Explore the demo menu",
+    more: "See all questions", ctaEy: "Start today", ctaT: "One link for your menu. Forever.",
   },
 };
 
@@ -247,7 +247,6 @@ function Index() {
           <h2 className="mt-3 text-4xl">{c.ctaT}</h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" variant="secondary"><Link to="/auth" search={{ mode: "signup" }}>{c.start}</Link></Button>
-            <Button asChild size="lg" variant="ghost"><Link to="/demo">{c.demo} <ArrowRight /></Link></Button>
           </div>
         </div>
       </section>

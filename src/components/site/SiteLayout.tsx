@@ -32,7 +32,6 @@ export function SiteHeader() {
   const links = [
     { to: "/features", label: t("nav.features") },
     { to: "/how-it-works", label: t("nav.how") },
-    { to: "/demo", label: t("nav.demo") },
     { to: "/pricing", label: t("nav.pricing") },
     { to: "/faq", label: t("nav.faq") },
     { to: "/contact", label: t("nav.contact") },

@@ -36,7 +36,6 @@ function How() {
       </ol>
       <div className="mx-auto mt-8 flex max-w-4xl gap-3 px-5">
         <Button asChild size="lg"><Link to="/auth" search={{ mode: "signup" }}>{t("cta.start")}</Link></Button>
-        <Button asChild size="lg" variant="outline"><Link to="/demo">{t("cta.demo")}</Link></Button>
       </div>
     </SitePage>
   );

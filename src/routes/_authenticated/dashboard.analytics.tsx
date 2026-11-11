@@ -8,7 +8,7 @@ import { BarList, Columns, PageTitle, Panel, Stat } from "@/components/dash/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { WEEKDAYS } from "@/lib/menu";
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 
 function downloadCsv(rows: (string | number)[][], name: string) {
   const csv = "\uFEFF" + rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
@@ -64,12 +64,15 @@ function Analytics() {
   return (
     <div>
       <PageTitle title={t("an.title")} sub={t("an.note")} action={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 print:hidden">
           <select aria-label={pt ? "Período de análise" : "Analysis period"} value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-9 rounded-md border bg-background px-3 text-sm">
             {[7, 30, 90, 365].map((d) => <option key={d} value={d}>{pt ? `Últimos ${d} dias` : `Last ${d} days`}</option>)}
           </select>
           <button type="button" onClick={exportReport} className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90">
             <Download className="h-4 w-4" />{pt ? "Exportar relatório" : "Export report"}
+          </button>
+          <button type="button" onClick={() => window.print()} className="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium hover:bg-muted">
+            <FileText className="h-4 w-4" />{pt ? "Exportar PDF" : "Export PDF"}
           </button>
         </div>
       } />

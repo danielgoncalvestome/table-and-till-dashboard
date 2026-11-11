@@ -219,10 +219,6 @@ function Index() {
 
       <section className="border-y bg-card">
         <div className="mx-auto max-w-6xl px-5 py-20 text-center">
-          <div className="mx-auto mb-10 flex max-w-2xl items-center justify-center gap-3 rounded-md border border-primary/25 bg-secondary px-5 py-4 text-sm font-medium text-secondary-foreground">
-            <Gift className="h-5 w-5 shrink-0 text-primary" />
-            <span>{c.prBanner}</span>
-          </div>
           <Eyebrow>{c.prEy}</Eyebrow>
           <h2 className="mt-3 text-4xl">{c.prT}</h2>
           <p className="mt-6 text-5xl">9,90 € <span className="text-lg text-muted-foreground">/ {lang === "en" ? "month" : "mês"}</span></p>

@@ -26,12 +26,6 @@ function Pricing() {
   return (
     <SitePage>
       <PageIntro eyebrow={t("nav.pricing")} title={t("pricing.title")} />
-      <div className="mx-auto mb-6 max-w-xl px-5">
-        <div className="flex items-center justify-center gap-3 rounded-md border border-primary/25 bg-secondary px-5 py-4 text-sm font-medium text-secondary-foreground">
-          <Gift className="h-5 w-5 shrink-0 text-primary" />
-          <span>{t("pricing.nfcBanner")}</span>
-        </div>
-      </div>
       <section className="mx-auto max-w-5xl px-5">
         <div className="rounded-md border bg-card p-8">
           <img src={logoDark.url} alt="MenuTap" className="h-5 w-auto" />
@@ -40,7 +34,7 @@ function Pricing() {
               <li key={i} className="flex gap-3 text-sm"><Check className="h-4 w-4 shrink-0 text-primary" />{i}</li>
             ))}
           </ul>
-          <p className="mt-6 text-sm">{t("plans.free")} {t("plans.base")}</p>
+          <p className="mt-6 text-sm">{t("plans.free")}</p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PLANS.map((p) => (
               <div key={p.priceId} className="rounded-md border p-5">

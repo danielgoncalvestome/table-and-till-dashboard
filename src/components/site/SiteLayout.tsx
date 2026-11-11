@@ -104,6 +104,7 @@ export function SiteFooter() {
           <Link to="/contact">{t("nav.contact")}</Link>
           <Link to="/privacy">{t("footer.privacy")}</Link>
           <Link to="/terms">{t("footer.terms")}</Link>
+          <Link to="/refund">{t("footer.refund")}</Link>
           <a href="mailto:ola@menutap.pt">{"\n"}</a>
         </div>
       </div>

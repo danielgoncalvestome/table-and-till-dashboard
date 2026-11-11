@@ -118,3 +118,38 @@
 @utility rule-line {
   border-top: 1px solid var(--color-border);
 }
+
+/* Signed-in panel: pure white (light) or black (dark) */
+html.panel {
+  --background: oklch(1 0 0);
+  --card: oklch(1 0 0);
+  --popover: oklch(1 0 0);
+  --muted: oklch(0.965 0.004 150);
+  --sidebar: oklch(0.985 0.003 150);
+  --border: oklch(0.91 0.005 150);
+  --input: oklch(0.89 0.005 150);
+}
+html.panel.dark {
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.15 0.004 150);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.15 0.004 150);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.8 0.07 150);
+  --primary-foreground: oklch(0.15 0.02 160);
+  --secondary: oklch(0.22 0.01 150);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.2 0.005 150);
+  --muted-foreground: oklch(0.7 0.01 150);
+  --accent: oklch(0.28 0.03 150);
+  --accent-foreground: oklch(0.95 0.02 150);
+  --border: oklch(0.27 0.005 150);
+  --input: oklch(0.3 0.005 150);
+  --sidebar: oklch(0.08 0 0);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-accent: oklch(0.2 0.01 150);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.27 0.005 150);
+  color-scheme: dark;
+}

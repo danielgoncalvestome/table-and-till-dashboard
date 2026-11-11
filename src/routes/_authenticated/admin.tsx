@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ThemeToggle } from "@/lib/panel-theme";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -43,7 +44,7 @@ function Admin() {
   }
   return (
     <div className="mx-auto max-w-6xl p-8">
-      <Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link>
+      <div className="flex items-center justify-between"><Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link><ThemeToggle /></div>
       <PageTitle title={t("admin.title")} action={<div className="flex items-center gap-2">{!!al && al.messages + al.orders > 0 && <span className="relative mr-1" title="Alertas"><Bell className="h-5 w-5 text-destructive" /><span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-destructive" /></span>}<Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}<AlertDot n={al?.messages ?? 0} /></Link></div>} />
       <Panel>
         <div className="grid items-end gap-4 md:grid-cols-3">

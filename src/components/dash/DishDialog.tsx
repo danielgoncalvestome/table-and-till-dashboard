@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useI18n } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, uploadImage } from "@/lib/menu";
+import { useCatalog } from "@/lib/use-catalog";
 
 type Dish = Database["public"]["Tables"]["dishes"]["Row"];
 type Cat = Database["public"]["Tables"]["categories"]["Row"];
@@ -22,6 +23,9 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
   const [f, setF] = useState(blank);
   const [busy, setBusy] = useState(false);
   const [tag, setTag] = useState("");
+  const { data: catalog } = useCatalog(restaurantId);
+  const [recs, setRecs] = useState<string[]>([]);
+  const others = (catalog?.dishes ?? []).filter((d) => !d.archived && d.id !== dish?.id);
   const addTag = () => { const v = tag.trim(); if (v && !f.dietary.includes(v)) setF((p) => ({ ...p, dietary: [...p.dietary, v] })); setTag(""); };
 
   useEffect(() => {
@@ -30,6 +34,8 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
       const ni = dish.name_i18n as Record<string, string>; const di = dish.description_i18n as Record<string, string>;
       setF({ name: dish.name, description: dish.description ?? "", nameEn: ni?.en ?? "", descEn: di?.en ?? "", price: String(dish.price), promo: dish.promo_price != null ? String(dish.promo_price) : "", image_url: dish.image_url ?? "", category_id: dish.category_id, allergens: dish.allergens, allergens_verified: dish.allergens_verified, dietary: dish.dietary, longDesc: dish.long_description ?? "", longDescEn: (dish.long_description_i18n as Record<string, string>)?.en ?? "", ingredients: dish.ingredients ?? "", ingredientsEn: (dish.ingredients_i18n as Record<string, string>)?.en ?? "", gallery: dish.gallery ?? [], featured: dish.featured, available: dish.available, prep: dish.prep_minutes?.toString() ?? "", calories: dish.calories?.toString() ?? "" });
     } else setF({ ...blank, category_id: defaultCategoryId });
+    setRecs([]);
+    if (dish) supabase.from("recommendations").select("recommended_dish_id").eq("dish_id", dish.id).then(({ data }) => setRecs((data ?? []).map((x) => x.recommended_dish_id)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, dish, defaultCategoryId]);
 
@@ -58,9 +64,12 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
       price, promo_price: promo, image_url: f.image_url || null, allergens: f.allergens, allergens_verified: f.allergens_verified,
       dietary: f.dietary, long_description: f.longDesc.trim() || null, long_description_i18n: f.longDescEn ? { en: f.longDescEn } : {}, ingredients: f.ingredients.trim() || null, ingredients_i18n: f.ingredientsEn ? { en: f.ingredientsEn } : {}, gallery: f.gallery, featured: f.featured, available: f.available, prep_minutes: f.prep ? Number(f.prep) : null, calories: f.calories ? Number(f.calories) : null, updated_at: new Date().toISOString(),
     };
-    const { error } = dish ? await supabase.from("dishes").update(row).eq("id", dish.id) : await supabase.from("dishes").insert({ ...row, position: 999 });
+    const res = dish ? await supabase.from("dishes").update(row).eq("id", dish.id).select("id").single() : await supabase.from("dishes").insert({ ...row, position: 999 }).select("id").single();
+    if (res.error) { setBusy(false); return toast.error(res.error.message); }
+    const id = res.data.id;
+    await supabase.from("recommendations").delete().eq("dish_id", id);
+    if (recs.length) await supabase.from("recommendations").insert(recs.map((rid) => ({ restaurant_id: restaurantId, dish_id: id, recommended_dish_id: rid, label: "Combina bem com", label_i18n: { en: "Pairs well with" } })));
     setBusy(false);
-    if (error) return toast.error(error.message);
     toast.success(t("common.saved"));
     onSaved();
     onClose();
@@ -138,6 +147,17 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
               <Input value={tag} maxLength={30} placeholder={lang === "pt" ? "Nova etiqueta (ex.: Halal)" : "New label (e.g. Halal)"} onChange={(e) => setTag(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }} />
               <Button type="button" variant="outline" onClick={addTag}>{lang === "pt" ? "Adicionar" : "Add"}</Button>
             </div>
+          </div>
+          <div>
+            <Label>{lang === "pt" ? "Recomendações (combina bem com)" : "Recommendations (pairs well with)"}</Label>
+            <p className="text-xs text-muted-foreground">{lang === "pt" ? "Pratos sugeridos na página deste prato." : "Dishes suggested on this dish's page."}</p>
+            {others.length ? (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {others.map((d) => (
+                  <button type="button" key={d.id} onClick={() => setRecs((p) => p.includes(d.id) ? p.filter((x) => x !== d.id) : [...p, d.id])} className={`rounded-full border px-2.5 py-1 text-xs ${recs.includes(d.id) ? "border-primary bg-primary text-primary-foreground" : ""}`}>{d.name}</button>
+                ))}
+              </div>
+            ) : <p className="mt-1 text-xs text-muted-foreground">{lang === "pt" ? "Adicione mais pratos para poder recomendá-los." : "Add more dishes to recommend them."}</p>}
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div><Label>{t("dish.prep")}</Label><Input type="number" min={0} value={f.prep} onChange={(e) => setF({ ...f, prep: e.target.value })} /></div>

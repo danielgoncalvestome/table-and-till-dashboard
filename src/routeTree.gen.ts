@@ -29,7 +29,6 @@ import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_a
 import { Route as AuthenticatedDashboardDesignRouteImport } from './routes/_authenticated/dashboard.design'
 import { Route as AuthenticatedDashboardHelpRouteImport } from './routes/_authenticated/dashboard.help'
 import { Route as AuthenticatedDashboardMenusRouteImport } from './routes/_authenticated/dashboard.menus'
-import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
 import { Route as AuthenticatedDashboardTeamRouteImport } from './routes/_authenticated/dashboard.team'
@@ -140,12 +139,6 @@ const AuthenticatedDashboardMenusRoute =
     path: '/menus',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AuthenticatedDashboardQrRoute =
-  AuthenticatedDashboardQrRouteImport.update({
-    id: '/qr',
-    path: '/qr',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
 const AuthenticatedDashboardSettingsRoute =
   AuthenticatedDashboardSettingsRouteImport.update({
     id: '/settings',
@@ -190,7 +183,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
-  '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -215,7 +207,6 @@ export interface FileRoutesByTo {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
-  '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -243,7 +234,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/_authenticated/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/_authenticated/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
-  '/_authenticated/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -271,7 +261,6 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
-    | '/dashboard/qr'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
@@ -296,7 +285,6 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
-    | '/dashboard/qr'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
@@ -323,7 +311,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/design'
     | '/_authenticated/dashboard/help'
     | '/_authenticated/dashboard/menus'
-    | '/_authenticated/dashboard/qr'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/team'
@@ -489,13 +476,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardMenusRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_authenticated/dashboard/qr': {
-      id: '/_authenticated/dashboard/qr'
-      path: '/qr'
-      fullPath: '/dashboard/qr'
-      preLoaderRoute: typeof AuthenticatedDashboardQrRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
     '/_authenticated/dashboard/settings': {
       id: '/_authenticated/dashboard/settings'
       path: '/settings'
@@ -532,7 +512,6 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDesignRoute: typeof AuthenticatedDashboardDesignRoute
   AuthenticatedDashboardHelpRoute: typeof AuthenticatedDashboardHelpRoute
   AuthenticatedDashboardMenusRoute: typeof AuthenticatedDashboardMenusRoute
-  AuthenticatedDashboardQrRoute: typeof AuthenticatedDashboardQrRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardTeamRoute: typeof AuthenticatedDashboardTeamRoute
@@ -545,7 +524,6 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardDesignRoute: AuthenticatedDashboardDesignRoute,
     AuthenticatedDashboardHelpRoute: AuthenticatedDashboardHelpRoute,
     AuthenticatedDashboardMenusRoute: AuthenticatedDashboardMenusRoute,
-    AuthenticatedDashboardQrRoute: AuthenticatedDashboardQrRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
     AuthenticatedDashboardSubscriptionRoute:
       AuthenticatedDashboardSubscriptionRoute,

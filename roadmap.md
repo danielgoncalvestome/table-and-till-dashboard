@@ -3,3 +3,6 @@
 - [x] Novo logótipo em todas as páginas
 - [x] Alerta no admin: mensagens não lidas / encomendas não em preparação nem enviadas
 - [x] Painel: remover página QR/NFC; QR e link na visão geral; sem quadro NFC
+- [x] Administração refeita: alertas, mensagens, ficha por restaurante, dias experimentais em janela
+- [x] Aviso ao restaurante de fim do período experimental
+- [x] Botão de definições junto ao modo claro/escuro

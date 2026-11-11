@@ -13,7 +13,7 @@ function Help() {
     <div>
       <PageTitle title={t("help.title")} />
       <div className="grid gap-4 md:grid-cols-2">{items.map(([a, b]) => <Panel key={a} title={a}><p className="text-sm text-muted-foreground">{b}</p></Panel>)}</div>
-      <p className="mt-6 text-sm">ola@menutap.pt</p>
+      <p className="mt-6 text-sm">danielgoncalvestome+menutap@gmail.com</p>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { AlertDot, useAdminAlerts } from "@/hooks/use-admin-alerts";
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, ExternalLink, LogOut, Shield, Menu as MenuIcon,
@@ -24,12 +24,19 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardLayout() {
   const { t } = useI18n();
-  const { data: list, isLoading } = useMyRestaurants();
+  const { data: mine, isLoading } = useMyRestaurants();
   const { data: isAdmin } = useIsAdmin();
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [mobileNav, setMobileNav] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+  const { data: extra } = useQuery({
+    queryKey: ["admin-managed", currentId],
+    enabled: !!isAdmin && !!currentId && !!mine && !mine.some((r) => r.id === currentId),
+    queryFn: async () => (await supabase.from("restaurants").select("*").eq("id", currentId!).maybeSingle()).data,
+  });
+  const list = extra ? [...(mine ?? []), { role: "owner" as const, ...extra }] : mine;
 
   useEffect(() => {
     const saved = localStorage.getItem("mt-current-restaurant");
@@ -93,7 +100,7 @@ function DashboardLayout() {
               <span className="font-display text-lg">{current.name}</span>
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-            <div className="flex items-center gap-2"><ThemeToggle /><Button asChild variant="outline" size="sm"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer">{t("dash.viewMenu")} <ExternalLink /></a></Button></div>
+            <div className="flex items-center gap-2"><Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link><ThemeToggle /><Button asChild variant="outline" size="sm"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer">{t("dash.viewMenu")} <ExternalLink /></a></Button></div>
           </header>
           <main className="mx-auto max-w-6xl p-5 md:p-8"><Outlet /></main>
         </div>

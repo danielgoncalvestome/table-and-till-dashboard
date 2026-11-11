@@ -61,6 +61,58 @@ function Analytics() {
     (ratings ?? []).forEach((x) => rows.push([dn(x.dish_id), Number(x.avg_stars).toFixed(1), Number(x.total)]));
     downloadCsv(rows, `menutap-${r.slug ?? "relatorio"}-${days}d.csv`);
   };
+  const exportPdf = async () => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const W = 210, M = 16; let y = 20;
+    const ensure = (h: number) => { if (y + h > 282) { doc.addPage(); y = 20; } };
+    doc.setFillColor(24, 53, 43); doc.rect(0, 0, W, 34, "F");
+    doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(18);
+    doc.text(`${t("an.title")} — ${r.name}`, M, 16);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+    doc.text(`${pt ? `Últimos ${days} dias` : `Last ${days} days`} · ${new Date().toLocaleDateString(pt ? "pt-PT" : "en-GB")}`, M, 25);
+    y = 44; doc.setTextColor(32, 38, 34);
+    const stats: [string, number][] = [[t("ov.views"), s.views], [t("ov.sessions"), s.sessions], [`${t("an.recs")} · ${t("an.impr")}`, totalImpr], [`${t("an.recs")} · ${t("an.clicks")}`, totalClicks]];
+    const bw = (W - 2 * M - 9) / 4;
+    stats.forEach(([k, v], i) => {
+      const x = M + i * (bw + 3);
+      doc.setFillColor(246, 243, 236); doc.roundedRect(x, y, bw, 22, 2, 2, "F");
+      doc.setFontSize(8); doc.setTextColor(100, 110, 104); doc.text(doc.splitTextToSize(k, bw - 6), x + 3, y + 6);
+      doc.setFontSize(16); doc.setFont("helvetica", "bold"); doc.setTextColor(24, 53, 43); doc.text(String(v), x + 3, y + 18);
+      doc.setFont("helvetica", "normal");
+    });
+    y += 32;
+    const heading = (title: string) => { ensure(14); doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(24, 53, 43); doc.text(title, M, y); y += 6; doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(32, 38, 34); };
+    if (insights.length) {
+      heading(t("an.insights"));
+      insights.forEach((i) => { const l = doc.splitTextToSize(`• ${i}`, W - 2 * M); ensure(l.length * 4.5); doc.text(l, M, y); y += l.length * 4.5 + 1; });
+      y += 5;
+    }
+    const bars = (title: string, items: [string, number][]) => {
+      heading(title);
+      if (!items.length) { doc.setTextColor(120, 120, 120); doc.text(t("ov.noData"), M, y); y += 10; return; }
+      const max = Math.max(...items.map(([, v]) => v), 1);
+      items.forEach(([k, v]) => {
+        ensure(7);
+        doc.setTextColor(32, 38, 34); doc.text(doc.splitTextToSize(k, 70)[0], M, y + 3);
+        doc.setFillColor(230, 234, 228); doc.rect(M + 74, y, 90, 4, "F");
+        doc.setFillColor(24, 53, 43); doc.rect(M + 74, y, (90 * v) / max, 4, "F");
+        doc.text(String(v), W - M, y + 3, { align: "right" }); y += 6.5;
+      });
+      y += 6;
+    };
+    bars(t("ov.topDishes"), s.topDishes.slice(0, 10).map(([k, v]) => [dn(k), v]));
+    bars(t("ov.topCats"), s.topCats.slice(0, 10).map(([k, v]) => [cn(k), v]));
+    bars(t("an.days"), s.days.map((v, i) => [WEEKDAYS[lang][i], v]));
+    bars(t("an.hours"), s.hours.map((v, i) => [`${i}h`, v] as [string, number]).filter(([, v]) => v > 0));
+    bars(t("an.searches"), s.searches.slice(0, 10));
+    bars(t("ov.langs"), s.langs.map(([k, v]) => [k.toUpperCase(), v]));
+    bars(t("an.sources"), s.sources);
+    bars(t("an.ratings"), (ratings ?? []).map((x) => [`${dn(x.dish_id)} · ${Number(x.avg_stars).toFixed(1)}/5`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]));
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(8); doc.setTextColor(140, 140, 140); doc.text(`MenuTap · ${p}/${n}`, W - M, 292, { align: "right" }); }
+    doc.save(`menutap-${r.slug ?? "relatorio"}-${days}d.pdf`);
+  };
   return (
     <div>
       <PageTitle title={t("an.title")} sub={t("an.note")} action={
@@ -71,7 +123,7 @@ function Analytics() {
           <button type="button" onClick={exportReport} className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90">
             <Download className="h-4 w-4" />{pt ? "Exportar relatório" : "Export report"}
           </button>
-          <button type="button" onClick={() => window.print()} className="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium hover:bg-muted">
+          <button type="button" onClick={exportPdf} className="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium hover:bg-muted">
             <FileText className="h-4 w-4" />{pt ? "Exportar PDF" : "Export PDF"}
           </button>
         </div>

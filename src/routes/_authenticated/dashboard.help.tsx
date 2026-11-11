@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PageTitle, Panel } from "@/components/dash/ui";
@@ -61,6 +61,7 @@ function Help() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [seeded, setSeeded] = useState(false);
 
   const { data: account } = useQuery({
     queryKey: ["help-account"],
@@ -70,6 +71,13 @@ function Help() {
       return realAccountEmail(user.email);
     },
   });
+
+  useEffect(() => {
+    if (!seeded && account !== undefined) {
+      if (account) setEmail(account);
+      setSeeded(true);
+    }
+  }, [account, seeded]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -98,7 +106,7 @@ function Help() {
             </div>
             <div>
               <Label htmlFor="help-email">Email</Label>
-              <Input id="help-email" type="email" value={email || (account ?? "")} onChange={(e) => setEmail(e.target.value)} required maxLength={255} className="mt-1" />
+              <Input id="help-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={255} className="mt-1" />
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="help-msg">{t("contact.message")}</Label>

@@ -8,8 +8,7 @@ import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, label
 import logoDark from "@/assets/menutap-logo.png.asset.json";
 import logoLight from "@/assets/menutap-logo-light.png.asset.json";
 
-const HERO_MAX = 200;
-const HERO_MIN = 64;
+const HERO_H = 140;
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params }) => ({
@@ -62,9 +61,7 @@ function PublicMenu() {
   const { data, isLoading } = useQuery({ queryKey: ["public-menu", slug], queryFn: () => loadMenu(slug), refetchInterval: 60_000 });
   const [lang, setLang] = useState<Lang>("pt");
   const [menuId, setMenuId] = useState<string | null>(null);
-  const [scrollY, setScrollY] = useState(0);
-  useEffect(() => { const f = () => setScrollY(window.scrollY); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
-  const heroH = Math.round(HERO_MAX - (HERO_MAX - HERO_MIN) * Math.min(scrollY / 160, 1));
+  const heroH = HERO_H;
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Dish | null>(null);
@@ -124,9 +121,9 @@ function PublicMenu() {
     <div style={style} className="min-h-screen bg-[var(--m-bg)] text-[var(--m-primary)]">
       {r.is_demo && <div className="bg-[var(--m-primary)] py-1.5 text-center text-xs text-[var(--m-bg)]">{u.demo}</div>}
       {r.logo_url && (
-        <div className="sticky top-0 z-20 flex items-center justify-center overflow-hidden bg-cover bg-center transition-[height] duration-150 ease-out"
+        <div className="sticky top-0 z-20 flex items-center justify-center overflow-hidden bg-cover bg-center"
           style={{ height: heroH, backgroundImage: r.cover_url ? `url(${r.cover_url})` : undefined, backgroundColor: r.cover_url ? undefined : (r.cover_color ?? "var(--m-bg)") }}>
-          <img src={r.logo_url} alt={r.name} className="w-auto max-w-[80%] object-contain transition-[height] duration-150 ease-out" style={{ height: heroH - 24 }} />
+          <img src={r.logo_url} alt={r.name} className="w-auto max-w-[80%] object-contain" style={{ height: heroH - 24 }} />
         </div>
       )}
       <header>
@@ -167,7 +164,7 @@ function PublicMenu() {
         </div>
       )}
 
-      <nav style={{ top: r.logo_url ? HERO_MIN : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
+      <nav style={{ top: r.logo_url ? HERO_H : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl gap-5 overflow-x-auto px-5 py-3 text-xs font-semibold uppercase tracking-wider">
           {cats.map((c) => (
             <a key={c.id} href={`#c-${c.id}`} onClick={() => track(r.id, "category_view", { category_id: c.id, lang })} className="whitespace-nowrap opacity-70 hover:opacity-100">{tr(c.name, c.name_i18n, lang)}</a>

@@ -6,3 +6,4 @@
 - [x] Administração refeita: alertas, mensagens, ficha por restaurante, dias experimentais em janela
 - [x] Aviso ao restaurante de fim do período experimental
 - [x] Botão de definições junto ao modo claro/escuro
+- [x] Página de ajuda: formulário de mensagem no topo + dúvidas frequentes alargadas

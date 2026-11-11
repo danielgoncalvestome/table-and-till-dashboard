@@ -1,14 +1,20 @@
 import type Stripe from 'stripe';
 import { createStripeClient, type StripeEnv } from './stripe.server';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
+import { realAccountEmail } from './account-rules';
 export async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
   options: { email?: string; userId?: string },
 ): Promise<string> {
+  options = { ...options, email: realAccountEmail(options.email) };
   if (options.userId && !/^[a-zA-Z0-9_-]+$/.test(options.userId)) throw new Error('Invalid userId');
   if (options.userId) {
     const found = await stripe.customers.search({ query: `metadata['userId']:'${options.userId}'`, limit: 1 });
-    if (found.data.length) return found.data[0].id;
+    if (found.data.length) {
+      const customer = found.data[0];
+      if (options.email && customer.email !== options.email) await stripe.customers.update(customer.id, { email: options.email });
+      return customer.id;
+    }
   }
   if (options.email) {
     const existing = await stripe.customers.list({ email: options.email, limit: 1 });

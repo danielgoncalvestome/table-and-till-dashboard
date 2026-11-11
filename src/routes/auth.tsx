@@ -8,6 +8,9 @@ import { Logo } from "@/components/site/SiteLayout";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useServerFn } from "@tanstack/react-start";
+import { usernameSchema, usernameEmail } from "@/lib/account-rules";
+import { signInWithUsername } from "@/utils/account.functions";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -41,15 +44,14 @@ function AuthPage() {
   const [mode, setMode] = useState<Mode>(search.mode ?? "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const usernameLogin = useServerFn(signInWithUsername);
   const [busy, setBusy] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => setMode(search.mode ?? "login"), [search.mode]);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => { if (data.session) navigate({ to: "/dashboard" }); });
-    const { data } = supabase.auth.onAuthStateChange((e, s) => { if (e === "SIGNED_IN" && s) navigate({ to: "/dashboard" }); });
-    return () => data.subscription.unsubscribe();
+    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/dashboard" }); });
   }, [navigate]);
 
   async function submit(e: React.FormEvent) {
@@ -58,11 +60,29 @@ function AuthPage() {
     setInfo(null);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (email.includes("@")) {
+          const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+          if (error) throw new Error(t("auth.credentials"));
+        } else {
+          const parsed = usernameSchema.safeParse(email);
+          if (!parsed.success) throw new Error(t("auth.credentials"));
+          const result = await usernameLogin({ data: { username: parsed.data, password } });
+          if (!result.session) throw new Error(t("auth.credentials"));
+          const { error } = await supabase.auth.setSession(result.session);
+          if (error) throw error;
+        }
+        navigate({ to: "/dashboard" });
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: name } } });
-        if (error) throw error;
+        const parsed = usernameSchema.safeParse(username);
+        if (!parsed.success) throw new Error(t("auth.usernameInvalid"));
+        const { data: available, error: availabilityError } = await supabase.rpc("username_available", { _username: parsed.data });
+        if (availabilityError) throw availabilityError;
+        if (!available) throw new Error(t("auth.usernameTaken"));
+        const { data, error } = await supabase.auth.signUp({ email: usernameEmail(parsed.data), password, options: { emailRedirectTo: window.location.origin, data: { username: parsed.data } } });
+        if (error) {
+          const { data: stillAvailable } = await supabase.rpc("username_available", { _username: parsed.data });
+          throw new Error(stillAvailable === false || error.code === "user_already_exists" ? t("auth.usernameTaken") : error.message);
+        }
         if (data.session) navigate({ to: "/dashboard" });
         else setInfo(t("auth.checkEmail"));
       } else {
@@ -80,6 +100,10 @@ function AuthPage() {
   async function google() {
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
     if (r.error) toast.error(t("common.error"));
+    else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) navigate({ to: "/dashboard" });
+    }
   }
 
   return (
@@ -104,8 +128,10 @@ function AuthPage() {
                 </>
               )}
               <form onSubmit={submit} className="space-y-4">
-                {mode === "signup" && <div><Label htmlFor="n">{t("auth.name")}</Label><Input id="n" value={name} onChange={(e) => setName(e.target.value)} required /></div>}
-                <div><Label htmlFor="e">{t("auth.email")}</Label><Input id="e" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+                {mode === "signup" ? <>
+                  <div><Label htmlFor="n">{t("auth.username")}</Label><Input id="n" autoComplete="username" minLength={3} maxLength={30} pattern="[A-Za-z0-9_]{3,30}" value={username} onChange={(e) => setUsername(e.target.value)} required /><p className="mt-2 text-xs text-muted-foreground">{t("auth.usernameHint")}</p></div>
+                  <p className="text-sm text-muted-foreground">{t("auth.noEmailWarning")}</p>
+                </> : <div><Label htmlFor="e">{mode === "forgot" ? t("auth.email") : t("auth.identifier")}</Label><Input id="e" type={mode === "forgot" ? "email" : "text"} autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>}
                 {mode !== "forgot" && <div><Label htmlFor="p">{t("auth.password")}</Label><Input id="p" type="password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required /></div>}
                 <Button type="submit" className="w-full" disabled={busy}>{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.sendReset") : t("auth.login")}</Button>
               </form>

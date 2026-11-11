@@ -491,18 +491,21 @@ export type Database = {
           display_name: string | null
           id: string
           preferred_lang: string
+          username: string | null
         }
         Insert: {
           created_at?: string
           display_name?: string | null
           id: string
           preferred_lang?: string
+          username?: string | null
         }
         Update: {
           created_at?: string
           display_name?: string | null
           id?: string
           preferred_lang?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -855,6 +858,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      account_login_email: { Args: { _username: string }; Returns: string }
       dish_rating_summary: {
         Args: { _restaurant_id: string }
         Returns: {
@@ -885,6 +889,7 @@ export type Database = {
         Returns: undefined
       }
       restaurant_billing_access: { Args: { _id: string }; Returns: boolean }
+      username_available: { Args: { _username: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

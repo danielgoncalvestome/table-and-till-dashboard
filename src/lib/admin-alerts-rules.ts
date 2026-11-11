@@ -10,7 +10,7 @@ export function daysLeft(iso: string | null, now = Date.now()) {
   return iso ? Math.ceil((new Date(iso).getTime() - now) / DAY) : null;
 }
 
-export function activeSub(subs: AlertSub[], userId: string | null) {
+export function activeSub<S extends AlertSub>(subs: S[], userId: string | null): S | undefined {
   return subs.find((s) => s.user_id === userId && s.environment === "live" && ["active", "trialing", "past_due"].includes(s.status));
 }
 

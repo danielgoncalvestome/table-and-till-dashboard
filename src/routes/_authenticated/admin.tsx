@@ -52,7 +52,7 @@ function Admin() {
         </div>
       </Panel>
       <Panel title={t("admin.subs")} className="mt-4">
-        <ul className="divide-y text-sm">{subs?.map((x) => { const r = rs?.find((y) => y.created_by === x.user_id); return <li key={x.id} className="flex justify-between py-2"><span>{r?.name ?? x.user_id.slice(0, 8)} · {planByPrice(x.price_id)?.identifiers ?? "?"} {t("plans.ids")}</span><span className="text-muted-foreground">{x.environment === "sandbox" ? "teste · " : ""}{x.status} · {formatDate(x.created_at, lang)}</span></li>; })}</ul>
+        <ul className="divide-y text-sm">{subs?.map((x) => { const r = rs?.find((y) => y.created_by === x.user_id); return <li key={x.id} className="flex justify-between py-2"><span>{r?.name ?? x.user_id.slice(0, 8)} · {planByPrice(x.price_id)?.name ?? "?"}</span><span className="text-muted-foreground">{x.environment === "sandbox" ? "teste · " : ""}{x.status} · {formatDate(x.created_at, lang)}</span></li>; })}</ul>
       </Panel>
       <Panel title={t("admin.restaurants")} className="mt-4">
         <ul className="divide-y text-sm">{rs?.map((r) => <li key={r.id} className="flex justify-between py-2"><a href={`/r/${r.slug}`} target="_blank" rel="noreferrer">{r.name}</a><span className="text-muted-foreground">{r.status} · {r.published ? "✓" : "—"} · {formatDate(r.created_at, lang)}</span></li>)}</ul>

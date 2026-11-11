@@ -607,6 +607,7 @@ export type Database = {
           accent_color: string
           address: string | null
           background_color: string
+          cover_color: string | null
           cover_url: string | null
           created_at: string
           created_by: string | null
@@ -638,6 +639,7 @@ export type Database = {
           accent_color?: string
           address?: string | null
           background_color?: string
+          cover_color?: string | null
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -669,6 +671,7 @@ export type Database = {
           accent_color?: string
           address?: string | null
           background_color?: string
+          cover_color?: string | null
           cover_url?: string | null
           created_at?: string
           created_by?: string | null

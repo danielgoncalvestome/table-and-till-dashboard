@@ -20,7 +20,7 @@ function Privacy() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [PRIVACY_PT]
-    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at ola@menutap.pt.", "Data is hosted in the European Union where possible and is never sold to third parties.", "Provisional document — must be reviewed by a lawyer before commercial launch."];
+    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at ola@menutap.pt.", "The data controller is Daniel Gonçalves Tomé, trading as MenuTap. Payments, subscriptions, invoicing and tax compliance are handled by Paddle.com, our Merchant of Record, which receives the data needed for those purposes.", "We also use service providers (hosting, authentication, cookieless Lovable visitor analytics), professional advisers and authorities where required by law. Data is never sold. You have the rights of access, rectification, erasure, restriction, portability, objection and complaint to the CNPD."];
   return (
     <SitePage>
       <PageIntro title={t("footer.privacy")} />
@@ -42,7 +42,9 @@ O MenuTap compromete-se a tratar os dados pessoais de forma transparente, segura
 2. Responsável pelo tratamento
  
 
-Identificação: MenuTap
+Identificação: Daniel Gonçalves Tomé, que opera o serviço com a designação comercial MenuTap (website: https://menutap.pt).
+
+Daniel Gonçalves Tomé é o responsável pelo tratamento dos dados pessoais descritos nesta política, determinando as finalidades e os meios desse tratamento.
 
 ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração.
 
@@ -161,6 +163,10 @@ Envio de comunicações eletrónicas;
 
 Análise estatística e monitorização técnica.
 
+Os pagamentos, a gestão de subscrições, a faturação e o cumprimento das obrigações fiscais são assegurados pela Paddle.com, que atua como Merchant of Record (revendedor) em todas as encomendas. Para esse efeito, a Paddle recebe os dados necessários à venda do produto, à gestão da subscrição, ao pagamento, à faturação e ao cumprimento fiscal.
+
+Poderemos ainda partilhar dados com consultores profissionais (jurídicos e contabilísticos), quando necessário.
+
 Estes prestadores apenas terão acesso aos dados necessários à prestação dos respetivos serviços e estarão sujeitos às obrigações contratuais e legais aplicáveis.
 
 O MenuTap não vende dados pessoais a terceiros.
@@ -219,7 +225,7 @@ Direito de apresentar reclamação junto da autoridade de controlo competente.
 
 Em Portugal, a autoridade de controlo é a Comissão Nacional de Proteção de Dados (CNPD).
 
-Os pedidos relacionados com o exercício destes direitos poderão ser enviados para [Email de privacidade].
+Os pedidos relacionados com o exercício destes direitos poderão ser enviados para ola@menutap.pt.
 
 O MenuTap poderá solicitar informações adicionais para confirmar a identidade do requerente, quando necessário.
 
@@ -231,7 +237,11 @@ Os cookies estritamente necessários ao funcionamento do website poderão ser ut
 
 Os cookies de análise, publicidade ou outras finalidades não essenciais apenas serão utilizados quando exista uma base legal adequada e, quando exigido, após a obtenção do consentimento do utilizador.
 
-Os utilizadores poderão gerir as suas preferências através das opções disponibilizadas no website e das configurações do respetivo navegador.
+Os utilizadores poderão gerir as suas preferências através das configurações do respetivo navegador. A sessão de login é guardada no armazenamento local do navegador, apenas para manter a conta autenticada.
+
+O website utiliza a análise de visitantes do Lovable, que não utiliza cookies, não guarda nada no dispositivo do visitante, não conserva endereços IP e não identifica os visitantes. Regista as páginas visitadas, a origem da visita, o país, o navegador, o sistema operativo e o tipo de dispositivo, o tempo de permanência, a velocidade de carregamento, erros e os cliques em botões e ligações, para todos os visitantes. Os dados detalhados são conservados durante 90 dias e os resumos diários durante um ano. O Lovable recolhe estes dados por nossa conta; a política de privacidade do Lovable (https://lovable.dev/privacy) explica como os trata.
+
+No início de sessão com Google, os dados de autenticação são partilhados com a Google.
 
 12. Comunicações comerciais
 

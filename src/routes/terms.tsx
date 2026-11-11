@@ -20,7 +20,7 @@ function Terms() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [TERMS_PT]
-    : ["MenuTap provides a digital menu platform through a monthly subscription, with a free trial period.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You can cancel anytime. After the subscription ends, data is preserved for a grace period and access becomes read-only.", "Provisional document — must be reviewed by a lawyer before commercial launch."];
+    : ["MenuTap provides a digital menu platform through a monthly subscription, with a free trial period.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You are contracting with Daniel Gonçalves Tomé, trading as MenuTap. By using the service you accept these terms. You must not misuse it (unlawful use, fraud, spam, IP infringement, malware, probing or scraping). MenuTap retains all IP in the service, which is provided without guarantee of uninterrupted or error-free operation.", "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. Payment, billing, tax, cancellation and refunds are also governed by the Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms).", "You can cancel anytime; refunds follow our 30-day Refund Policy. We may suspend or terminate access for material breach, non-payment, security or fraud risk, or repeated policy violations."];
   return (
     <SitePage>
       <PageIntro title={t("footer.terms")} />
@@ -129,6 +129,8 @@ A subscrição é faturada com a periodicidade indicada no momento da contrataç
 
 O pagamento deverá ser efetuado através dos meios disponibilizados na plataforma;
 
+O nosso processo de encomenda é conduzido pelo nosso revendedor online Paddle.com. A Paddle.com é o Merchant of Record de todas as nossas encomendas. A Paddle presta todo o apoio ao cliente relativo a pagamentos e trata das devoluções. Os pagamentos, a faturação, os impostos, os cancelamentos e os reembolsos regem-se também pelos Termos do Comprador da Paddle (https://www.paddle.com/legal/checkout-buyer-terms);
+
 As condições específicas de cada plano são apresentadas antes da confirmação da subscrição.
 
 O MenuTap poderá alterar os preços ou funcionalidades dos planos, comunicando previamente as alterações aos Clientes com subscrições ativas.
@@ -155,7 +157,7 @@ O cancelamento impede a renovação dos períodos seguintes;
 
 O acesso às funcionalidades pagas mantém-se até ao final do período já pago;
 
-Não são efetuados reembolsos proporcionais por períodos parcialmente utilizados, exceto quando legalmente exigido.
+Os reembolsos regem-se pela nossa Política de Reembolso (https://menutap.pt/refund), que prevê uma garantia de reembolso de 30 dias.
 
 Após o cancelamento, o MenuTap poderá eliminar ou anonimizar os dados associados à conta, respeitando os prazos de conservação legalmente aplicáveis e as condições da Política de Privacidade.
 

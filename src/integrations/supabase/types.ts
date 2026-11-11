@@ -868,6 +868,19 @@ export type Database = {
     }
     Functions: {
       account_login_email: { Args: { _username: string }; Returns: string }
+      admin_owner_info: {
+        Args: { _user_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          last_sign_in_at: string
+          username: string
+        }[]
+      }
+      admin_set_trial_end: {
+        Args: { _ends: string; _restaurant_id: string }
+        Returns: undefined
+      }
       dish_rating_summary: {
         Args: { _restaurant_id: string }
         Returns: {

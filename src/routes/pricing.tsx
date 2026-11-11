@@ -40,7 +40,7 @@ function Pricing() {
               <div key={p.priceId} className="rounded-md border p-5">
                 <p className="font-display text-4xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-base text-muted-foreground">{t("pricing.per")}</span></p>
                 <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
-                <p className="mt-3 text-sm font-medium">{t("plans.n").replace("{n}", String(p.identifiers))}</p>
+                <p className="mt-3 text-sm font-medium">{p.name}</p>
               </div>
             ))}
           </div>

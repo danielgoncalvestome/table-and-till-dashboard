@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CreditCard, ExternalLink, Nfc } from "lucide-react";
+import { CreditCard, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPaddleEnvironment, openPlanCheckout } from "@/lib/paddle";
 import { createPortalSession } from "@/utils/payments.functions";
@@ -70,12 +70,12 @@ function Sub() {
       <div className="grid gap-4 md:grid-cols-2">
         <Panel title={t("sub.trial")}>
           {trialEnd ? <p className="text-sm">{t("sub.trialEnds")} <strong>{formatDate(trialEnd, lang)}</strong></p> : <p className="text-sm text-muted-foreground">{t("sub.trialNot")}</p>}
-          {sub && <p className="mt-3 text-sm">{t((`sub.${sub.status}` in { "sub.active": 1, "sub.trialing": 1, "sub.past_due": 1, "sub.canceled": 1, "sub.paused": 1 } ? `sub.${sub.status}` : "sub.none") as Parameters<typeof t>[0])}{current && <> · {t("plans.n").replace("{n}", String(current.identifiers))}</>}</p>}
+          {sub && <p className="mt-3 text-sm">{t((`sub.${sub.status}` in { "sub.active": 1, "sub.trialing": 1, "sub.past_due": 1, "sub.canceled": 1, "sub.paused": 1 } ? `sub.${sub.status}` : "sub.none") as Parameters<typeof t>[0])}{current && <> · {current.name}</>}</p>}
           {sub?.cancel_at_period_end && sub.current_period_end && <p className="mt-3 text-sm">{t("sub.cancels")} {formatDate(sub.current_period_end, lang)}</p>}
           {owner && running && <Button className="mt-5" variant="outline" disabled={!!busy} onClick={manage}><ExternalLink />{busy === "portal" ? t("common.loading") : t("sub.manage")}</Button>}
         </Panel>
         <Panel title={t("dash.cards")}>
-          <p className="flex gap-2 text-sm"><Nfc className="h-4 w-4 shrink-0 text-primary" />{t("plans.free")}</p>
+          <p className="flex gap-2 text-sm"><CreditCard className="h-4 w-4 shrink-0 text-primary" />{t("plans.free")}</p>
           <p className="mt-2 text-sm text-muted-foreground">{t("plans.more")}</p>
           <p className="mt-3 text-xs text-muted-foreground">{t("sub.keep")}</p>
         </Panel>
@@ -85,7 +85,7 @@ function Sub() {
           <div key={p.priceId} className={`rounded-md border bg-card p-5 ${current?.priceId === p.priceId && running ? "border-primary" : ""}`}>
             <p className="font-display text-3xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-sm text-muted-foreground">{t("pricing.per")}</span></p>
             <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
-            <p className="mt-3 text-sm font-medium">{t("plans.n").replace("{n}", String(p.identifiers))}</p>
+            <p className="mt-3 text-sm font-medium">{p.name}</p>
             {owner && (current?.priceId === p.priceId && running
               ? <p className="mt-4 text-sm text-primary">{t("plans.current")}</p>
               : !running && <Button className="mt-4 w-full" disabled={!!busy || !environment || !published} onClick={() => buy(p.priceId)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.choose")}</Button>)}

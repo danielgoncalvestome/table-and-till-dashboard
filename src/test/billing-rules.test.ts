@@ -6,8 +6,8 @@ describe('account subscription rules',()=>{
     expect(hasPaidAccess('canceled','2026-11-20T17:00:00Z',now)).toBe(true);
     expect(hasPaidAccess('canceled','2026-11-10T17:00:00Z',now)).toBe(false);
   });
-  it('has the four agreed plans with included identifiers',()=>{
-    expect(PLANS.map(p=>[p.cents,p.identifiers])).toEqual([[990,4],[1790,6],[2490,9],[3990,16]]);
+  it('has the four agreed plans with tier names',()=>{
+    expect(PLANS.map(p=>[p.cents,p.name])).toEqual([[990,'Base'],[1790,'Pro'],[2490,'Business'],[3990,'Enterprise']]);
   });
   it('never treats missing or test payment configuration as live',()=>{
     expect(paymentEnvironment(undefined)).toBeNull();

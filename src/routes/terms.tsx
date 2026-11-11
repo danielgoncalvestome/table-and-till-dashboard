@@ -103,17 +103,17 @@ O MenuTap disponibiliza ferramentas de publicação e gestão de informação, n
 
 5. Menus digitais, QR Code e NFC
 
-Os menus digitais são disponibilizados através de endereços eletrónicos próprios, que poderão ser associados a códigos QR ou dispositivos NFC.
+Os menus digitais são disponibilizados através de endereços eletrónicos próprios, que poderão ser associados a códigos QR ou etiquetas NFC.
 
 O Cliente reconhece que:
 
 O funcionamento do menu depende da disponibilidade da plataforma e de uma ligação à Internet por parte do visitante;
 
-Os dispositivos NFC e os códigos QR funcionam como meios de acesso ao endereço do menu;
+As etiquetas NFC e os códigos QR funcionam como meios de acesso ao endereço do menu;
 
 O MenuTap não garante a compatibilidade com todos os dispositivos móveis existentes;
 
-A alteração dos conteúdos do menu não exige necessariamente a substituição do código QR ou dispositivo NFC, desde que seja mantido o mesmo endereço eletrónico.
+A alteração dos conteúdos do menu não exige necessariamente a substituição do código QR ou etiqueta NFC, desde que seja mantido o mesmo endereço eletrónico.
 
 O Cliente é responsável pela correta instalação e utilização dos materiais físicos fornecidos ou adquiridos.
 

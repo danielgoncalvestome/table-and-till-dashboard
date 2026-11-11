@@ -139,12 +139,6 @@ function PublicMenu() {
             </div>
           </div>
           {r.description && <p className="mt-3 max-w-2xl text-sm opacity-80">{tr(r.description, r.description_i18n, lang)}</p>}
-          <div className="mt-4 flex items-center gap-2">
-            {r.phone && <a href={`tel:${r.phone}`} aria-label={u.call} onClick={() => track(r.id, "call_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><Phone className="h-4 w-4" /></a>}
-            {r.instagram_url && <a href={r.instagram_url} target="_blank" rel="noreferrer" aria-label="Instagram" onClick={() => track(r.id, "instagram_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><Instagram className="h-4 w-4" /></a>}
-            {r.google_reviews_url && <a href={r.google_reviews_url} target="_blank" rel="noreferrer" aria-label={u.reviews} onClick={() => track(r.id, "reviews_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><GoogleG /></a>}
-            <button aria-label={u.search} onClick={() => setSearchOpen(!searchOpen)} className="ml-auto grid h-9 w-9 place-items-center rounded-full"><Search className="h-4 w-4" /></button>
-          </div>
           {searchOpen && (
             <div className="mt-3 flex items-center gap-2 border-b border-[var(--m-primary)]/30 pb-2">
               <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={u.search} className="flex-1 bg-transparent text-sm outline-none placeholder:opacity-50" />
@@ -154,15 +148,21 @@ function PublicMenu() {
         </div>
       </header>
 
-      {data.menus.length > 1 && (
-        <div className="mx-auto mt-5 flex max-w-4xl gap-2 overflow-x-auto px-5">
+      <div className="mx-auto mt-5 flex max-w-4xl items-center gap-2 px-5">
+        <button aria-label={u.search} onClick={() => setSearchOpen(!searchOpen)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full"><Search className="h-4 w-4" /></button>
+        <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto">
           {data.menus.map((m) => (
             <button key={m.id} onClick={() => setMenuId(m.id)} className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs ${activeMenu?.id === m.id ? "border-[var(--m-primary)] bg-[var(--m-primary)] text-[var(--m-bg)]" : "border-[var(--m-primary)]/30"}`}>
               {tr(m.name, m.name_i18n, lang)}
             </button>
           ))}
         </div>
-      )}
+        <div className="flex shrink-0 items-center gap-2">
+          {r.phone && <a href={`tel:${r.phone}`} aria-label={u.call} onClick={() => track(r.id, "call_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><Phone className="h-4 w-4" /></a>}
+          {r.instagram_url && <a href={r.instagram_url} target="_blank" rel="noreferrer" aria-label="Instagram" onClick={() => track(r.id, "instagram_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><Instagram className="h-4 w-4" /></a>}
+          {r.google_reviews_url && <a href={r.google_reviews_url} target="_blank" rel="noreferrer" aria-label={u.reviews} onClick={() => track(r.id, "reviews_click")} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--m-primary)]/30"><GoogleG /></a>}
+        </div>
+      </div>
 
       <nav style={{ top: r.logo_url ? HERO_H : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl gap-5 overflow-x-auto px-5 py-3 text-xs font-semibold uppercase tracking-wider">

@@ -8,7 +8,7 @@ export function useAdminAlerts(enabled: boolean) {
     enabled,
     refetchInterval: 60_000,
     queryFn: async () => {
-      const [m, o] = await Promise.all([
+      const [m] = await Promise.all([
         supabase.from("contact_submissions").select("id", { count: "exact", head: true }).eq("read", false),
       ]);
       return { messages: m.count ?? 0, orders: 0 };

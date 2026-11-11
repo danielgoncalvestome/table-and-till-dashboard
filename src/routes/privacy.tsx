@@ -20,7 +20,7 @@ function Privacy() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [PRIVACY_PT]
-    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at ola@menutap.pt.", "The data controller is Daniel Gonçalves Tomé, trading as MenuTap. Payments, subscriptions, invoicing and tax compliance are handled by Paddle.com, our Merchant of Record, which receives the data needed for those purposes.", "We also use service providers (hosting, authentication, cookieless Lovable visitor analytics), professional advisers and authorities where required by law. Data is never sold. You have the rights of access, rectification, erasure, restriction, portability, objection and complaint to the CNPD."];
+    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at danielgoncalvestome+menutap@gmail.com.", "The data controller is Daniel Gonçalves Tomé, trading as MenuTap. Payments, subscriptions, invoicing and tax compliance are handled by Paddle.com, our Merchant of Record, which receives the data needed for those purposes.", "We also use service providers (hosting, authentication, cookieless Lovable visitor analytics), professional advisers and authorities where required by law. Data is never sold. You have the rights of access, rectification, erasure, restriction, portability, objection and complaint to the CNPD."];
   return (
     <SitePage>
       <PageIntro title={t("footer.privacy")} />
@@ -225,7 +225,7 @@ Direito de apresentar reclamação junto da autoridade de controlo competente.
 
 Em Portugal, a autoridade de controlo é a Comissão Nacional de Proteção de Dados (CNPD).
 
-Os pedidos relacionados com o exercício destes direitos poderão ser enviados para ola@menutap.pt.
+Os pedidos relacionados com o exercício destes direitos poderão ser enviados para danielgoncalvestome+menutap@gmail.com.
 
 O MenuTap poderá solicitar informações adicionais para confirmar a identidade do requerente, quando necessário.
 

@@ -105,7 +105,7 @@ export function SiteFooter() {
           <Link to="/privacy">{t("footer.privacy")}</Link>
           <Link to="/terms">{t("footer.terms")}</Link>
           <Link to="/refund">{t("footer.refund")}</Link>
-          <a href="mailto:ola@menutap.pt">{"\n"}</a>
+          <a href="mailto:danielgoncalvestome+menutap@gmail.com">{"\n"}</a>
         </div>
       </div>
       <div className="mx-auto max-w-6xl px-5 pb-8 text-xs opacity-60">© {new Date().getFullYear()} MenuTap. {t("footer.rights")}</div>

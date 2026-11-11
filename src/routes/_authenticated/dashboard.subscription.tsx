@@ -77,6 +77,7 @@ function Sub() {
         <Panel title={t("dash.cards")}>
           <p className="flex gap-2 text-sm"><CreditCard className="h-4 w-4 shrink-0 text-primary" />{t("plans.free")}</p>
           <p className="mt-2 text-sm text-muted-foreground">{t("plans.more")}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{t("plans.digital")}</p>
           <p className="mt-3 text-xs text-muted-foreground">{t("sub.keep")}</p>
         </Panel>
       </div>
@@ -86,6 +87,7 @@ function Sub() {
             <p className="font-display text-3xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-sm text-muted-foreground">{t("pricing.per")}</span></p>
             <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
             <p className="mt-3 text-sm font-medium">{p.name}</p>
+                <p className="text-xs text-muted-foreground">{t("plans.devices").replace("{n}", String(p.devices))}</p>
             {owner && (current?.priceId === p.priceId && running
               ? <p className="mt-4 text-sm text-primary">{t("plans.current")}</p>
               : !running && <Button className="mt-4 w-full" disabled={!!busy || !environment || !published} onClick={() => buy(p.priceId)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.choose")}</Button>)}

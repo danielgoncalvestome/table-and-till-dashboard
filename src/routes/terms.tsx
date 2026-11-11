@@ -20,7 +20,7 @@ function Terms() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [TERMS_PT]
-    : ["MenuTap provides a digital menu platform through a monthly subscription, with a free trial period.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You are contracting with Daniel Gonçalves Tomé, trading as MenuTap. By using the service you accept these terms. You must not misuse it (unlawful use, fraud, spam, IP infringement, malware, probing or scraping). MenuTap retains all IP in the service, which is provided without guarantee of uninterrupted or error-free operation.", "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. Payment, billing, tax, cancellation and refunds are also governed by the Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms).", "You can cancel anytime; refunds follow our 14-day Refund Policy. We may suspend or terminate access for material breach, non-payment, security or fraud risk, or repeated policy violations."];
+    : ["MenuTap provides a purely digital menu platform (software as a service) through a monthly subscription, with a free trial period. No subscription includes, supplies or ships any physical goods, devices, cards or tags; each plan only sets the maximum number of compatible customer-owned devices that can be linked to the menu.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You are contracting with Daniel Gonçalves Tomé, trading as MenuTap. By using the service you accept these terms. You must not misuse it (unlawful use, fraud, spam, IP infringement, malware, probing or scraping). MenuTap retains all IP in the service, which is provided without guarantee of uninterrupted or error-free operation.", "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. Payment, billing, tax, cancellation and refunds are also governed by the Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms).", "You can cancel anytime; refunds follow our 14-day Refund Policy. We may suspend or terminate access for material breach, non-payment, security or fraud risk, or repeated policy violations."];
   return (
     <SitePage>
       <PageIntro title={t("footer.terms")} />
@@ -37,7 +37,7 @@ const TERMS_PT = `Termos e Condições de Utilização — MenuTap
 
 O presente website e a plataforma MenuTap são operados por:
 
-Titular: MenuTap 
+Titular: Daniel Gonçalves Tomé, sob a designação comercial MenuTap
 ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração. 
 Website: https://menutap.pt
 
@@ -115,7 +115,7 @@ O MenuTap não garante a compatibilidade com todos os dispositivos móveis exist
 
 A alteração dos conteúdos do menu não exige necessariamente a substituição do código QR ou etiqueta NFC, desde que seja mantido o mesmo endereço eletrónico.
 
-O Cliente é responsável pela correta instalação e utilização dos materiais físicos fornecidos ou adquiridos.
+O MenuTap é um serviço exclusivamente digital (Software as a Service). Nenhuma subscrição inclui, fornece ou envia qualquer bem físico, dispositivo, cartão ou etiqueta. O Cliente gera os links e códigos QR na plataforma e utiliza, por sua conta, os seus próprios suportes compatíveis. Cada plano define apenas o número máximo de dispositivos compatíveis que o Cliente pode associar ao seu menu.
 
 6. Planos, preços e pagamentos
 

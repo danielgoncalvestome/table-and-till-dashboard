@@ -10,8 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { audit, useIsAdmin } from "@/lib/restaurant";
 import { formatDate } from "@/lib/menu";
-import { getStripeEnvironment } from "@/lib/stripe";
-import { applyMonthlyPriceToSubscriptions } from "@/utils/payments.functions";
+import { planByPrice } from "@/lib/billing-rules";
 import { Bell } from "lucide-react";
 import { AlertDot, useAdminAlerts } from "@/hooks/use-admin-alerts";
 
@@ -27,9 +26,10 @@ function Admin() {
   const { data: s } = useQuery({ queryKey: ["platform_settings"], queryFn: async () => (await supabase.from("platform_settings").select("*").eq("id", 1).single()).data, enabled: !!isAdmin });
   const { data: rs } = useQuery({ queryKey: ["admin-restaurants"], queryFn: async () => (await supabase.from("restaurants").select("*").order("created_at", { ascending: false })).data ?? [], enabled: !!isAdmin });
   const { data: logs } = useQuery({ queryKey: ["admin-audit"], queryFn: async () => (await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(30)).data ?? [], enabled: !!isAdmin });
+  const { data: subs } = useQuery({ queryKey: ["admin-subs"], queryFn: async () => (await supabase.from("account_subscriptions").select("*").not("paddle_subscription_id","is",null).order("created_at", { ascending: false })).data ?? [], enabled: !!isAdmin });
   const { data: al } = useAdminAlerts(!!isAdmin);
-  const [f, setF] = useState({ monthly_price_cents: 990, trial_days: 10 });
-  useEffect(() => { if (s) setF({ monthly_price_cents: s.monthly_price_cents, trial_days: s.trial_days }); }, [s]);
+  const [f, setF] = useState({ trial_days: 10 });
+  useEffect(() => { if (s) setF({ trial_days: s.trial_days }); }, [s]);
 
   if (isLoading) return null;
   if (!isAdmin) return <div className="p-10 text-center"><p>403</p><Link to="/dashboard" className="text-primary underline">{t("nav.dashboard")}</Link></div>;
@@ -49,13 +49,15 @@ function Admin() {
   return (
     <div className="mx-auto max-w-6xl p-8">
       <Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link>
-      <PageTitle title={t("admin.title")} action={<div className="flex items-center gap-2">{!!al && al.messages + al.orders > 0 && <span className="relative mr-1" title="Alertas"><Bell className="h-5 w-5 text-destructive" /><span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-destructive" /></span>}<Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}<AlertDot n={al?.messages ?? 0} /></Link><Link to="/admin/products" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.shop")}<AlertDot n={al?.orders ?? 0} /></Link></div>} />
+      <PageTitle title={t("admin.title")} action={<div className="flex items-center gap-2">{!!al && al.messages + al.orders > 0 && <span className="relative mr-1" title="Alertas"><Bell className="h-5 w-5 text-destructive" /><span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-destructive" /></span>}<Link to="/admin/messages" className="rounded-md border px-4 py-2 text-sm hover:bg-muted">{t("admin.messages")}<AlertDot n={al?.messages ?? 0} /></Link></div>} />
       <Panel>
         <div className="grid items-end gap-4 md:grid-cols-3">
-          <div><Label>{t("admin.price")}</Label><Input type="number" min={0} value={f.monthly_price_cents} onChange={(e) => setF({ ...f, monthly_price_cents: Number(e.target.value) })} /></div>
-          <div><Label>{t("admin.trial")}</Label><Input type="number" min={0} value={f.trial_days} onChange={(e) => setF({ ...f, trial_days: Number(e.target.value) })} /></div>
+                    <div><Label>{t("admin.trial")}</Label><Input type="number" min={0} value={f.trial_days} onChange={(e) => setF({ ...f, trial_days: Number(e.target.value) })} /></div>
           <Button onClick={save}>{t("common.save")}</Button>
         </div>
+      </Panel>
+      <Panel title={t("admin.subs")} className="mt-4">
+        <ul className="divide-y text-sm">{subs?.map((x) => { const r = rs?.find((y) => y.created_by === x.user_id); return <li key={x.id} className="flex justify-between py-2"><span>{r?.name ?? x.user_id.slice(0, 8)} · {planByPrice(x.price_id)?.identifiers ?? "?"} {t("plans.ids")}</span><span className="text-muted-foreground">{x.environment === "sandbox" ? "teste · " : ""}{x.status} · {formatDate(x.created_at, lang)}</span></li>; })}</ul>
       </Panel>
       <Panel title={t("admin.restaurants")} className="mt-4">
         <ul className="divide-y text-sm">{rs?.map((r) => <li key={r.id} className="flex justify-between py-2"><a href={`/r/${r.slug}`} target="_blank" rel="noreferrer">{r.name}</a><span className="text-muted-foreground">{r.status} · {r.published ? "✓" : "—"} · {formatDate(r.created_at, lang)}</span></li>)}</ul>

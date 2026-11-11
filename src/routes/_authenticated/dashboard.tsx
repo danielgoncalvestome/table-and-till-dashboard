@@ -54,7 +54,6 @@ function DashboardLayout() {
     { to: "/dashboard/design", icon: Palette, label: t("dash.design") },
     { to: "/dashboard/qr", icon: QrCode, label: t("dash.qr") },
     { to: "/dashboard/team", icon: Users, label: t("dash.team") },
-    { to: "/dashboard/cards", icon: Nfc, label: t("dash.cards") },
     { to: "/dashboard/subscription", icon: CreditCard, label: t("dash.sub") },
     { to: "/dashboard/settings", icon: Settings, label: t("dash.settings") },
     { to: "/dashboard/help", icon: LifeBuoy, label: t("dash.help") },

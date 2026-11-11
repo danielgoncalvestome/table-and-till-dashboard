@@ -10,9 +10,8 @@ export function useAdminAlerts(enabled: boolean) {
     queryFn: async () => {
       const [m, o] = await Promise.all([
         supabase.from("contact_submissions").select("id", { count: "exact", head: true }).eq("read", false),
-        supabase.from("shop_orders").select("id", { count: "exact", head: true }).eq("status", "paid"),
       ]);
-      return { messages: m.count ?? 0, orders: o.count ?? 0 };
+      return { messages: m.count ?? 0, orders: 0 };
     },
   });
 }

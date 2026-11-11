@@ -35,7 +35,7 @@ const RCtx = createContext<Ctx | null>(null);
 
 export function RestaurantProvider({ restaurant, children }: { restaurant: Restaurant & { role: string }; children: ReactNode }) {
   const qc = useQueryClient();
-  return <RCtx.Provider value={{ restaurant, refresh: () => qc.invalidateQueries({ queryKey: ["my-restaurants"] }) }}>{children}</RCtx.Provider>;
+  return <RCtx.Provider value={{ restaurant, refresh: () => { qc.invalidateQueries({ queryKey: ["my-restaurants"] }); qc.invalidateQueries({ queryKey: ["admin-managed"] }); } }}>{children}</RCtx.Provider>;
 }
 
 export function useRestaurant() {

@@ -25,7 +25,7 @@ const C = {
     h1a: "O seu menu digital. Simples, elegante e", h1b: "sempre atualizado.",
     sub: "Crie o seu menu online e partilhe-o por QR code e NFC. Os clientes leem o QR code ou encostam o telemóvel, por NFC, e abrem o menu num segundo — sem app, sem registo, sem complicações",
     start: "Começar gratuitamente", seeFeatures: "Funcionalidades", addr: "O seu endereço, para sempre:",
-    ideaEy: "A ideia por trás do MenuTap", ideaT: "Um identificador fixo.\u00a0Um menu sempre vivo.",
+    ideaEy: "A ideia por trás do MenuTap", ideaT: "Um link fixo.\u00a0Um menu sempre vivo.",
     ideaD: "Cada espaço recebe um link próprio —\u00a0coloque o QR ou a etiqueta NFC na mesa, no balcão ou na parede — e é por trás dele que o menu muda sempre que precisar.",
     ideas: [["Mudou um preço?", "Já está no menu dos clientes.\u00a0"], ["Acabou o polvo?", "Marque o prato como indisponível e o menu público reflete-o de imediato, sem recarregar a página."], ["Novo menu de jantar?", "Crie-o no painel. Sem regravar etiquetas NFC, sem reimprimir QR, sem refazer a carta."]],
     howEy: "Como funciona", howT: "Do primeiro prato à primeira mesa, em seis passos simples.",

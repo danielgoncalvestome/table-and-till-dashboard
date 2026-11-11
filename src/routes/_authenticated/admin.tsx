@@ -39,11 +39,6 @@ function Admin() {
     if (error) return toast.error(t("common.error"));
     await audit("platform.settings", null, f);
     toast.success(t("common.saved"));
-    const environment = getStripeEnvironment();
-    if (environment && s && s.monthly_price_cents !== f.monthly_price_cents) {
-      const r = await applyMonthlyPriceToSubscriptions({ data: { environment } });
-      if ("error" in r) toast.error(r.error); else toast.success(t("admin.priceApplied").replace("{n}", String(r.updated)));
-    }
     qc.invalidateQueries({ queryKey: ["platform_settings"] });
   }
   return (

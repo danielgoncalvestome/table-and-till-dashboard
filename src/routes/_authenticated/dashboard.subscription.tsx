@@ -76,7 +76,6 @@ function Sub() {
         </Panel>
         <Panel title={t("dash.cards")}>
           <p className="flex gap-2 text-sm"><Nfc className="h-4 w-4 shrink-0 text-primary" />{t("plans.free")}</p>
-          <p className="mt-2 text-sm">{t("plans.base")}</p>
           <p className="mt-2 text-sm text-muted-foreground">{t("plans.more")}</p>
           <p className="mt-3 text-xs text-muted-foreground">{t("sub.keep")}</p>
         </Panel>

@@ -81,7 +81,7 @@ Manter atualizados os dados associados à conta;
 
 Comunicar qualquer utilização não autorizada de que tenha conhecimento.
 
-O MenuTap reserva-se o direito de suspender ou limitar contas em caso de utilização abusiva, fraudulenta ou contrária aos presentes termos.
+O MenuTap reserva-se o direito de suspender ou limitar contas em caso de incumprimento grave destes termos, falta de pagamento, risco de segurança ou fraude, ou violações repetidas ou graves das regras de utilização.
 
 4. Utilização da plataforma
 

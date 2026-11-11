@@ -36,4 +36,4 @@ use the editor.
 - UI strings live in src/lib/i18n.tsx (pt default, en); restaurant content translations live in `*_i18n` jsonb columns. Why: keep interface and menu translations separate.
 - Payments use Paddle via the gateway utility in paddle.server.ts, overlay checkout with customData.userId, and a signature-verified public webhook; account_subscriptions stores environment-scoped billing and plans live in billing-rules PLANS. Why: Merchant of Record handles tax, and test payments must never grant live access.
 - Public menu access is checked by restaurant_billing_access through RLS, while members retain draft and expired-menu read access. Why: enforce expiry without deleting restaurant content.
-- No physical goods anywhere: plans differ only by the number of compatible devices supported; never mention shipping, offering or selling devices. Why: Paddle rejects products that include physical goods.
+- No physical goods anywhere: plans differ only by tier name (Base, Pro, Business, Enterprise); never mention devices, shipping or selling goods. Why: Paddle rejects products that include physical goods.

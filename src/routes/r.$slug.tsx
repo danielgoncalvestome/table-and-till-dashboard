@@ -8,6 +8,9 @@ import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, label
 import logoDark from "@/assets/menutap-logo.png.asset.json";
 import logoLight from "@/assets/menutap-logo-light.png.asset.json";
 
+const HERO_MAX = 200;
+const HERO_MIN = 64;
+
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params }) => ({
     meta: [
@@ -59,6 +62,9 @@ function PublicMenu() {
   const { data, isLoading } = useQuery({ queryKey: ["public-menu", slug], queryFn: () => loadMenu(slug), refetchInterval: 60_000 });
   const [lang, setLang] = useState<Lang>("pt");
   const [menuId, setMenuId] = useState<string | null>(null);
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => { const f = () => setScrollY(window.scrollY); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
+  const heroH = Math.round(HERO_MAX - (HERO_MAX - HERO_MIN) * Math.min(scrollY / 160, 1));
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Dish | null>(null);
@@ -117,17 +123,18 @@ function PublicMenu() {
   return (
     <div style={style} className="min-h-screen bg-[var(--m-bg)] text-[var(--m-primary)]">
       {r.is_demo && <div className="bg-[var(--m-primary)] py-1.5 text-center text-xs text-[var(--m-bg)]">{u.demo}</div>}
+      {r.logo_url && (
+        <div className="sticky top-0 z-20 flex items-center justify-center overflow-hidden bg-cover bg-center transition-[height] duration-150 ease-out"
+          style={{ height: heroH, backgroundImage: r.cover_url ? `url(${r.cover_url})` : undefined, backgroundColor: r.cover_url ? undefined : (r.cover_color ?? "var(--m-bg)") }}>
+          <img src={r.logo_url} alt={r.name} className="w-auto max-w-[80%] object-contain transition-[height] duration-150 ease-out" style={{ height: heroH - 24 }} />
+        </div>
+      )}
       <header>
-        {r.cover_url && <img src={r.cover_url} alt="" className="h-48 w-full object-cover md:h-72" />}
+        {!r.logo_url && r.cover_url && <img src={r.cover_url} alt="" className="h-48 w-full object-cover md:h-72" />}
+        {!r.logo_url && !r.cover_url && r.cover_color && <div className="h-24 w-full" style={{ background: r.cover_color }} />}
         <div className="mx-auto max-w-4xl px-5 pt-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              {r.logo_url && <img src={r.logo_url} alt="" className="h-14 w-14 rounded-full border object-cover" />}
-              <div>
-                <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--m-font)" }}>{r.name}</h1>
-                {r.address && <p className="mt-1 flex items-center gap-1 text-xs opacity-70"><MapPin className="h-3 w-3" />{r.address}</p>}
-              </div>
-            </div>
+          <div className={`flex items-start gap-4 ${r.logo_url ? "justify-end" : "justify-between"}`}>
+            {!r.logo_url && <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--m-font)" }}>{r.name}</h1>}
             <div className="flex shrink-0 items-center gap-1 text-xs font-semibold">
               {r.languages.filter((l) => l === "pt" || l === "en").map((l, i) => (
                 <span key={l}>{i > 0 && <span className="opacity-40"> | </span>}<button onClick={() => changeLang(l as Lang)} className={lang === l ? "underline underline-offset-4" : "opacity-50"}>{l.toUpperCase()}</button></span>
@@ -160,7 +167,7 @@ function PublicMenu() {
         </div>
       )}
 
-      <nav className="sticky top-0 z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
+      <nav style={{ top: r.logo_url ? HERO_MIN : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl gap-5 overflow-x-auto px-5 py-3 text-xs font-semibold uppercase tracking-wider">
           {cats.map((c) => (
             <a key={c.id} href={`#c-${c.id}`} onClick={() => track(r.id, "category_view", { category_id: c.id, lang })} className="whitespace-nowrap opacity-70 hover:opacity-100">{tr(c.name, c.name_i18n, lang)}</a>
@@ -211,8 +218,9 @@ function PublicMenu() {
         })}
         {ql && cats.every((c) => dishesOf(c.id).length === 0) && <p className="pt-10 text-center text-sm opacity-60">{u.none}</p>}
 
-        {(r.opening_hours || r.phone || r.email) && (
+        {(r.opening_hours || r.phone || r.email || r.address) && (
           <footer className="mt-16 border-t border-[var(--m-primary)]/15 pt-6 text-sm opacity-80">
+            {r.address && <p className="mb-1 flex items-center gap-2"><MapPin className="h-4 w-4" />{r.address}</p>}
             {r.opening_hours && <p className="flex items-center gap-2"><Clock className="h-4 w-4" />{r.opening_hours}</p>}
             {r.phone && <p className="mt-1">{r.phone}</p>}
             {r.email && <p className="mt-1">{r.email}</p>}

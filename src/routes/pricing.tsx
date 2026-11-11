@@ -41,10 +41,12 @@ function Pricing() {
                 <p className="font-display text-4xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-base text-muted-foreground">{t("pricing.per")}</span></p>
                 <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
                 <p className="mt-3 text-sm font-medium">{p.name}</p>
+                <p className="text-xs text-muted-foreground">{t("plans.devices").replace("{n}", String(p.devices))}</p>
               </div>
             ))}
           </div>
           <p className="mt-6 rounded bg-muted p-4 text-sm text-muted-foreground">{t("pricing.trial")}</p>
+          <p className="mt-3 text-xs text-muted-foreground">{t("plans.digital")}</p>
           <Button asChild size="lg" className="mt-6 w-full"><Link to="/auth" search={{ mode: "signup" }}>{t("cta.trial")}</Link></Button>
         </div>
       </section>

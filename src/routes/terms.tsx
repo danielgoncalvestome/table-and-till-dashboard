@@ -115,7 +115,7 @@ O MenuTap não garante a compatibilidade com todos os dispositivos móveis exist
 
 A alteração dos conteúdos do menu não exige necessariamente a substituição do código QR ou etiqueta NFC, desde que seja mantido o mesmo endereço eletrónico.
 
-O Cliente é responsável pela correta instalação e utilização dos materiais físicos fornecidos ou adquiridos.
+O MenuTap é um serviço exclusivamente digital (Software as a Service). Nenhuma subscrição inclui, fornece ou envia qualquer bem físico, dispositivo, cartão ou etiqueta. O Cliente gera os links e códigos QR na plataforma e utiliza, por sua conta, os seus próprios suportes compatíveis. Cada plano define apenas o número máximo de dispositivos compatíveis que o Cliente pode associar ao seu menu.
 
 6. Planos, preços e pagamentos
 

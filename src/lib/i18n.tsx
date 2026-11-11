@@ -3,6 +3,24 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type Lang = "pt" | "en";
 
 const pt = {
+  "auth.username": "Username",
+  "auth.identifier": "Username ou email",
+  "auth.usernameHint": "3 a 30 caracteres: letras, números e underscore (_).",
+  "auth.noEmailWarning": "Sem email associado, não poderá recuperar a palavra-passe se a esquecer.",
+  "auth.usernameTaken": "Este username já está em uso. Escolha outro.",
+  "auth.usernameInvalid": "Use 3 a 30 letras, números ou underscore (_).",
+  "auth.credentials": "Username/email ou palavra-passe incorretos.",
+  "account.title": "Conta e segurança",
+  "account.email": "Email da conta",
+  "account.noEmail": "Nenhum email associado",
+  "account.emailPending": "Enviámos um link para o novo email. Confirme-o para concluir a associação.",
+  "account.emailAdd": "Associar email",
+  "account.currentPassword": "Palavra-passe atual",
+  "account.confirmPassword": "Confirmar nova palavra-passe",
+  "account.changePassword": "Alterar palavra-passe",
+  "account.passwordMismatch": "As palavras-passe não coincidem.",
+  "account.invalidRecovery": "Abra o link de recuperação enviado para o seu email.",
+
   "nav.features": "Funcionalidades",
   "nav.how": "Como funciona",
   "nav.pricing": "Subscrever",
@@ -138,6 +156,24 @@ const pt = {
 type Key = keyof typeof pt;
 
 const en: Record<Key, string> = {
+  "auth.username": "Username",
+  "auth.identifier": "Username or email",
+  "auth.usernameHint": "3–30 characters: letters, numbers and underscore (_).",
+  "auth.noEmailWarning": "Without an associated email, you cannot reset a forgotten password.",
+  "auth.usernameTaken": "This username is already taken. Choose another.",
+  "auth.usernameInvalid": "Use 3–30 letters, numbers or underscore (_).",
+  "auth.credentials": "Incorrect username/email or password.",
+  "account.title": "Account and security",
+  "account.email": "Account email",
+  "account.noEmail": "No email associated",
+  "account.emailPending": "We sent a link to the new email. Confirm it to complete the association.",
+  "account.emailAdd": "Associate email",
+  "account.currentPassword": "Current password",
+  "account.confirmPassword": "Confirm new password",
+  "account.changePassword": "Change password",
+  "account.passwordMismatch": "The passwords do not match.",
+  "account.invalidRecovery": "Open the recovery link sent to your email.",
+
   "nav.features": "Features", "nav.how": "How it works", "nav.pricing": "Pricing", "nav.faq": "FAQ",
   "nav.contact": "Contact","nav.login": "Sign in", "nav.dashboard": "Dashboard",
   "cta.trial": "Try it free","cta.start": "Get started",

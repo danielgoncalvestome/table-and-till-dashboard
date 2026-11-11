@@ -8,6 +8,7 @@ describe('account subscription rules',()=>{
   });
   it('has the four agreed plans with tier names',()=>{
     expect(PLANS.map(p=>[p.cents,p.name])).toEqual([[990,'Base'],[1790,'Pro'],[2490,'Business'],[3990,'Enterprise']]);
+    expect(PLANS.map(p=>p.devices)).toEqual([4,6,9,16]);
   });
   it('never treats missing or test payment configuration as live',()=>{
     expect(paymentEnvironment(undefined)).toBeNull();

@@ -23,10 +23,8 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin_.messages'
-import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin_.products'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_authenticated/dashboard.analytics'
-import { Route as AuthenticatedDashboardCardsRouteImport } from './routes/_authenticated/dashboard.cards'
 import { Route as AuthenticatedDashboardDesignRouteImport } from './routes/_authenticated/dashboard.design'
 import { Route as AuthenticatedDashboardHelpRouteImport } from './routes/_authenticated/dashboard.help'
 import { Route as AuthenticatedDashboardMenusRouteImport } from './routes/_authenticated/dashboard.menus'
@@ -107,12 +105,6 @@ const AuthenticatedAdminMessagesRoute =
     path: '/admin/messages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminProductsRoute =
-  AuthenticatedAdminProductsRouteImport.update({
-    id: '/admin_/products',
-    path: '/admin/products',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
@@ -123,12 +115,6 @@ const AuthenticatedDashboardAnalyticsRoute =
   AuthenticatedDashboardAnalyticsRouteImport.update({
     id: '/analytics',
     path: '/analytics',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardCardsRoute =
-  AuthenticatedDashboardCardsRouteImport.update({
-    id: '/cards',
-    path: '/cards',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardDesignRoute =
@@ -200,9 +186,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/r/$slug': typeof RSlugRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
-  '/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
@@ -227,9 +211,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/r/$slug': typeof RSlugRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
-  '/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
@@ -257,9 +239,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/r/$slug': typeof RSlugRoute
   '/_authenticated/admin_/messages': typeof AuthenticatedAdminMessagesRoute
-  '/_authenticated/admin_/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
-  '/_authenticated/dashboard/cards': typeof AuthenticatedDashboardCardsRoute
   '/_authenticated/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/_authenticated/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/_authenticated/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
@@ -287,9 +267,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/r/$slug'
     | '/admin/messages'
-    | '/admin/products'
     | '/dashboard/analytics'
-    | '/dashboard/cards'
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
@@ -314,9 +292,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/r/$slug'
     | '/admin/messages'
-    | '/admin/products'
     | '/dashboard/analytics'
-    | '/dashboard/cards'
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
@@ -343,9 +319,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/r/$slug'
     | '/_authenticated/admin_/messages'
-    | '/_authenticated/admin_/products'
     | '/_authenticated/dashboard/analytics'
-    | '/_authenticated/dashboard/cards'
     | '/_authenticated/dashboard/design'
     | '/_authenticated/dashboard/help'
     | '/_authenticated/dashboard/menus'
@@ -473,13 +447,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin_/products': {
-      id: '/_authenticated/admin_/products'
-      path: '/admin/products'
-      fullPath: '/admin/products'
-      preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
@@ -492,13 +459,6 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/dashboard/analytics'
       preLoaderRoute: typeof AuthenticatedDashboardAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/cards': {
-      id: '/_authenticated/dashboard/cards'
-      path: '/cards'
-      fullPath: '/dashboard/cards'
-      preLoaderRoute: typeof AuthenticatedDashboardCardsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/design': {
@@ -569,7 +529,6 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardAnalyticsRoute: typeof AuthenticatedDashboardAnalyticsRoute
-  AuthenticatedDashboardCardsRoute: typeof AuthenticatedDashboardCardsRoute
   AuthenticatedDashboardDesignRoute: typeof AuthenticatedDashboardDesignRoute
   AuthenticatedDashboardHelpRoute: typeof AuthenticatedDashboardHelpRoute
   AuthenticatedDashboardMenusRoute: typeof AuthenticatedDashboardMenusRoute
@@ -584,7 +543,6 @@ interface AuthenticatedDashboardRouteChildren {
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardAnalyticsRoute: AuthenticatedDashboardAnalyticsRoute,
-    AuthenticatedDashboardCardsRoute: AuthenticatedDashboardCardsRoute,
     AuthenticatedDashboardDesignRoute: AuthenticatedDashboardDesignRoute,
     AuthenticatedDashboardHelpRoute: AuthenticatedDashboardHelpRoute,
     AuthenticatedDashboardMenusRoute: AuthenticatedDashboardMenusRoute,
@@ -607,14 +565,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
-  AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
-  AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

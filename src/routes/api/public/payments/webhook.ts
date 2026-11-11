@@ -1,27 +1,30 @@
 import { createFileRoute } from '@tanstack/react-router';
-export const Route = createFileRoute('/api/public/payments/webhook')({server:{handlers:{POST:async({request})=>{
-  const environment=new URL(request.url).searchParams.get('env');
-  if(environment!=='sandbox' && environment!=='live') return new Response('Invalid environment',{status:400});
-  const {verifyPaymentEvent,syncSubscription}=await import('@/lib/billing.server');
+import type { PaddleEnv } from '@/lib/paddle.server';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function upsert(data: any, env: PaddleEnv) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const item = data.items?.[0];
+  const priceId = item?.price?.importMeta?.externalId;
+  const productId = item?.product?.importMeta?.externalId;
+  const row = { status: data.status, current_period_end: data.currentBillingPeriod?.endsAt ?? null,
+    cancel_at_period_end: data.scheduledChange?.action === 'cancel', updated_at: new Date().toISOString(),
+    ...(priceId && { price_id: priceId }), ...(productId && { product_id: productId }) };
+  const { data: existing } = await supabaseAdmin.from('account_subscriptions').select('id').eq('paddle_subscription_id', data.id).maybeSingle();
+  if (existing) { const { error } = await supabaseAdmin.from('account_subscriptions').update(row).eq('id', existing.id).eq('environment', env); if (error) throw error; return; }
+  const userId = data.customData?.userId;
+  if (!userId || !priceId) { console.warn('Skipping subscription without userId/externalId'); return; }
+  const { error } = await supabaseAdmin.from('account_subscriptions').insert({ ...row, price_id: priceId, user_id: userId, environment: env,
+    paddle_subscription_id: data.id, paddle_customer_id: data.customerId });
+  if (error) throw error;
+}
+export const Route = createFileRoute('/api/public/payments/webhook')({ server: { handlers: { POST: async ({ request }) => {
+  const env = new URL(request.url).searchParams.get('env');
+  if (env !== 'sandbox' && env !== 'live') return new Response('Invalid environment', { status: 400 });
+  const { verifyWebhook, EventName } = await import('@/lib/paddle.server');
   let event;
-  try {event=await verifyPaymentEvent(request,environment);} catch {return new Response('Invalid webhook signature',{status:400});}
+  try { event = await verifyWebhook(request, env); } catch { return new Response('Invalid signature', { status: 400 }); }
   try {
-    const {createStripeClient}=await import('@/lib/stripe.server');
-    const stripe=createStripeClient(environment);
-    if(event.type.startsWith('customer.subscription.')) {
-      const object=event.data.object;
-      if('id' in object && typeof object.id==='string') await syncSubscription(await stripe.subscriptions.retrieve(object.id),environment);
-    } else if(event.type==='checkout.session.completed' || event.type==='checkout.session.async_payment_succeeded') {
-      const session=event.data.object;
-      if(session.mode==='payment' && session.metadata?.orderId) {const {markShopOrder}=await import('@/lib/billing.server');await markShopOrder(session,environment);}
-      if(session.payment_status!=='unpaid' && session.subscription) await syncSubscription(await stripe.subscriptions.retrieve(typeof session.subscription==='string'?session.subscription:session.subscription.id),environment);
-    } else if(event.type==='checkout.session.expired' || event.type==='checkout.session.async_payment_failed') {
-      const session=event.data.object;
-      if(session.mode==='payment') {const {markShopOrderFailed}=await import('@/lib/billing.server');await markShopOrderFailed(session,environment);}
-    } else if(event.type==='invoice.paid' || event.type==='invoice.payment_failed') {
-      const sub=event.data.object.parent?.subscription_details?.subscription;
-      if(sub) await syncSubscription(await stripe.subscriptions.retrieve(typeof sub==='string'?sub:sub.id),environment);
-    }
-    return Response.json({received:true});
-  } catch(error) {console.error('Payment reconciliation failed',error instanceof Error?error.message:'Unknown error');return new Response('Reconciliation failed',{status:500});}
-}}}});
+    if ([EventName.SubscriptionCreated, EventName.SubscriptionUpdated, EventName.SubscriptionCanceled].includes(event.eventType as never)) await upsert(event.data, env);
+    return Response.json({ received: true });
+  } catch (e) { console.error('Webhook error', e instanceof Error ? e.message : e); return new Response('Webhook error', { status: 500 }); }
+} } } });

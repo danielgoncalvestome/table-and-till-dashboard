@@ -889,6 +889,7 @@ export type Database = {
         Returns: undefined
       }
       restaurant_billing_access: { Args: { _id: string }; Returns: boolean }
+      username_available: { Args: { _username: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

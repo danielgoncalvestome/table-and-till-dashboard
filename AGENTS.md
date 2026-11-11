@@ -30,6 +30,8 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Data access is client-side Supabase with RLS (is_member/is_owner helpers); public menu reads rely on anon SELECT policies gated by `published`. Why: one permission model for dashboard and public menus.
+- Username identities use a unique normalized profiles field and synthetic auth emails; username login resolves the current email only server-side and returns a session only after password verification. Why: preserve username login after email association without exposing account emails.
+- Account credentials are managed in a reusable dashboard settings form, separately from restaurant contact details; synthetic emails never reach Stripe. Why: account identity and billing must not use placeholder contact addresses.
 - Menu images go to the private `menu-images` bucket (public buckets are blocked) and are stored as 10-year signed URLs. Why: public menus need anonymous image access.
 - UI strings live in src/lib/i18n.tsx (pt default, en); restaurant content translations live in `*_i18n` jsonb columns. Why: keep interface and menu translations separate.
 - Stripe uses the gateway utility in stripe.server.ts, authenticated server functions, and signature-verified public webhooks; account_subscriptions stores environment-scoped account billing. Why: prevent leaked credentials, duplicate billing and test payments granting live access.

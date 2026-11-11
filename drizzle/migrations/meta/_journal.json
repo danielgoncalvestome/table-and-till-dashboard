@@ -64,6 +64,13 @@
       "when": 1794359438724,
       "tag": "0008_unique_account_usernames",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794359464961,
+      "tag": "0009_username_availability",
+      "breakpoints": true
     }
   ]
 }

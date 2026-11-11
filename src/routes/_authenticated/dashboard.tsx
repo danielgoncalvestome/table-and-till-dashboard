@@ -67,7 +67,7 @@ function DashboardLayout() {
 
   const sidebar = (
     <aside className="flex h-full flex-col gap-1 bg-sidebar p-4">
-      <div className="mb-4 px-2"><Logo /></div>
+      <div className="mb-4 px-2">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-12 w-auto max-w-full object-contain" /> : <Logo />}</div>
       {list.length > 1 && (
         <select className="mb-3 rounded border bg-card px-2 py-1.5 text-sm" value={current.id} onChange={(e) => { localStorage.setItem("mt-current-restaurant", e.target.value); setCurrentId(e.target.value); }}>
           {list.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}

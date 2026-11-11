@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/design")({ head:
 function Design() {
   const { t, lang } = useI18n();
   const { restaurant: r, refresh } = useRestaurant();
-  const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "" });
+  const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "" });
   const [busy, setBusy] = useState(false);
 
   async function up(k: "logo_url" | "cover_url", file?: File) {
@@ -23,7 +23,7 @@ function Design() {
     try { setBusy(true); const url = await uploadImage(r.id, file); setF((p) => ({ ...p, [k]: url })); } catch { toast.error(t("common.error")); } finally { setBusy(false); }
   }
   async function save() {
-    const { error } = await supabase.from("restaurants").update({ ...f, logo_url: f.logo_url || null, cover_url: f.cover_url || null }).eq("id", r.id);
+    const { error } = await supabase.from("restaurants").update({ ...f, logo_url: f.logo_url || null, cover_url: f.cover_url || null, cover_color: f.cover_color || null }).eq("id", r.id);
     if (error) return toast.error(t("common.error"));
     toast.success(t("common.saved")); refresh();
   }
@@ -55,15 +55,28 @@ function Design() {
           </Panel>
           <Panel>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div><Label>{t("f.logo")}</Label>{f.logo_url && <img src={f.logo_url} alt="" className="my-2 h-16 w-16 rounded-full object-cover" />}<Input type="file" accept="image/*" onChange={(e) => up("logo_url", e.target.files?.[0])} /></div>
-              <div><Label>{t("f.cover")}</Label>{f.cover_url && <img src={f.cover_url} alt="" className="my-2 h-16 w-full rounded object-cover" />}<Input type="file" accept="image/*" onChange={(e) => up("cover_url", e.target.files?.[0])} /></div>
+              <div><Label>{t("f.logo")}</Label>{f.logo_url && <img src={f.logo_url} alt="" className="my-2 h-16 w-auto max-w-full object-contain" />}<Input type="file" accept="image/*" onChange={(e) => up("logo_url", e.target.files?.[0])} /></div>
+              <div><Label>{t("f.cover")}</Label>{f.cover_url && <img src={f.cover_url} alt="" className="my-2 h-16 w-full rounded object-cover" />}<Input type="file" accept="image/*" onChange={(e) => up("cover_url", e.target.files?.[0])} />{f.cover_url && <button type="button" onClick={() => setF({ ...f, cover_url: "" })} className="mt-1 text-xs text-muted-foreground underline">{lang === "pt" ? "Remover foto de capa" : "Remove cover photo"}</button>}</div>
             </div>
+            {!f.cover_url && (
+              <div className="mt-4"><Label>{lang === "pt" ? "Cor de fundo da capa" : "Cover background colour"}</Label>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <button type="button" onClick={() => setF({ ...f, cover_color: "" })} className={`rounded border px-3 py-1.5 text-sm ${!f.cover_color ? "border-primary bg-secondary" : ""}`}>{lang === "pt" ? "Sem cor / transparente" : "No colour / transparent"}</button>
+                  <input type="color" value={f.cover_color || "#18352b"} onChange={(e) => setF({ ...f, cover_color: e.target.value })} className="h-9 w-12 rounded border" aria-label={lang === "pt" ? "Escolher cor" : "Pick colour"} />
+                  {f.cover_color && <span className="text-sm text-muted-foreground">{f.cover_color}</span>}
+                </div>
+              </div>
+            )}
           </Panel>
         </div>
         <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color }}>
-          {f.cover_url && <img src={f.cover_url} alt="" className="h-28 w-full object-cover" />}
+          {f.logo_url ? (
+            <div className="flex h-28 items-center justify-center bg-cover bg-center" style={{ backgroundImage: f.cover_url ? `url(${f.cover_url})` : undefined, backgroundColor: f.cover_url ? undefined : f.cover_color || undefined }}>
+              <img src={f.logo_url} alt="" className="h-20 w-auto max-w-[80%] object-contain" />
+            </div>
+          ) : f.cover_url ? <img src={f.cover_url} alt="" className="h-28 w-full object-cover" /> : f.cover_color ? <div className="h-14" style={{ background: f.cover_color }} /> : null}
           <div className="p-4">
-            <p className="text-2xl" style={{ fontFamily: font }}>{r.name}</p>
+            {!f.logo_url && <p className="text-2xl" style={{ fontFamily: font }}>{r.name}</p>}
             <p className="mt-3 text-xs font-semibold uppercase tracking-widest" style={{ color: f.accent_color }}>{lang === "pt" ? "Recomendados" : "Recommended"}</p>
             <div className="mt-2 grid grid-cols-2 gap-3">{[1, 2].map((i) => <div key={i}><div className="aspect-square rounded" style={{ background: f.primary_color, opacity: 0.12 }} /><p className="mt-1 text-sm font-semibold">Prato {i}</p><p className="text-sm">€ 12,00</p></div>)}</div>
           </div>

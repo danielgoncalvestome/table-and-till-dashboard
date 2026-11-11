@@ -7,3 +7,4 @@
 - [x] Aviso ao restaurante de fim do período experimental
 - [x] Botão de definições junto ao modo claro/escuro
 - [x] Página de ajuda: formulário de mensagem no topo + dúvidas frequentes alargadas
+- [x] Design e marca → Tipografia: mais tipos de letra disponíveis (14 no total; carregamento e aplicação no menu público verificados)

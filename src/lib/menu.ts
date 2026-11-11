@@ -41,8 +41,18 @@ export const MENU_KINDS = [
 export const FONTS = [
   { id: "serif", label: "Fraunces", css: "'Fraunces', Georgia, serif" },
   { id: "classic", label: "Cormorant", css: "'Cormorant Garamond', Georgia, serif" },
+  { id: "playfair", label: "Playfair", css: "'Playfair Display', Georgia, serif" },
+  { id: "dmserif", label: "DM Serif", css: "'DM Serif Display', Georgia, serif" },
+  { id: "garamond", label: "Garamond", css: "'EB Garamond', Georgia, serif" },
+  { id: "lora", label: "Lora", css: "'Lora', Georgia, serif" },
+  { id: "bitter", label: "Bitter", css: "'Bitter', Georgia, serif" },
+  { id: "baskerville", label: "Baskerville", css: "'Libre Baskerville', Georgia, serif" },
   { id: "sans", label: "Manrope", css: "'Manrope', system-ui, sans-serif" },
+  { id: "montserrat", label: "Montserrat", css: "'Montserrat', system-ui, sans-serif" },
+  { id: "archivo", label: "Archivo", css: "'Archivo', system-ui, sans-serif" },
+  { id: "outfit", label: "Outfit", css: "'Outfit', system-ui, sans-serif" },
   { id: "modern", label: "Space Grotesk", css: "'Space Grotesk', system-ui, sans-serif" },
+  { id: "syne", label: "Syne", css: "'Syne', system-ui, sans-serif" },
 ] as const;
 
 export const TEMPLATES = [

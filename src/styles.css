@@ -153,3 +153,11 @@ html.panel.dark {
   --sidebar-border: oklch(0.27 0.005 150);
   color-scheme: dark;
 }
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  aside, header, nav { display: none !important; }
+  main { padding: 0 !important; margin: 0 !important; }
+  .rounded-md.border { break-inside: avoid; }
+}

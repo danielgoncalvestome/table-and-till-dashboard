@@ -11,6 +11,7 @@ import { useCatalog } from "@/lib/use-catalog";
 import { BarList, Columns } from "@/components/dash/ui";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { trialWarning } from "@/lib/admin-alerts-rules";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Visão geral — MenuTap" }, { name: "description", content: "Consulte o estado e atividade do restaurante." }, { property: "og:title", content: "Visão geral — MenuTap" }, { property: "og:description", content: "Consulte o estado e atividade do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
@@ -27,6 +28,7 @@ function Overview() {
   const { data: ev } = useQuery({ queryKey: ["events", r.id], queryFn: () => fetchEvents(r.id) });
   const { data: cat } = useCatalog(r.id);
   const { data: ratings } = useQuery({ queryKey: ["rating-summary", r.id], queryFn: async () => (await supabase.rpc("dish_rating_summary", { _restaurant_id: r.id })).data ?? [] });
+  const { data: paid } = useQuery({ queryKey: ["own-paid", r.created_by], enabled: !!r.created_by, queryFn: async () => ((await supabase.from("account_subscriptions").select("status").eq("user_id", r.created_by!).eq("environment", "live").in("status", ["active", "trialing", "past_due"])).data ?? []).length > 0 });
   const s = ev ? summarize(ev) : null;
   const dishes = (cat?.dishes ?? []).filter((d) => !d.archived);
   const dishName = (id: string) => cat?.dishes.find((d) => d.id === id)?.name ?? "—";
@@ -42,7 +44,10 @@ function Overview() {
   const avg = totalRatings ? (ratings ?? []).reduce((a, x) => a + Number(x.avg_stars) * Number(x.total), 0) / totalRatings : 0;
   const topRated = [...(ratings ?? [])].sort((a, b) => Number(b.avg_stars) - Number(a.avg_stars)).slice(0, 4);
 
-  const alerts: { text: string; to?: "/dashboard/menus" | "/dashboard/design" }[] = [];
+  const alerts: { text: string; to?: "/dashboard/menus" | "/dashboard/design" | "/dashboard/subscription" }[] = [];
+  const tw = paid === undefined || r.is_demo ? null : trialWarning(r.trial_ends_at, paid);
+  if (tw?.kind === "ending") alerts.push({ text: pt ? `O período experimental termina ${tw.days === 0 ? "hoje" : `em ${tw.days} dia(s)`}. Subscreva um plano para manter o menu online.` : `Your free trial ends ${tw.days === 0 ? "today" : `in ${tw.days} day(s)`}. Subscribe to keep your menu online.`, to: "/dashboard/subscription" });
+  if (tw?.kind === "expired") alerts.push({ text: pt ? "O período experimental terminou e o menu não está visível. Subscreva um plano." : "Your free trial has ended and the menu is hidden. Subscribe to a plan.", to: "/dashboard/subscription" });
   if (!r.published) alerts.push({ text: pt ? "O menu ainda não está publicado. O período experimental começa ao publicar." : "Your menu isn't published yet. The trial starts when you publish." });
   if (cat && dishes.length === 0) alerts.push({ text: pt ? "Ainda não tem pratos. Adicione o primeiro." : "No dishes yet. Add your first one.", to: "/dashboard/menus" });
   const noImg = dishes.filter((d) => !d.image_url).length;

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ThemeToggle } from "@/lib/panel-theme";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PageTitle, Panel } from "@/components/dash/ui";
@@ -30,7 +31,7 @@ function Messages() {
   }
   return (
     <div className="mx-auto max-w-4xl p-8">
-      <Link to="/admin" className="text-sm text-muted-foreground">← {t("admin.title")}</Link>
+      <div className="flex items-center justify-between"><Link to="/admin" className="text-sm text-muted-foreground">← {t("admin.title")}</Link><ThemeToggle /></div>
       <PageTitle title={t("admin.messages")} />
       {!msgs?.length && <p className="text-muted-foreground">{t("admin.noMessages")}</p>}
       <div className="space-y-3">

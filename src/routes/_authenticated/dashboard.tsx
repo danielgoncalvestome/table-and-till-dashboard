@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  LayoutDashboard, BookOpen, Sparkles, BarChart3, Palette, QrCode, Users, CreditCard, Settings, LifeBuoy, ExternalLink, LogOut, Shield, Menu as MenuIcon,
+  LayoutDashboard, BookOpen, BarChart3, Palette, QrCode, Users, CreditCard, Settings, LifeBuoy, ExternalLink, LogOut, Shield, Menu as MenuIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { LangSwitch, useI18n } from "@/lib/i18n";
 import { RestaurantProvider, audit, useIsAdmin, useMyRestaurants } from "@/lib/restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/menu";
+import { ThemeToggle } from "@/lib/panel-theme";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — MenuTap" }, { name: "description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:title", content: "Painel — MenuTap" }, { property: "og:description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -49,7 +50,6 @@ function DashboardLayout() {
   const nav = [
     { to: "/dashboard", icon: LayoutDashboard, label: t("dash.overview"), exact: true },
     { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus") },
-    { to: "/dashboard/recommendations", icon: Sparkles, label: t("dash.recs") },
     { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics") },
     { to: "/dashboard/design", icon: Palette, label: t("dash.design") },
     { to: "/dashboard/qr", icon: QrCode, label: t("dash.qr") },
@@ -94,7 +94,7 @@ function DashboardLayout() {
               <span className="font-display text-lg">{current.name}</span>
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-            <Button asChild variant="outline" size="sm"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer">{t("dash.viewMenu")} <ExternalLink /></a></Button>
+            <div className="flex items-center gap-2"><ThemeToggle /><Button asChild variant="outline" size="sm"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer">{t("dash.viewMenu")} <ExternalLink /></a></Button></div>
           </header>
           <main className="mx-auto max-w-6xl p-5 md:p-8"><Outlet /></main>
         </div>
@@ -134,7 +134,7 @@ function Onboarding() {
 
   return (
     <div className="min-h-screen">
-      <div className="flex items-center justify-between border-b px-6 py-4"><Logo /><LangSwitch /></div>
+      <div className="flex items-center justify-between border-b px-6 py-4"><Logo /><div className="flex items-center gap-3"><LangSwitch /><ThemeToggle /></div></div>
       <form onSubmit={submit} className="mx-auto max-w-2xl space-y-5 px-6 py-12">
         <h1 className="text-4xl">{t("onb.title")}</h1>
         <p className="text-muted-foreground">{t("onb.sub")}</p>

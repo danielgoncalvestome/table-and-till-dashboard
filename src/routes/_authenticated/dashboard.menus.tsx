@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, Copy, Archive, ArchiveRestore, GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Archive, ArchiveRestore, GripVertical, Pencil, Plus, Settings, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,7 @@ function Menus() {
   const [edit, setEdit] = useState<{ dish: Dish | null; cat: string } | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [drag, setDrag] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
   const reload = () => qc.invalidateQueries({ queryKey: ["catalog", r.id] });
 
   useEffect(() => {
@@ -88,8 +89,9 @@ function Menus() {
                 {m.name}{!m.published && " ·"}
               </button>
             ))}
+            {menu && <button type="button" onClick={() => setShowSettings((v) => !v)} aria-expanded={showSettings} className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm ${showSettings ? "border-primary bg-secondary" : "bg-card"}`}><Settings className="h-4 w-4" />Menu</button>}
           </div>
-          {menu && <MenuSettings key={menu.id} menu={menu} onChanged={reload} />}
+          {menu && showSettings && <MenuSettings key={menu.id} menu={menu} onChanged={reload} />}
 
           <div className="mt-6 flex items-center justify-between">
             <label className="flex items-center gap-2 text-sm text-muted-foreground"><Switch checked={showArchived} onCheckedChange={setShowArchived} />{t("dish.archived")}</label>

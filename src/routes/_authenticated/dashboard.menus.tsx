@@ -89,7 +89,7 @@ function Menus() {
                 {m.name}{!m.published && " ·"}
               </button>
             ))}
-            {menu && <button type="button" onClick={() => setShowSettings((v) => !v)} aria-expanded={showSettings} className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm ${showSettings ? "border-primary bg-secondary" : "bg-card"}`}><Settings className="h-4 w-4" />Menu</button>}
+            {menu && <button type="button" onClick={() => setShowSettings((v) => !v)} aria-expanded={showSettings} className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm ${showSettings ? "border-primary bg-secondary" : "bg-card"}`}><Settings className="h-4 w-4" />Menus</button>}
           </div>
           {menu && showSettings && <MenuSettings key={menu.id} menu={menu} onChanged={reload} />}
 

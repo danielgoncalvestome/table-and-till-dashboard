@@ -106,6 +106,11 @@ function Overview() {
         ) : <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{pt ? "Tudo em ordem." : "All good."}</p>}
       </Card>
 
+      <Card>
+        <h2 className="mb-4 font-sans text-sm font-semibold">{pt ? "Visualizações por dia (14 dias)" : "Views per day (14 days)"}</h2>
+        <Columns values={daily.values} labels={daily.labels} />
+      </Card>
+
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <Kpi icon={Star} label={pt ? "Avaliação" : "Rating"} value={totalRatings ? avg.toFixed(1) : "—"} hint={totalRatings ? (pt ? `${totalRatings} avaliações` : `${totalRatings} ratings`) : undefined} />
         <Kpi icon={Eye} label={t("ov.views")} value={s?.views ?? "—"} />
@@ -132,10 +137,6 @@ function Overview() {
         </Card>
         <QrCard />
       </div>
-      <Card>
-        <h2 className="mb-4 font-sans text-sm font-semibold">{pt ? "Visualizações por dia (14 dias)" : "Views per day (14 days)"}</h2>
-        <Columns values={daily.values} labels={daily.labels} />
-      </Card>
     </div>
   );
 }

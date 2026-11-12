@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () =>
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border bg-card p-6 ${className}`}>{children}</section>;
+  return <section className={`rounded-2xl border bg-card p-4 sm:p-6 ${className}`}>{children}</section>;
 }
 
 function Overview() {
@@ -72,50 +72,44 @@ function Overview() {
   ] as const;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 sm:space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{pt ? "Últimos 30 dias" : "Last 30 days"}</p>
-          <h1 className="mt-1 text-3xl md:text-4xl">{t("dash.overview")}</h1>
+          <h1 className="mt-1 text-2xl md:text-4xl">{t("dash.overview")}</h1>
         </div>
         <Button onClick={togglePublish} variant={r.published ? "outline" : "default"}>{r.published ? t("dash.unpublish") : t("dash.publish")}</Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Kpi icon={Eye} label={t("ov.views")} value={s?.views ?? "—"} />
-        <Kpi icon={Users} label={t("ov.sessions")} value={s?.sessions ?? "—"} />
-        <Kpi icon={Star} label={pt ? "Avaliação média" : "Average rating"} value={totalRatings ? avg.toFixed(1) : "—"} hint={totalRatings ? (pt ? `${totalRatings} avaliações` : `${totalRatings} ratings`) : undefined} />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <h2 className="mb-5 font-sans text-sm font-semibold">{pt ? "Visualizações por dia (14 dias)" : "Views per day (14 days)"}</h2>
-          <Columns values={daily.values} labels={daily.labels} />
-        </Card>
-        <Card>
-          <h2 className="mb-4 flex items-center gap-2 font-sans text-sm font-semibold">{pt ? "Alertas" : "Alerts"}{alerts.length > 0 && <span className="rounded-full bg-destructive px-2 text-[11px] text-destructive-foreground">{alerts.length}</span>}</h2>
-          {alerts.length ? (
-            <ul className="space-y-3 text-sm">
-              {alerts.map((a) => (
-                <li key={a.text} className="flex gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-                  {a.to ? <Link to={a.to} className="hover:underline">{a.text}</Link> : <span>{a.text}</span>}</li>
-              ))}
-            </ul>
-          ) : <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{pt ? "Tudo em ordem." : "All good."}</p>}
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {tiles.map((x) => (
-          <Link key={x.to} to={x.to} className="group rounded-2xl border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-primary">
-            <div className="flex items-start justify-between">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-secondary text-primary"><x.icon className="h-5 w-5" /></span>
-              <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
+          <Link key={x.to} to={x.to} className="group flex min-w-0 flex-col items-center gap-1.5 rounded-xl border bg-card p-3 text-center transition-all hover:-translate-y-0.5 hover:border-primary sm:items-start sm:rounded-2xl sm:p-6 sm:text-left">
+            <div className="flex w-full items-start justify-center sm:justify-between">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-secondary text-primary sm:h-11 sm:w-11 sm:rounded-xl"><x.icon className="h-4 w-4 sm:h-5 sm:w-5" /></span>
+              <ArrowUpRight className="hidden h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary sm:block" />
             </div>
-            <p className="mt-6 font-display text-xl">{x.title}</p>
-            <p className="text-sm text-muted-foreground">{x.sub}</p>
+            <p className="w-full truncate text-xs font-semibold sm:mt-4 sm:font-display sm:text-xl sm:font-normal">{x.title}</p>
+            <p className="hidden text-sm text-muted-foreground sm:block">{x.sub}</p>
           </Link>
         ))}
+      </div>
+
+      <Card>
+        <h2 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">{pt ? "Alertas" : "Alerts"}{alerts.length > 0 && <span className="rounded-full bg-destructive px-2 text-[11px] text-destructive-foreground">{alerts.length}</span>}</h2>
+        {alerts.length ? (
+          <ul className="space-y-2 text-sm">
+            {alerts.map((a) => (
+              <li key={a.text} className="flex gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                {a.to ? <Link to={a.to} className="hover:underline">{a.text}</Link> : <span>{a.text}</span>}</li>
+            ))}
+          </ul>
+        ) : <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{pt ? "Tudo em ordem." : "All good."}</p>}
+      </Card>
+
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <Kpi icon={Star} label={pt ? "Avaliação" : "Rating"} value={totalRatings ? avg.toFixed(1) : "—"} hint={totalRatings ? (pt ? `${totalRatings} avaliações` : `${totalRatings} ratings`) : undefined} />
+        <Kpi icon={Eye} label={t("ov.views")} value={s?.views ?? "—"} />
+        <Kpi icon={Users} label={t("ov.sessions")} value={s?.sessions ?? "—"} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -138,16 +132,20 @@ function Overview() {
         </Card>
         <QrCard />
       </div>
+      <Card>
+        <h2 className="mb-4 font-sans text-sm font-semibold">{pt ? "Visualizações por dia (14 dias)" : "Views per day (14 days)"}</h2>
+        <Columns values={daily.values} labels={daily.labels} />
+      </Card>
     </div>
   );
 }
 
 function Kpi({ icon: Icon, label, value, hint }: { icon: typeof Eye; label: string; value: React.ReactNode; hint?: string }) {
   return (
-    <div className="rounded-2xl border bg-card p-6">
-      <div className="flex items-center justify-between"><p className="eyebrow">{label}</p><Icon className="h-4 w-4 text-muted-foreground" /></div>
-      <p className="mt-3 font-display text-4xl">{value}</p>
-      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+    <div className="min-w-0 rounded-xl border bg-card p-3 sm:rounded-2xl sm:p-6">
+      <div className="flex items-center justify-between gap-1"><p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground sm:eyebrow">{label}</p><Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground sm:h-4 sm:w-4" /></div>
+      <p className="mt-1 font-display text-2xl sm:mt-3 sm:text-4xl">{value}</p>
+      {hint && <p className="mt-1 hidden text-xs text-muted-foreground sm:block">{hint}</p>}
     </div>
   );
 }

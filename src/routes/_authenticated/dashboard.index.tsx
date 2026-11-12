@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () =>
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border bg-card p-4 sm:p-6 ${className}`}>{children}</section>;
+  return <section className={`min-w-0 rounded-2xl border bg-card p-4 sm:p-6 ${className}`}>{children}</section>;
 }
 
 function Overview() {
@@ -168,7 +168,7 @@ function QrCard() {
       <h2 className="mb-4 font-sans text-sm font-semibold">{lang === "pt" ? "QR code e link do menu" : "Menu QR code & link"}</h2>
       {png && <img src={png} alt="QR" className="mx-auto w-36 rounded-lg" />}
       <div className="mt-4 flex items-center gap-1 rounded-lg bg-muted px-3 py-1.5 font-mono text-xs">
-        <a href={url} target="_blank" rel="noreferrer" className="flex-1 truncate hover:underline">{url.replace(/^https?:\/\//, "")}</a>
+        <a href={url} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate hover:underline">{url.replace(/^https?:\/\//, "")}</a>
         <Button size="icon" variant="ghost" aria-label={t("common.copy")} onClick={() => { navigator.clipboard.writeText(url); toast.success(t("common.copied")); }}><Copy /></Button>
       </div>
       <Button className="mt-3 w-full" variant="outline" onClick={download} disabled={!png}><Download />PNG</Button>

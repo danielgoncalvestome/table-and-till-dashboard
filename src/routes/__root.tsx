@@ -25,7 +25,7 @@ function NotFoundComponent() {
         <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
         <div className="mt-6">
           <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-4">
-            <img src={logoLight.url} alt="MenuTap" className="h-6 w-auto" />
+            <img src={logoLight.url} alt="MenuTap" className="h-12 w-auto" />
           </Link>
         </div>
       </div>

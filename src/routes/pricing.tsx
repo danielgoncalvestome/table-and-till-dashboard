@@ -28,7 +28,7 @@ function Pricing() {
       <PageIntro eyebrow={t("nav.pricing")} title={t("pricing.title")} />
       <section className="mx-auto max-w-5xl px-5">
         <div className="rounded-md border bg-card p-8">
-          <img src={logoDark.url} alt="MenuTap" className="h-5 w-auto" />
+          <img src={logoDark.url} alt="MenuTap" className="h-10 w-auto" />
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {t("pricing.items").split("|").map((i) => (
               <li key={i} className="flex gap-3 text-sm"><Check className="h-4 w-4 shrink-0 text-primary" />{i}</li>

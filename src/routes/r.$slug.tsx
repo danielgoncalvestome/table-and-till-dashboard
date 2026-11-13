@@ -80,6 +80,25 @@ function PublicMenu() {
     }
   }, [data]);
 
+  useEffect(() => {
+    const bg = data?.r.background_color;
+    if (!bg) return;
+    const html = document.documentElement, body = document.body;
+    const prev = { h: html.style.backgroundColor, b: body.style.backgroundColor };
+    html.style.backgroundColor = bg;
+    body.style.backgroundColor = bg;
+    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    const created = !meta;
+    const prevMeta = meta?.content;
+    if (!meta) { meta = document.createElement("meta"); meta.name = "theme-color"; document.head.appendChild(meta); }
+    meta.content = bg;
+    return () => {
+      html.style.backgroundColor = prev.h;
+      body.style.backgroundColor = prev.b;
+      if (created) meta?.remove(); else if (meta && prevMeta != null) meta.content = prevMeta;
+    };
+  }, [data?.r.background_color]);
+
   const activeMenu = useMemo(() => {
     if (!data) return null;
     if (menuId) return data.menus.find((m) => m.id === menuId) ?? null;

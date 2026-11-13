@@ -9,13 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { FONTS, TEMPLATES, uploadImage } from "@/lib/menu";
+import { TEXT_SECTIONS, textStyle, type TextStyles, type TextStyle } from "@/lib/text-styles";
 
 export const Route = createFileRoute("/_authenticated/dashboard/design")({ head: () => ({ meta: [{ title: "Aparência — MenuTap" }, { name: "description", content: "Personalize a aparência do seu menu digital." }, { property: "og:title", content: "Aparência — MenuTap" }, { property: "og:description", content: "Personalize a aparência do seu menu digital." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Design });
 
 function Design() {
   const { t, lang } = useI18n();
   const { restaurant: r, refresh } = useRestaurant();
-  const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "" });
+  const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "", text_styles: (r.text_styles ?? {}) as TextStyles });
   const [busy, setBusy] = useState(false);
 
   async function up(k: "logo_url" | "cover_url", file?: File) {
@@ -23,11 +24,13 @@ function Design() {
     try { setBusy(true); const url = await uploadImage(r.id, file); setF((p) => ({ ...p, [k]: url })); } catch { toast.error(t("common.error")); } finally { setBusy(false); }
   }
   async function save() {
-    const { error } = await supabase.from("restaurants").update({ ...f, logo_url: f.logo_url || null, cover_url: f.cover_url || null, cover_color: f.cover_color || null }).eq("id", r.id);
+    const { error } = await supabase.from("restaurants").update({ ...f, logo_url: f.logo_url || null, cover_url: f.cover_url || null, cover_color: f.cover_color || null, text_styles: f.text_styles as never }).eq("id", r.id);
     if (error) return toast.error(t("common.error"));
     toast.success(t("common.saved")); refresh();
   }
   const font = FONTS.find((x) => x.id === f.font)?.css;
+  const setTS = (id: string, patch: Partial<TextStyle>) => setF((p) => ({ ...p, text_styles: { ...p.text_styles, [id]: { ...(p.text_styles as Record<string, TextStyle>)[id], ...patch } } }));
+  const resetTS = (id: string) => setF((p) => { const n = { ...p.text_styles } as Record<string, TextStyle>; delete n[id]; return { ...p, text_styles: n }; });
   return (
     <div>
       <PageTitle title={t("design.title")} action={<Button onClick={save} disabled={busy}>{t("common.save")}</Button>} />
@@ -68,6 +71,40 @@ function Design() {
               </div>
             )}
           </Panel>
+          <Panel title={lang === "pt" ? "Texto por secção" : "Text per section"}>
+            <div className="space-y-3">
+              {TEXT_SECTIONS.map((sec) => {
+                const v = (f.text_styles as Record<string, TextStyle>)[sec.id] ?? {};
+                return (
+                  <div key={sec.id} className="rounded border p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold" style={textStyle(f.text_styles, sec.id)}>{sec[lang]}</p>
+                      {f.text_styles[sec.id] && <button type="button" onClick={() => resetTS(sec.id)} className="text-xs text-muted-foreground underline">{lang === "pt" ? "Repor" : "Reset"}</button>}
+                    </div>
+                    <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      <select value={v.font ?? ""} onChange={(e) => setTS(sec.id, { font: e.target.value || undefined })} className="h-9 rounded border bg-background px-2 text-sm">
+                        <option value="">{lang === "pt" ? "Letra padrão" : "Default font"}</option>
+                        {FONTS.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}
+                      </select>
+                      <div className="flex items-center gap-1">
+                        <input type="color" value={v.color ?? f.primary_color} onChange={(e) => setTS(sec.id, { color: e.target.value })} className="h-9 w-10 rounded border" aria-label={lang === "pt" ? "Cor" : "Colour"} />
+                        {v.color && <button type="button" onClick={() => setTS(sec.id, { color: undefined })} className="text-xs text-muted-foreground underline">{lang === "pt" ? "padrão" : "default"}</button>}
+                      </div>
+                      <select value={v.size ?? ""} onChange={(e) => setTS(sec.id, { size: e.target.value ? Number(e.target.value) : undefined })} className="h-9 rounded border bg-background px-2 text-sm">
+                        <option value="">{lang === "pt" ? "Tamanho padrão" : "Default size"}</option>
+                        {[10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32, 36].map((n) => <option key={n} value={n}>{n} px</option>)}
+                      </select>
+                      <select value={v.upper === undefined ? "" : v.upper ? "1" : "0"} onChange={(e) => setTS(sec.id, { upper: e.target.value === "" ? undefined : e.target.value === "1" })} className="h-9 rounded border bg-background px-2 text-sm">
+                        <option value="">{lang === "pt" ? "Maiúsculas: padrão" : "Case: default"}</option>
+                        <option value="1">{lang === "pt" ? "MAIÚSCULAS" : "UPPERCASE"}</option>
+                        <option value="0">{lang === "pt" ? "Normal" : "Normal"}</option>
+                      </select>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
         </div>
         <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color }}>
           {f.logo_url ? (
@@ -76,9 +113,9 @@ function Design() {
             </div>
           ) : f.cover_url ? <img src={f.cover_url} alt="" className="h-28 w-full object-cover" /> : f.cover_color ? <div className="h-14" style={{ background: f.cover_color }} /> : null}
           <div className="p-4">
-            {!f.logo_url && <p className="text-2xl" style={{ fontFamily: font }}>{r.name}</p>}
-            <p className="mt-3 text-xs font-semibold uppercase tracking-widest" style={{ color: f.accent_color }}>{lang === "pt" ? "Recomendados" : "Recommended"}</p>
-            <div className="mt-2 grid grid-cols-2 gap-3">{[1, 2].map((i) => <div key={i}><div className="aspect-square rounded" style={{ background: f.primary_color, opacity: 0.12 }} /><p className="mt-1 text-sm font-semibold">Prato {i}</p><p className="text-sm">€ 12,00</p></div>)}</div>
+            {!f.logo_url && <p className="text-2xl" style={{ fontFamily: font, ...textStyle(f.text_styles, "name") }}>{r.name}</p>}
+            <p className="mt-3 text-xs font-semibold uppercase tracking-widest" style={{ color: f.accent_color, ...textStyle(f.text_styles, "featured") }}>{lang === "pt" ? "Recomendados" : "Recommended"}</p>
+            <div className="mt-2 grid grid-cols-2 gap-3">{[1, 2].map((i) => <div key={i}><div className="aspect-square rounded" style={{ background: f.primary_color, opacity: 0.12 }} /><p className="mt-1 text-sm font-semibold" style={textStyle(f.text_styles, "dish")}>Prato {i}</p><p className="text-xs opacity-70" style={textStyle(f.text_styles, "description")}>Descrição</p><p className="text-sm" style={textStyle(f.text_styles, "price")}>12,00</p></div>)}</div>
           </div>
         </div>
       </div>

@@ -630,6 +630,7 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["restaurant_status"]
           template: string
+          text_styles: Json
           trial_ends_at: string | null
           trial_started_at: string | null
           updated_at: string
@@ -662,6 +663,7 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
+          text_styles?: Json
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
@@ -694,6 +696,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
+          text_styles?: Json
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string

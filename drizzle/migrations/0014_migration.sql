@@ -1,0 +1,1 @@
+ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS text_styles jsonb NOT NULL DEFAULT '{}'::jsonb;

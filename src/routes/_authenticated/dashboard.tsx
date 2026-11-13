@@ -94,13 +94,13 @@ function DashboardLayout() {
         <div className="sticky top-0 hidden h-screen w-60 shrink-0 border-r md:block">{sidebar}</div>
         {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-64 border-r">{sidebar}</div><button className="flex-1 bg-foreground/30" aria-label="Close" onClick={() => setMobileNav(false)} /></div>}
         <div className="min-w-0 flex-1">
-          <header className="flex h-14 items-center justify-between border-b bg-card px-5">
-            <div className="flex items-center gap-3">
-              <button className="md:hidden" onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-5 w-5" /></button>
-              <span className="font-display text-lg">{current.name}</span>
-              <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
+          <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b bg-card/95 px-3 backdrop-blur sm:px-5">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <button className="shrink-0 md:hidden" onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-5 w-5" /></button>
+              <span className="min-w-0 truncate font-display text-lg">{current.name}</span>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-            <div className="flex items-center gap-2"><Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link><ThemeToggle /><Button asChild variant="outline" size="sm"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer">{t("dash.viewMenu")} <ExternalLink /></a></Button></div>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2"><Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link><ThemeToggle /><Button asChild variant="outline" size="sm" className="h-9 w-9 shrink-0 px-0 md:h-auto md:w-auto md:px-3"><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")}><ExternalLink className="h-4 w-4" /><span className="hidden md:inline">{t("dash.viewMenu")}</span></a></Button></div>
           </header>
           <main className="mx-auto max-w-6xl p-5 md:p-8"><Outlet /></main>
         </div>

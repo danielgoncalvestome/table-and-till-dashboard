@@ -146,7 +146,15 @@ type EventType =
 
 export function track(restaurantId: string, event_type: EventType, extra: { dish_id?: string; category_id?: string; lang?: string; query?: string; source?: string } = {}) {
   try {
-    void supabase.from("analytics_events").insert({ restaurant_id: restaurantId, event_type, session_id: getSessionId(), ...extra, query: extra.query?.slice(0, 80) });
+    supabase
+      .from("analytics_events")
+      .insert({ restaurant_id: restaurantId, event_type, session_id: getSessionId(), ...extra, query: extra.query?.slice(0, 80) })
+      .then(({ error }) => {
+        if (error) console.error("analytics track failed:", error.message);
+      })
+      .catch(() => {
+        /* analytics must never break the menu */
+      });
   } catch {
     /* analytics must never break the menu */
   }

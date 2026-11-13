@@ -5,6 +5,7 @@ import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft } from "l
 import { supabase } from "@/integrations/supabase/client";
 import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
+import { textStyle } from "@/lib/text-styles";
 import logoDark from "@/assets/menutap-logo.png.asset.json";
 import logoLight from "@/assets/menutap-logo-light.png.asset.json";
 
@@ -150,7 +151,7 @@ function PublicMenu() {
         {!r.logo_url && !r.cover_url && r.cover_color && <div className="h-24 w-full" style={{ background: r.cover_color }} />}
         <div className="mx-auto max-w-4xl px-5 pt-5">
           <div className={`flex items-start gap-4 ${r.logo_url ? "justify-end" : "justify-between"}`}>
-            {!r.logo_url && <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--m-font)" }}>{r.name}</h1>}
+            {!r.logo_url && <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--m-font)", ...textStyle(r.text_styles, "name") }}>{r.name}</h1>}
             <div className="flex shrink-0 items-center gap-1 text-xs font-semibold">
               {r.languages.filter((l) => l === "pt" || l === "en").map((l, i) => (
                 <span key={l}>{i > 0 && <span className="opacity-40"> | </span>}<button onClick={() => changeLang(l as Lang)} className={lang === l ? "underline underline-offset-4" : "opacity-50"}>{l.toUpperCase()}</button></span>
@@ -170,7 +171,7 @@ function PublicMenu() {
       {data.menus.length > 1 && (
         <div className="mx-auto mt-5 flex max-w-4xl gap-2 overflow-x-auto px-5">
           {data.menus.map((m) => (
-            <button key={m.id} onClick={() => setMenuId(m.id)} className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs ${activeMenu?.id === m.id ? "border-[var(--m-primary)] bg-[var(--m-primary)] text-[var(--m-bg)]" : "border-[var(--m-primary)]/30"}`}>
+            <button key={m.id} onClick={() => setMenuId(m.id)} className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs ${activeMenu?.id === m.id ? "border-[var(--m-primary)] bg-[var(--m-primary)] text-[var(--m-bg)]" : "border-[var(--m-primary)]/30"}`} style={textStyle(r.text_styles, "menus")}>
               {tr(m.name, m.name_i18n, lang)}
             </button>
           ))}
@@ -182,7 +183,7 @@ function PublicMenu() {
           <button aria-label={u.search} onClick={() => setSearchOpen(!searchOpen)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full"><Search className="h-4 w-4" /></button>
           <div className="flex min-w-0 flex-1 gap-5 overflow-x-auto py-1 text-xs font-semibold uppercase tracking-wider">
             {cats.map((c) => (
-              <a key={c.id} href={`#c-${c.id}`} onClick={() => track(r.id, "category_view", { category_id: c.id, lang })} className="whitespace-nowrap opacity-70 hover:opacity-100">{tr(c.name, c.name_i18n, lang)}</a>
+              <a key={c.id} href={`#c-${c.id}`} onClick={() => track(r.id, "category_view", { category_id: c.id, lang })} className="whitespace-nowrap opacity-70 hover:opacity-100" style={textStyle(r.text_styles, "nav")}>{tr(c.name, c.name_i18n, lang)}</a>
             ))}
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -196,7 +197,7 @@ function PublicMenu() {
       <main className="mx-auto max-w-4xl px-5 pb-16">
         {!ql && featured.length > 0 && (
           <section className="pt-6">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--m-accent)]">{u.featured}</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--m-accent)]" style={textStyle(r.text_styles, "featured")}>{u.featured}</h2>
             <div className="mt-3 flex gap-3 overflow-x-auto pb-2">
               {featured.map((d) => (
                 <button key={d.id} onClick={() => openDish(d)} className="w-40 shrink-0 text-left">
@@ -212,17 +213,17 @@ function PublicMenu() {
           if (ql && list.length === 0) return null;
           return (
             <section key={c.id} id={`c-${c.id}`} className="scroll-mt-14 pt-8">
-              <h2 className="text-2xl" style={{ fontFamily: "var(--m-font)" }}>{tr(c.name, c.name_i18n, lang)}</h2>
+              <h2 className="text-2xl" style={{ fontFamily: "var(--m-font)", ...textStyle(r.text_styles, "category") }}>{tr(c.name, c.name_i18n, lang)}</h2>
               <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-8">
                 {list.map((d) => {
                   const rt = ratingOf(d.id);
                   return (
                     <button key={d.id} onClick={() => openDish(d)} className={`text-left ${!d.available ? "opacity-50" : ""}`}>
                       {d.image_url ? <img src={d.image_url} alt={tr(d.name, d.name_i18n, lang)} loading="lazy" className="aspect-square w-full rounded object-cover" /> : <div className="grid aspect-square w-full place-items-center rounded bg-[var(--m-primary)]/[0.06] text-3xl opacity-40" style={{ fontFamily: "var(--m-font)" }}>{d.name.charAt(0)}</div>}
-                      <p className="mt-2 text-sm font-semibold leading-snug">{tr(d.name, d.name_i18n, lang)}</p>
-                      {d.description && <p className="mt-0.5 line-clamp-2 text-xs opacity-70">{tr(d.description, d.description_i18n, lang)}</p>}
+                      <p className="mt-2 text-sm font-semibold leading-snug" style={textStyle(r.text_styles, "dish")}>{tr(d.name, d.name_i18n, lang)}</p>
+                      {d.description && <p className="mt-0.5 line-clamp-2 text-xs opacity-70" style={textStyle(r.text_styles, "description")}>{tr(d.description, d.description_i18n, lang)}</p>}
                       <div className="mt-1 flex items-center justify-between gap-2 text-sm">
-                        <span>
+                        <span style={textStyle(r.text_styles, "price")}>
                           {d.promo_price != null ? (<><span className="font-semibold text-[var(--m-accent)]">{noEuro(formatPrice(d.promo_price, lang))}</span> <s className="text-xs opacity-50">{noEuro(formatPrice(d.price, lang))}</s></>) : noEuro(formatPrice(d.price, lang))}
                         </span>
                         {!d.available ? <span className="text-[10px] font-semibold uppercase">{u.sold}</span> : rt ? <span className="flex items-center gap-0.5 text-xs opacity-80"><Star className="h-3 w-3 fill-star text-star" />{Number(rt.avg_stars).toFixed(1)}</span> : null}

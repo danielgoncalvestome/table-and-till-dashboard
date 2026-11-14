@@ -20,3 +20,5 @@
 - [x] Limpar pedidos ao libertar mesa
 - [x] Equipa com permissões só no plano Gestão e Reservas (19,90)
 - [x] Permissão independente «Editar sala», com bloqueio das alterações não autorizadas (6 testes; opção e acesso do proprietário verificados no ecrã)
+- [x] Visão Geral: secções preenchem toda a grelha sem espaços em branco
+- [x] Visão Geral: secções lado a lado com altura igual e altura máxima limitada

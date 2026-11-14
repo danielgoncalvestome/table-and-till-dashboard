@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
   AlertTriangle, ArrowDown, ArrowUp, ArrowUpRight, BarChart3, BookOpen, CalendarPlus, CalendarDays, Check, CheckCircle2, ChefHat, Eye, EyeOff,
-  Globe, LayoutGrid, Maximize2, Minimize2, Palette, Pencil, Plus, RotateCcw, Star, Users, Utensils, type LucideIcon,
+  Globe, LayoutGrid, Maximize2, Minimize2, Palette, Pencil, Plus, RotateCcw, Sparkles, Star, Users, Utensils, type LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
@@ -19,13 +19,14 @@ import { useResData } from "@/components/res/data";
 import { BLOCKING, STATUS_LABEL, hhmm, tableState, todayStr, type ResStatus } from "@/lib/reservations";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL, type CartLine } from "@/lib/orders";
 import { formatPrice } from "@/lib/menu";
+import { fetchReservations, fillRows, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
 import { DEFAULT_LAYOUT, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Visão geral — MenuTap" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Visão geral — MenuTap" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
-const TITLES: Record<SectionId, string> = { actions: "Ações rápidas", status: "Estado do serviço", alerts: "Alertas", today: "Reservas de hoje", floor: "Ocupação da sala", orders: "Pedidos ao vivo", views: "Visualizações", kpis: "Indicadores", dishes: "Pratos mais vistos", ratings: "Avaliações" };
-const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Globe, alerts: AlertTriangle, today: CalendarDays, floor: Users, orders: ChefHat, views: BarChart3, kpis: Eye, dishes: Utensils, ratings: Star };
+const TITLES: Record<SectionId, string> = { actions: "Ações rápidas", status: "Estado do serviço", alerts: "Alertas", today: "Reservas de hoje", floor: "Ocupação da sala", orders: "Pedidos ao vivo", views: "Visualizações", kpis: "Indicadores", dishes: "Menu Intelligence", ratings: "Avaliações" };
+const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Globe, alerts: AlertTriangle, today: CalendarDays, floor: Users, orders: ChefHat, views: BarChart3, kpis: Eye, dishes: Sparkles, ratings: Star };
 
 function Box({ id, children, action, className = "" }: { id: SectionId; children: ReactNode; action?: ReactNode; className?: string }) {
   const Icon = ICONS[id];
@@ -35,7 +36,7 @@ function Box({ id, children, action, className = "" }: { id: SectionId; children
         <h2 className="flex min-w-0 items-center gap-2 font-sans text-sm font-semibold"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon className="h-3.5 w-3.5" /></span><span className="truncate">{TITLES[id]}</span></h2>
         {action}
       </header>
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 max-h-[26rem] flex-1 overflow-y-auto">{children}</div>
     </section>
   );
 }
@@ -84,12 +85,17 @@ function Overview() {
   const { data: paid } = useQuery({ queryKey: ["own-paid", r.created_by], enabled: !!r.created_by, queryFn: async () => ((await supabase.from("account_subscriptions").select("status").eq("user_id", r.created_by!).eq("environment", "live").in("status", ["active", "trialing", "past_due"])).data ?? []).length > 0 });
   const { data: orders, refetch: refetchOrders } = useQuery({ queryKey: ["orders", r.id], refetchInterval: 15000, queryFn: async () => (await supabase.from("table_orders").select("*").eq("restaurant_id", r.id).eq("cleared", false).order("created_at", { ascending: false })).data ?? [] });
   const { tables, res } = useResData(todayStr());
+  const { data: res30 } = useQuery({ queryKey: ["res-intel", r.id], queryFn: () => fetchReservations(r.id, 30) });
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(t); }, []);
 
   const s = ev ? summarize(ev) : null;
   const dishes = (cat?.dishes ?? []).filter((d) => !d.archived);
   const dishName = (id: string) => cat?.dishes.find((d) => d.id === id)?.name ?? "—";
+  const intel = [
+    ...(s && cat ? menuInsights(s, cat, pt).map((t) => ({ t, k: "menu" as const })) : []),
+    ...(res30 ? reservationInsights(summarizeReservations(res30), pt).map((t) => ({ t, k: "res" as const })) : []),
+  ];
   const daily = useMemo(() => {
     const keys = Array.from({ length: 14 }, (_, i) => dayKey(new Date(Date.now() - (13 - i) * 864e5)));
     const m = new Map(keys.map((k) => [k, 0]));
@@ -240,13 +246,19 @@ function Overview() {
         {[[Star, "Avaliação", totalRatings ? avg.toFixed(1) : "—"], [Eye, "Visualizações", s?.views ?? "—"], [Users, "Sessões", s?.sessions ?? "—"]].map(([I, l, v]) => { const Ic = I as LucideIcon; return <div key={l as string} className="rounded-xl bg-muted/60 p-3"><Ic className="h-4 w-4 text-primary" /><p className="mt-2 font-display text-2xl">{v as ReactNode}</p><p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{l as string}</p></div>; })}
       </div>
     ),
-    dishes: (s?.topDishes ?? []).length ? (
-      <ol className="space-y-2.5">
-        {(s?.topDishes ?? []).slice(0, 5).map(([k, v], i, arr) => (
-          <li key={k} className="text-sm"><div className="flex justify-between gap-2"><span className="truncate"><span className="mr-2 text-muted-foreground">{i + 1}</span>{dishName(k)}</span><span className="text-muted-foreground">{v}</span></div><div className="mt-1 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${(v / arr[0][1]) * 100}%` }} /></div></li>
-        ))}
-      </ol>
-    ) : <p className="text-sm text-muted-foreground">Ainda sem dados.</p>,
+    dishes: intel.length ? (
+      <div className="space-y-2">
+        <ul className="space-y-2">
+          {intel.slice(0, 7).map((x) => (
+            <li key={x.t} className="flex items-start gap-2.5 rounded-xl bg-muted/50 p-2.5 text-sm">
+              <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-lg ${x.k === "menu" ? "bg-primary/10 text-primary" : "bg-st-reserved/15 text-foreground"}`}>{x.k === "menu" ? <Utensils className="h-3 w-3" /> : <CalendarDays className="h-3 w-3" />}</span>
+              <span className="min-w-0 flex-1">{x.t}</span>
+            </li>
+          ))}
+        </ul>
+        <Link to="/dashboard/analytics" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">Ver análise completa <ArrowUpRight className="h-3 w-3" /></Link>
+      </div>
+    ) : <p className="text-sm text-muted-foreground">Ainda sem dados suficientes.</p>,
     ratings: topRated.length ? (
       <div className="flex items-center gap-4">
         <Donut parts={[{ v: avg, cls: "stroke-star" }, { v: 5 - avg, cls: "stroke-transparent" }]} center={avg.toFixed(1)} sub={`${totalRatings} aval.`} />
@@ -258,6 +270,7 @@ function Overview() {
   };
 
   const shown = editing ? layout : layout.filter((x) => !x.hidden);
+  const full = fillRows(shown);
   const dateLabel = new Date().toLocaleDateString(pt ? "pt-PT" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
 
   return (
@@ -273,11 +286,11 @@ function Overview() {
         </div>
       </div>
       {editing && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground">Use as setas para mudar a ordem, o olho para mostrar/esconder e o ícone de tamanho para alternar entre meia largura e largura total.</p>}
-      <div className="grid gap-4 lg:grid-flow-row-dense lg:grid-cols-2">
-        {shown.map((item) => {
+      <div className="grid gap-4 lg:grid-cols-2">
+        {shown.map((item, si) => {
           const i = layout.findIndex((x) => x.id === item.id);
           return (
-            <div key={item.id} className={`relative min-w-0 ${item.wide ? "lg:col-span-2" : ""} ${editing ? "rounded-2xl ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""} ${item.hidden ? "opacity-40" : ""}`}>
+            <div key={item.id} className={`relative min-w-0 ${full[si] ? "lg:col-span-2" : ""} ${editing ? "rounded-2xl ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""} ${item.hidden ? "opacity-40" : ""}`}>
               {editing && (
                 <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-lg border bg-background p-1 shadow-sm">
                   <EditBtn label="Subir" onClick={() => move(i, -1)} icon={ArrowUp} />
@@ -286,7 +299,7 @@ function Overview() {
                   <EditBtn label={item.hidden ? "Mostrar" : "Esconder"} onClick={() => patch(i, { hidden: !item.hidden })} icon={item.hidden ? EyeOff : Eye} />
                 </div>
               )}
-              <div className={editing ? "pointer-events-none select-none" : ""}><Box id={item.id}>{sections[item.id]}</Box></div>
+              <div className={`h-full ${editing ? "pointer-events-none select-none" : ""}`}><Box id={item.id}>{sections[item.id]}</Box></div>
             </div>
           );
         })}

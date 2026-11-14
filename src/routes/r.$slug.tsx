@@ -68,6 +68,8 @@ function PublicMenu() {
   const heroH = HERO_H;
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [cart, setCart] = useState<CartLine[]>([]);
+  const [sel, setSel] = useState<string | null>(null);
   const [open, setOpen] = useState<Dish | null>(null);
   const tracked = useRef(false);
 

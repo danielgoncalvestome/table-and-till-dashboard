@@ -118,7 +118,7 @@ function Landing() {
     <SitePage>
       <div className="theme-bordeaux">
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 md:grid-cols-2 md:pt-24">
-          <Reveal>
+          <div>
             <p className="eyebrow text-primary">Mesas e reservas</p>
             <h1 className="mt-3 text-4xl leading-tight md:text-6xl">As suas mesas. As suas reservas. Tudo sob controlo.</h1>
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">Uma gestão de mesas e reservas pensada para o seu restaurante. Simples quando precisa de simplicidade. Avançada quando precisa de mais.</p>
@@ -126,8 +126,8 @@ function Landing() {
               <Button asChild size="lg"><Link to="/auth" search={{ mode: "signup" }}>Começar agora</Link></Button>
               <Button size="lg" variant="outline" onClick={() => document.getElementById("modos")?.scrollIntoView({ behavior: "smooth" })}>Explorar funcionalidades</Button>
             </div>
-          </Reveal>
-          <Reveal><HeroDemo /></Reveal>
+          </div>
+          <HeroDemo />
         </section>
 
         <section id="modos" className="scroll-mt-20 border-y bg-card/50 py-20">

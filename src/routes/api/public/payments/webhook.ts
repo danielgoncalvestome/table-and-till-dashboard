@@ -9,8 +9,8 @@ async function upsert(data: any, env: PaddleEnv) {
   const row = { status: data.status, current_period_end: data.currentBillingPeriod?.endsAt ?? null,
     cancel_at_period_end: data.scheduledChange?.action === 'cancel', updated_at: new Date().toISOString(),
     ...(priceId && { price_id: priceId }), ...(productId && { product_id: productId }) };
-  const { data: existing } = await supabaseAdmin.from('account_subscriptions').select('id').eq('paddle_subscription_id', data.id).maybeSingle();
-  if (existing) { const { error } = await supabaseAdmin.from('account_subscriptions').update(row).eq('id', existing.id).eq('environment', env); if (error) throw error; return; }
+  const { data: existing } = await supabaseAdmin.from('account_subscriptions').select('id,user_id').eq('paddle_subscription_id', data.id).maybeSingle();
+  if (existing) { const { error } = await supabaseAdmin.from('account_subscriptions').update(row).eq('id', existing.id).eq('environment', env); if (error) throw error; await enableOnlineBooking(supabaseAdmin, existing.user_id, priceId, data.status); return; }
   const userId = data.customData?.userId;
   if (!userId || !priceId) { console.warn('Skipping subscription without userId/externalId'); return; }
   const { error } = await supabaseAdmin.from('account_subscriptions').insert({ ...row, price_id: priceId, user_id: userId, environment: env,

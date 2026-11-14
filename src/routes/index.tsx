@@ -7,9 +7,8 @@ import { PhonePreview } from "@/components/site/PhonePreview";
 import { TablesLanding } from "@/components/site/TablesLanding";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    p: s.p === "reservas" ? ("reservas" as const) : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): { p?: "reservas" } =>
+    s.p === "reservas" ? { p: "reservas" } : {},
   head: () => ({
     meta: [
       { title: "MenuTap — Menus digitais com QR code e NFC para restaurantes" },

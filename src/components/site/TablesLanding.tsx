@@ -164,7 +164,7 @@ export function TablesLanding() {
             <p className="mx-auto mt-4 max-w-xl opacity-80">Escolha o modo ideal para o seu estabelecimento e comece a simplificar a gestão das suas mesas.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" variant="secondary"><Link to="/auth" search={{ mode: "signup" }}>Começar agora</Link></Button>
-              <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"><Link to="/">Conhecer o MenuTap</Link></Button>
+              <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"><Link to="/" search={{ p: undefined }}>Conhecer o MenuTap</Link></Button>
             </div>
           </div>
         </section>

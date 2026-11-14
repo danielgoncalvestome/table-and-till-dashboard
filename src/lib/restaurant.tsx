@@ -11,9 +11,9 @@ export function useMyRestaurants() {
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return [];
-      const { data: mem, error } = await supabase.from("restaurant_members").select("role, restaurant:restaurants(*)").eq("user_id", u.user.id);
+      const { data: mem, error } = await supabase.from("restaurant_members").select("role, permissions, restaurant:restaurants(*)").eq("user_id", u.user.id);
       if (error) throw error;
-      return (mem ?? []).filter((m) => m.restaurant).map((m) => ({ role: m.role, ...(m.restaurant as Restaurant) }));
+      return (mem ?? []).filter((m) => m.restaurant).map((m) => ({ role: m.role as string, permissions: (m.permissions ?? {}) as Record<string, boolean>, ...(m.restaurant as Restaurant) }));
     },
   });
 }
@@ -30,10 +30,10 @@ export function useIsAdmin() {
   });
 }
 
-type Ctx = { restaurant: Restaurant & { role: string }; refresh: () => void };
+type Ctx = { restaurant: Restaurant & { role: string; permissions?: Record<string, boolean> }; refresh: () => void };
 const RCtx = createContext<Ctx | null>(null);
 
-export function RestaurantProvider({ restaurant, children }: { restaurant: Restaurant & { role: string }; children: ReactNode }) {
+export function RestaurantProvider({ restaurant, children }: { restaurant: Restaurant & { role: string; permissions?: Record<string, boolean> }; children: ReactNode }) {
   const qc = useQueryClient();
   return <RCtx.Provider value={{ restaurant, refresh: () => { qc.invalidateQueries({ queryKey: ["my-restaurants"] }); qc.invalidateQueries({ queryKey: ["admin-managed"] }); } }}>{children}</RCtx.Provider>;
 }

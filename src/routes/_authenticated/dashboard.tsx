@@ -16,6 +16,8 @@ import { RestaurantProvider, audit, useIsAdmin, useMyRestaurants } from "@/lib/r
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/menu";
 import { ThemeToggle } from "@/lib/panel-theme";
+import { canAccess, type Permission } from "@/lib/team-rules";
+import { useLocation } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — MenuTap" }, { name: "description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:title", content: "Painel — MenuTap" }, { property: "og:description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -29,6 +31,7 @@ function DashboardLayout() {
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [mobileNav, setMobileNav] = useState(false);
   const navigate = useNavigate();
+  const path = useLocation({ select: (l) => l.pathname });
   const qc = useQueryClient();
 
   const { data: extra } = useQuery({
@@ -54,18 +57,22 @@ function DashboardLayout() {
     navigate({ to: "/auth", replace: true });
   }
 
-  const nav = [
+  const allNav = [
     { to: "/dashboard", icon: LayoutDashboard, label: t("dash.overview"), exact: true },
-    { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus") },
-    { to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations") },
-    { to: "/dashboard/orders", icon: ClipboardList, label: t("dash.orders") },
-    { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics") },
-    { to: "/dashboard/design", icon: Palette, label: t("dash.design") },
-    { to: "/dashboard/team", icon: Users, label: t("dash.team") },
-    { to: "/dashboard/subscription", icon: CreditCard, label: t("dash.sub") },
-    { to: "/dashboard/settings", icon: Settings, label: t("dash.settings") },
+    { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus"), perm: "menus" },
+    { to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations"), perm: "reservations" },
+    { to: "/dashboard/orders", icon: ClipboardList, label: t("dash.orders"), perm: "orders" },
+    { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics"), perm: "analytics" },
+    { to: "/dashboard/design", icon: Palette, label: t("dash.design"), perm: "design" },
+    { to: "/dashboard/team", icon: Users, label: t("dash.team"), perm: "team" },
+    { to: "/dashboard/subscription", icon: CreditCard, label: t("dash.sub"), perm: "subscription" },
+    { to: "/dashboard/settings", icon: Settings, label: t("dash.settings"), perm: "settings" },
     { to: "/dashboard/help", icon: LifeBuoy, label: t("dash.help") },
   ] as const;
+  const perms = (current as { permissions?: Record<string, boolean> }).permissions;
+  const allowed = (perm?: string) => !perm || canAccess(current.role, perms, perm as Permission | "team" | "subscription");
+  const nav = allNav.filter((n) => allowed("perm" in n ? n.perm : undefined));
+  const blocked = allNav.find((n) => "perm" in n && !allowed(n.perm) && (path === n.to || path.startsWith(n.to + "/")));
 
   const sidebar = (
     <aside className="flex h-full flex-col gap-1 bg-sidebar p-4">
@@ -102,9 +109,9 @@ function DashboardLayout() {
               <span className="min-w-0 truncate font-display text-lg">{current.name}</span>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2"><Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link><ThemeToggle /><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><BookOpen className="h-4 w-4" /></a><a href={`/r/${current.slug}/reservar`} target="_blank" rel="noreferrer" aria-label="Página de reservas" title="Página de reservas" className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><CalendarDays className="h-4 w-4" /></a></div>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">{allowed("settings") && <Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link>}<ThemeToggle /><a href={`/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><BookOpen className="h-4 w-4" /></a><a href={`/r/${current.slug}/reservar`} target="_blank" rel="noreferrer" aria-label="Página de reservas" title="Página de reservas" className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><CalendarDays className="h-4 w-4" /></a></div>
           </header>
-          <main className="mx-auto max-w-6xl p-5 md:p-8"><Outlet /></main>
+          <main className="mx-auto max-w-6xl p-5 md:p-8">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
         </div>
       </div>
     </RestaurantProvider>

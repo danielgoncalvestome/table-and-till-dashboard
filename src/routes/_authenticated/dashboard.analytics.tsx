@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { WEEKDAYS } from "@/lib/menu";
 import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, ChefHat, Download, Eye, FileText, Sparkles, Star, TrendingUp, Users, Utensils, type LucideIcon } from "lucide-react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fetchOrders, fetchReservations, menuInsights, reservationInsights, summarizeOrders, summarizeReservations } from "@/lib/insights";
 import { STATUS_LABEL, type ResStatus } from "@/lib/reservations";
 import { formatPrice } from "@/lib/menu";
@@ -129,7 +129,7 @@ function Analytics() {
     doc.save(`menutap-${r.slug ?? "relatorio"}-${days}d.pdf`);
   };
   const pct = (x: number) => `${Math.round(x * 100)}%`;
-  const hourData = Array.from({ length: 24 }, (_, h) => ({ h: `${h}h`, menu: s.hours[h], reservas: rs.hours[h], pedidos: os.hours[h] })).filter((x, i) => i >= 8 || x.menu || x.reservas || x.pedidos);
+  const hourData = Array.from({ length: 24 }, (_, h) => ({ h: String(h), menu: s.hours[h], reservas: rs.hours[h], pedidos: os.hours[h] })).filter((x, i) => i >= 8 || x.menu || x.reservas || x.pedidos);
   const weekData = WEEKDAYS[lang].map((d, i) => ({ d, menu: s.days[i], pessoas: rs.days[i] }));
   const STATUS_COLORS: Record<string, string> = { pending: "var(--st-reserved)", confirmed: "var(--chart-2)", seated: "var(--st-seated)", completed: "var(--chart-1)", cancelled: "var(--muted-foreground)", no_show: "var(--destructive)" };
   const statusData = Object.entries(rs.status).map(([k, v]) => ({ name: STATUS_LABEL[k as ResStatus] ?? k, value: v, fill: STATUS_COLORS[k] ?? "var(--chart-3)" }));
@@ -165,7 +165,7 @@ function Analytics() {
 
       {tab === "menu" && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={t("an.days")}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={t("ov.topDishes")}><BarList items={s.topDishes.slice(0, 8).map(([k, v]) => [dn(k), v])} empty={t("ov.noData")} /></Card>
           <Card title={t("ov.topCats")}><BarList items={s.topCats.slice(0, 8).map(([k, v]) => [cn(k), v])} empty={t("ov.noData")} /></Card>
@@ -176,7 +176,7 @@ function Analytics() {
       )}
       {tab === "res" && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Pessoas por dia da semana" : "Guests by weekday"}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pessoas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Estado das reservas" : "Booking status"}><DonutChart data={statusData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
           <Card title={pt ? "Origem das reservas" : "Booking source"}><DonutChart data={srcData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
@@ -187,7 +187,7 @@ function Analytics() {
       {tab === "orders" && (
         <div className="grid gap-4 md:grid-cols-2">
           <Card title={pt ? "Valor por dia" : "Value per day"}><Chart><BarChart data={daily} margin={{ left: -16 }}><XAxis dataKey="day" {...axis} minTickGap={16} /><YAxis {...axis} /><Tooltip {...tip} formatter={(v: number) => formatPrice(v)} /><Bar dataKey="valor" name={pt ? "Valor" : "Value"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Pratos mais pedidos" : "Most ordered dishes"}><BarList items={os.topItems.slice(0, 8)} empty={pt ? "Ainda sem pedidos." : "No orders yet."} /></Card>
           <Card title={pt ? "Resumo" : "Summary"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Pedidos" : "Orders"} value={os.count} /><Mini label={pt ? "Valor total" : "Total"} value={formatPrice(os.revenue)} /><Mini label={pt ? "Valor médio" : "Average"} value={formatPrice(os.avg)} /><Mini label={pt ? "Cancelados" : "Cancelled"} value={os.cancelled} /></div></Card>
         </div>
@@ -263,13 +263,18 @@ function Mini({ label, value }: { label: string; value: ReactNode }) {
 function DonutChart({ data, empty }: { data: { name: string; value: number; fill: string }[]; empty: string }) {
   const total = data.reduce((a, x) => a + x.value, 0);
   if (!total) return <p className="text-sm text-muted-foreground">{empty}</p>;
+  const C = 2 * Math.PI * 40;
+  let acc = 0;
   return (
-    <div className="flex items-center gap-4">
-      <div className="relative h-40 w-40 shrink-0">
-        <PieChart width={160} height={160}><Pie data={data} cx={80} cy={80} dataKey="value" nameKey="name" innerRadius={50} outerRadius={74} isAnimationActive={false} paddingAngle={2} stroke="none">{data.map((d) => <Cell key={d.name} fill={d.fill} />)}</Pie><Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} /></PieChart>
-        <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-2xl">{total}</div>
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+      <div className="relative h-24 w-24 shrink-0">
+        <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+          <circle cx="50" cy="50" r="40" fill="none" strokeWidth="11" className="stroke-muted" />
+          {data.map((d) => { const len = (d.value / total) * C; const el = <circle key={d.name} cx="50" cy="50" r="40" fill="none" strokeWidth="11" stroke={d.fill} strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-acc}><title>{`${d.name}: ${d.value}`}</title></circle>; acc += len; return el; })}
+        </svg>
+        <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-lg leading-none">{total}</div>
       </div>
-      <ul className="min-w-0 flex-1 space-y-1.5 text-sm">{data.map((d) => <li key={d.name} className="flex items-center gap-2"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="flex-1 truncate">{d.name}</span><span className="text-muted-foreground">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
+      <ul className="min-w-0 flex-1 space-y-1 text-xs sm:max-w-xs">{data.map((d) => <li key={d.name} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="truncate">{d.name}</span><span className="text-muted-foreground tabular-nums">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
     </div>
   );
 }

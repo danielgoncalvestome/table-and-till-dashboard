@@ -46,12 +46,12 @@ function Donut({ parts, center, sub }: { parts: { v: number; cls: string }[]; ce
   let acc = 0;
   const C = 2 * Math.PI * 40;
   return (
-    <div className="relative h-32 w-32 shrink-0">
+    <div className="relative h-24 w-24 shrink-0">
       <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
         <circle cx="50" cy="50" r="40" fill="none" strokeWidth="12" className="stroke-muted" />
         {parts.map((p, i) => { const len = (p.v / total) * C; const el = <circle key={i} cx="50" cy="50" r="40" fill="none" strokeWidth="12" strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-acc} className={`${p.cls} transition-all duration-700`} />; acc += len; return el; })}
       </svg>
-      <div className="absolute inset-0 grid place-items-center text-center"><div><p className="font-display text-2xl leading-none">{center}</p><p className="text-[10px] text-muted-foreground">{sub}</p></div></div>
+      <div className="absolute inset-0 grid place-items-center text-center"><div><p className="font-display text-xl leading-none">{center}</p><p className="text-[9px] text-muted-foreground">{sub}</p></div></div>
     </div>
   );
 }

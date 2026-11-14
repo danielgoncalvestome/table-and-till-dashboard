@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -187,6 +188,7 @@ function PublicMenu() {
             ))}
           </div>
           <div className="flex shrink-0 items-center gap-2">
+            {r.booking_enabled && <a href={`/r/${r.slug}/reservar`} aria-label="Reservar" className="grid h-8 w-8 place-items-center rounded-full border border-[var(--m-primary)]/30"><CalendarDays className="h-4 w-4" /></a>}
             {r.phone && <a href={`tel:${r.phone}`} aria-label={u.call} onClick={() => track(r.id, "call_click")} className="grid h-8 w-8 place-items-center rounded-full border border-[var(--m-primary)]/30"><Phone className="h-4 w-4" /></a>}
             {r.google_reviews_url && <a href={r.google_reviews_url} target="_blank" rel="noreferrer" aria-label={u.reviews} onClick={() => track(r.id, "reviews_click")} className="grid h-8 w-8 place-items-center rounded-full border border-[var(--m-primary)]/30"><GoogleG /></a>}
             {r.instagram_url && <a href={r.instagram_url} target="_blank" rel="noreferrer" aria-label="Instagram" onClick={() => track(r.id, "instagram_click")} className="grid h-8 w-8 place-items-center rounded-full border border-[var(--m-primary)]/30"><Instagram className="h-4 w-4" /></a>}

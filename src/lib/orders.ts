@@ -18,7 +18,7 @@ export type DeviceWarning = { kind: "plan_changed" | "device_mismatch"; text: st
 export function deviceWarningItems(activeTables: number, submitted: number | null | undefined, devices: number): DeviceWarning[] {
   const w: DeviceWarning[] = [];
   if (submitted != null && submitted !== activeTables) w.push({ kind: "plan_changed", text: `A planta mudou: ${activeTables} mesas ativas, ${submitted} na última submissão.` });
-  if (devices !== activeTables) w.push({ kind: "device_mismatch", text: `Dispositivos (${devices}) diferente do número de mesas ativas (${activeTables}).` });
+  if (devices !== activeTables) w.push({ kind: "device_mismatch", text: "Dispositivos em falta" });
   return w;
 }
 export function deviceWarnings(activeTables: number, submitted: number | null | undefined, devices: number) {

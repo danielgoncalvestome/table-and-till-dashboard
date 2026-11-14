@@ -166,14 +166,46 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
             <span className="text-sm font-semibold">Cliente à porta (sentar agora)</span>
           </button>
           {!f.walkin && <div className="grid grid-cols-2 gap-2"><div><Label>Data</Label><Input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></div><div><Label>Hora</Label><Input type="time" step={900} value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></div></div>}
-          <div className="grid grid-cols-2 gap-2">
-            <div><Label>Pessoas</Label><Input type="number" min={1} max={50} value={f.party} onChange={(e) => setF({ ...f, party: Number(e.target.value) })} /></div>
-            <div><Label>Mesa</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.table} onChange={(e) => setF({ ...f, table: e.target.value })}><option value="">Automática</option>{tables.filter((t) => t.active).map((t) => <option key={t.id} value={t.id}>{t.label} ({t.seats})</option>)}</select></div>
+          <div>
+            <Label>Pessoas</Label>
+            <div className="mt-1 flex items-center justify-between rounded-xl border bg-card px-2 py-1.5">
+              <button type="button" aria-label="Menos pessoas" disabled={f.party <= 1} onClick={() => setF({ ...f, party: Math.max(1, f.party - 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Minus className="h-4 w-4" /></button>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="min-w-8 text-center text-xl font-bold tabular-nums">{f.party}</span>
+              </div>
+              <button type="button" aria-label="Mais pessoas" disabled={f.party >= 50} onClick={() => setF({ ...f, party: Math.min(50, f.party + 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Plus className="h-4 w-4" /></button>
+            </div>
           </div>
-          <Input placeholder="Nome" value={f.name} required={!f.walkin} onChange={(e) => setF({ ...f, name: e.target.value })} />
-          <Input type="tel" placeholder="Telefone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-          <Input type="email" placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
-          <Textarea placeholder="Observações" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
+          <div>
+            <Label>Mesa</Label>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              <button type="button" onClick={() => setF({ ...f, table: "" })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === "" ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>Automática</button>
+              {tables.filter((t) => t.active).map((t) => (
+                <button type="button" key={t.id} onClick={() => setF({ ...f, table: f.table === t.id ? "" : t.id })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === t.id ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{t.label} <span className={`text-xs ${f.table === t.id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>({t.seats})</span></button>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button type="button" aria-expanded={showContact} onClick={() => setShowContact(!showContact)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showContact || f.name || f.phone || f.email ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
+              <UserRound className="h-4 w-4" />Cliente{(f.name || f.phone || f.email) && !showContact ? " •" : ""}
+            </button>
+            <button type="button" aria-expanded={showNotes} onClick={() => setShowNotes(!showNotes)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showNotes || f.notes ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
+              <StickyNote className="h-4 w-4" />Notas{f.notes && !showNotes ? " •" : ""}
+            </button>
+          </div>
+          {showContact && (
+            <div className="space-y-2 rounded-xl border bg-muted/40 p-3">
+              <Input placeholder="Nome" value={f.name} required={!f.walkin} onChange={(e) => setF({ ...f, name: e.target.value })} />
+              <Input type="tel" placeholder="Telefone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
+              <Input type="email" placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+            </div>
+          )}
+          {showNotes && (
+            <div className="rounded-xl border bg-muted/40 p-3">
+              <Textarea placeholder="Observações" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
+            </div>
+          )}
           <Button className="w-full" disabled={busy}>Guardar</Button>
         </form>
       </DialogContent>

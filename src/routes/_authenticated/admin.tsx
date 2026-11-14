@@ -16,7 +16,7 @@ import { planByPrice, validPlanCents } from "@/lib/billing-rules";
 import { usePlans } from "@/lib/use-plans";
 import { useServerFn } from "@tanstack/react-start";
 import { updatePlanPrice } from "@/utils/payments.functions";
-import { activeSub, daysLeft, platformAlerts } from "@/lib/admin-alerts-rules";
+import { activeSub, daysLeft, platformAlerts, type DeviceInfo } from "@/lib/admin-alerts-rules";
 import { AlertDot } from "@/hooks/use-admin-alerts";
 
 export const Route = createFileRoute("/_authenticated/admin")({

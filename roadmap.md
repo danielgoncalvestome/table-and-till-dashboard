@@ -22,3 +22,4 @@
 - [x] Permissão independente «Editar sala», com bloqueio das alterações não autorizadas (6 testes; opção e acesso do proprietário verificados no ecrã)
 - [x] Visão Geral: secções preenchem toda a grelha sem espaços em branco
 - [x] Visão Geral: secções lado a lado com altura igual e altura máxima limitada
+- [ ] Análise: horas do eixo x dos gráficos de barras sempre visíveis e sem o "h" (a verificar no ecrã)

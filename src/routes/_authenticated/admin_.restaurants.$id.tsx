@@ -162,8 +162,8 @@ function AdminRestaurant() {
           <div><Label>Idioma predefinido</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.default_lang ?? "pt"} onChange={(e) => set("default_lang", e.target.value)}><option value="pt">PT</option><option value="en">EN</option></select></div>
           <label className="flex items-center gap-2 text-sm"><Switch checked={(f.languages ?? []).includes("en")} onCheckedChange={(v) => set("languages", v ? ["pt", "en"] : ["pt"])} />Inglês ativo</label>
           <label className="flex items-center gap-2 text-sm"><Switch checked={!!f.published} onCheckedChange={(v) => set("published", v)} />Publicado</label>
-        </div>
-        <div className="mt-4"><Label>Descrição</Label><Textarea value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} /></div>
+        </div>}
+        {openEdit && <div className="mt-4"><Label>Descrição</Label><Textarea value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} /></div>}
       </section>
 
       <section className={box}>

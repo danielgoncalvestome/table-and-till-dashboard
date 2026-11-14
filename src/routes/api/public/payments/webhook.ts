@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { PaddleEnv } from '@/lib/paddle.server';
+import { shouldEnableOnlineBooking } from '@/lib/billing-rules';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function upsert(data: any, env: PaddleEnv) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');

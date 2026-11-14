@@ -36,7 +36,7 @@ function Box({ id, children, action, className = "" }: { id: SectionId; children
         <h2 className="flex min-w-0 items-center gap-2 font-sans text-sm font-semibold"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon className="h-3.5 w-3.5" /></span><span className="truncate">{TITLES[id]}</span></h2>
         {action}
       </header>
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 max-h-[26rem] flex-1 overflow-y-auto">{children}</div>
     </section>
   );
 }

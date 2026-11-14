@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ChevronDown } from "lucide-react";
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { ImageUploadField } from "@/components/dash/ImageUploadField";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ function Design() {
   const { restaurant: r, refresh } = useRestaurant();
   const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "", text_styles: (r.text_styles ?? {}) as TextStyles });
   const [busy, setBusy] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   async function up(k: "logo_url" | "cover_url", file?: File) {
     if (!file) return;
@@ -72,8 +74,13 @@ function Design() {
               </div>
             )}
           </Panel>
-          <Panel title={lang === "pt" ? "Texto por secção" : "Text per section"}>
-            <div className="space-y-3">
+          <Panel>
+            <button type="button" onClick={() => setShowText((v) => !v)} className="flex w-full items-center justify-between gap-2 text-left">
+              <span className="font-sans text-sm font-semibold">{lang === "pt" ? "Texto por secção" : "Text per section"}</span>
+              <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${showText ? "rotate-180" : ""}`} />
+            </button>
+            {showText && (
+            <div className="mt-4 space-y-3">
               {TEXT_SECTIONS.map((sec) => {
                 const v = (f.text_styles as Record<string, TextStyle>)[sec.id] ?? {};
                 return (
@@ -105,6 +112,7 @@ function Design() {
                 );
               })}
             </div>
+            )}
           </Panel>
         </div>
         <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color }}>

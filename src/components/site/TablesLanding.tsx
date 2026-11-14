@@ -105,9 +105,8 @@ function FlowDemo() {
 
 const Benefit = ({ children }: { children: ReactNode }) => <li className="flex items-center gap-2 text-sm"><span className="h-1.5 w-1.5 rounded-full bg-primary" />{children}</li>;
 
-function Landing() {
+export function TablesLanding() {
   return (
-    <SitePage>
       <div className="theme-bordeaux">
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 md:grid-cols-2 md:pt-24">
           <div>

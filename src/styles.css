@@ -161,3 +161,29 @@ html.panel.dark {
   main { padding: 0 !important; margin: 0 !important; }
   .rounded-md.border { break-inside: avoid; }
 }
+
+/* Table status tokens (reservations) */
+:root {
+  --st-free: oklch(0.62 0.12 150);
+  --st-reserved: oklch(0.75 0.14 75);
+  --st-seated: oklch(0.55 0.17 28);
+  --bordeaux: oklch(0.33 0.09 15);
+}
+@theme inline {
+  --color-st-free: var(--st-free);
+  --color-st-reserved: var(--st-reserved);
+  --color-st-seated: var(--st-seated);
+  --color-bordeaux: var(--bordeaux);
+}
+.theme-bordeaux {
+  --primary: var(--bordeaux);
+  --primary-foreground: oklch(0.975 0.008 85);
+  --secondary: oklch(0.93 0.025 15);
+  --secondary-foreground: var(--bordeaux);
+  --accent: oklch(0.9 0.04 15);
+  --accent-foreground: var(--bordeaux);
+  --ring: oklch(0.6 0.09 15);
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-anim, .motion-safe-anim * { animation: none !important; transition: none !important; }
+}

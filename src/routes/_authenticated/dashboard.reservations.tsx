@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
 });
 
 const TABS = [["today", "Sala"], ["list", "Reservas"], ["tables", "Mesas e zonas"], ["settings", "Regras"]] as const;
-const STATUS_CLS: Record<string, string> = { free: "border-primary/30 bg-primary/5", reserved: "border-amber-500/60 bg-amber-500/10", seated: "border-destructive/60 bg-destructive/10", late: "border-amber-500 bg-amber-500/20 animate-pulse" };
+const STATUS_CLS: Record<string, string> = { free: "border-st-free/50 bg-st-free/10", reserved: "border-st-reserved/70 bg-st-reserved/15", seated: "border-st-seated/60 bg-st-seated/10", late: "border-st-reserved bg-st-reserved/30 animate-pulse" };
 
 function Reservations() {
   const [tab, setTab] = useState<(typeof TABS)[number][0]>("today");
@@ -75,9 +75,9 @@ function Floor({ date, onBook }: { date: string; onBook: (id: string) => void })
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-primary">{counts.free}</p>Livres</div>
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-amber-600">{counts.reserved}</p>Reservadas</div>
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-destructive">{counts.seated}</p>Ocupadas</div>
+        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-free">{counts.free}</p>Livres</div>
+        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-reserved">{counts.reserved}</p>Reservadas</div>
+        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-seated">{counts.seated}</p>Ocupadas</div>
       </div>
       {zones.length > 0 && <div className="flex gap-2 overflow-x-auto">{[{ id: "all", name: "Todas" }, ...zones].map((z) => <button key={z.id} onClick={() => setZone(z.id)} className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs ${zone === z.id ? "bg-foreground text-background" : ""}`}>{z.name}</button>)}</div>}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -85,7 +85,7 @@ function Floor({ date, onBook }: { date: string; onBook: (id: string) => void })
           <div key={t.id} className={`rounded-lg border-2 p-3 ${STATUS_CLS[st]}`}>
             <div className="flex items-center justify-between"><span className="font-display text-2xl">{t.label}</span><span className="flex items-center gap-1 text-xs text-muted-foreground"><Users className="h-3 w-3" />{t.seats}</span></div>
             {seated && <p className="mt-1 text-xs">{seated.name} · liberta {hhmm(seated.ends_at)}</p>}
-            {next && <p className="mt-1 flex items-center gap-1 text-xs">{st === "late" && <AlertTriangle className="h-3 w-3 text-amber-600" />}<Clock className="h-3 w-3" />{hhmm(next.starts_at)} · {next.name} ({next.party})</p>}
+            {next && <p className="mt-1 flex items-center gap-1 text-xs">{st === "late" && <AlertTriangle className="h-3 w-3 text-st-reserved" />}<Clock className="h-3 w-3" />{hhmm(next.starts_at)} · {next.name} ({next.party})</p>}
             {!seated && !next && <p className="mt-1 text-xs text-muted-foreground">Livre</p>}
             <div className="mt-2 flex flex-wrap gap-1">
               {seated ? <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setStatus(seated.id, "completed")}>Libertar</Button>

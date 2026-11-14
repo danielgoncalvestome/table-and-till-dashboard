@@ -12,3 +12,21 @@ describe("trial alerts", () => {
     expect(a[0].level).toBe("high");
   });
 });
+
+describe("device alerts", () => {
+  const r = [{ id: "r1", name: "Cantina", created_by: "u", published: true, is_demo: false, trial_ends_at: null, created_at: iso(-20) }];
+  it("flags a device mismatch with the restaurant name", () => {
+    const a = platformAlerts(r, [], 0, now, { r1: { devices: 2, submitted: 3, tables: 3 } });
+    expect(a.map((x) => x.text)).toContain("Cantina: Dispositivos (2) diferente do número de mesas ativas (3).");
+    const hit = a.find((x) => x.text.includes("Dispositivos"));
+    expect(hit?.restaurantId).toBe("r1");
+    expect(hit?.level).toBe("medium");
+  });
+  it("flags a changed floor plan", () => {
+    const a = platformAlerts(r, [], 0, now, { r1: { devices: 3, submitted: 2, tables: 3 } });
+    expect(a.map((x) => x.text)).toContain("Cantina: A planta mudou: 3 mesas ativas, 2 na última submissão.");
+  });
+  it("stays silent when devices and tables match", () => {
+    expect(platformAlerts(r, [], 0, now, { r1: { devices: 3, submitted: 3, tables: 3 } })).toEqual([]);
+  });
+});

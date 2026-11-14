@@ -169,6 +169,5 @@ export function TablesLanding() {
           </div>
         </section>
       </div>
-    </SitePage>
   );
 }

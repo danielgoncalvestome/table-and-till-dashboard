@@ -1194,6 +1194,10 @@ export type Database = {
         Args: { _restaurant_id: string }
         Returns: boolean
       }
+      move_reservation: {
+        Args: { _id: string; _table_id: string }
+        Returns: undefined
+      }
       public_book: {
         Args: {
           _date: string

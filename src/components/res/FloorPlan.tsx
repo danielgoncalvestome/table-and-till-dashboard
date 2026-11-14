@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Circle, Square, RectangleHorizontal, RotateCw, Copy, Trash2, Undo2, Redo2, ZoomIn, ZoomOut, Save, Users, Clock, Grid3x3 } from "lucide-react";
+import { Circle, Square, RectangleHorizontal, RotateCw, Copy, Trash2, Undo2, Redo2, ZoomIn, ZoomOut, Save, Users, Clock, Grid3x3, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,6 +107,9 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
 
   const info = live && selected[0]?.kind === "table" ? selected[0] : null;
   const infoState = info ? tableState(info.id, res, r.late_tolerance_minutes) : null;
+  const POP_W = 250;
+  const popLeft = info ? ((info.x + info.w) * zoom + 10 + POP_W <= size.w * zoom ? (info.x + info.w) * zoom + 10 : Math.max(0, info.x * zoom - POP_W - 10)) : 0;
+  const popTop = info ? Math.max(0, Math.min(info.y * zoom, size.h * zoom - 190)) : 0;
   async function setStatus(id: string, status: ResStatus) {
     await supabase.from("reservations").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
     qc.invalidateQueries({ queryKey: ["reservations", r.id] });

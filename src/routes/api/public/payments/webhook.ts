@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { PaddleEnv } from '@/lib/paddle.server';
+import { shouldEnableOnlineBooking } from '@/lib/billing-rules';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function upsert(data: any, env: PaddleEnv) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
@@ -9,13 +10,20 @@ async function upsert(data: any, env: PaddleEnv) {
   const row = { status: data.status, current_period_end: data.currentBillingPeriod?.endsAt ?? null,
     cancel_at_period_end: data.scheduledChange?.action === 'cancel', updated_at: new Date().toISOString(),
     ...(priceId && { price_id: priceId }), ...(productId && { product_id: productId }) };
-  const { data: existing } = await supabaseAdmin.from('account_subscriptions').select('id').eq('paddle_subscription_id', data.id).maybeSingle();
-  if (existing) { const { error } = await supabaseAdmin.from('account_subscriptions').update(row).eq('id', existing.id).eq('environment', env); if (error) throw error; return; }
+  const { data: existing } = await supabaseAdmin.from('account_subscriptions').select('id,user_id').eq('paddle_subscription_id', data.id).maybeSingle();
+  if (existing) { const { error } = await supabaseAdmin.from('account_subscriptions').update(row).eq('id', existing.id).eq('environment', env); if (error) throw error; await enableOnlineBooking(supabaseAdmin, existing.user_id, priceId, data.status); return; }
   const userId = data.customData?.userId;
   if (!userId || !priceId) { console.warn('Skipping subscription without userId/externalId'); return; }
   const { error } = await supabaseAdmin.from('account_subscriptions').insert({ ...row, price_id: priceId, user_id: userId, environment: env,
     paddle_subscription_id: data.id, paddle_customer_id: data.customerId });
   if (error) throw error;
+  await enableOnlineBooking(supabaseAdmin, userId, priceId, data.status);
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function enableOnlineBooking(supabaseAdmin: any, userId: string, priceId: string | undefined, status: string) {
+  if (!shouldEnableOnlineBooking(priceId, status)) return;
+  const { error } = await supabaseAdmin.from('restaurants').update({ booking_enabled: true }).eq('created_by', userId).eq('is_demo', false);
+  if (error) console.error('Failed to enable online booking', error.message);
 }
 export const Route = createFileRoute('/api/public/payments/webhook')({ server: { handlers: { POST: async ({ request }) => {
   const env = new URL(request.url).searchParams.get('env');

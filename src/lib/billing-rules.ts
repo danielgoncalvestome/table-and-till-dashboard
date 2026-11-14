@@ -27,3 +27,7 @@ export function paymentEnvironment(token: string | undefined): 'sandbox' | 'live
   if (token?.startsWith('live_')) return 'live';
   return null;
 }
+/** Subscribing to the reservations plan switches online booking on for the owner's restaurants. */
+export function shouldEnableOnlineBooking(priceId: string | undefined, status: string) {
+  return priceId === 'menutap_reservas_monthly' && ['active', 'trialing'].includes(status);
+}

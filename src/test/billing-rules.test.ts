@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {PLANS,hasPaidAccess,paymentEnvironment,withPrices,validPlanCents,planByPrice} from '@/lib/billing-rules';
+import {PLANS,hasPaidAccess,paymentEnvironment,withPrices,validPlanCents,planByPrice,shouldEnableOnlineBooking} from '@/lib/billing-rules';
 describe('account subscription rules',()=>{
   const now=Date.parse('2026-11-10T17:00:00Z');
   it('keeps account access until the canceled paid period ends',()=>{
@@ -18,6 +18,12 @@ describe('account subscription rules',()=>{
   });
   it('still names retired tiers for existing subscribers',()=>{
     expect(planByPrice('menutap_6_monthly')?.name).toBe('Pro');
+  });
+  it('switches online booking on only for an active reservations-plan subscription',()=>{
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','active')).toBe(true);
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','trialing')).toBe(true);
+    expect(shouldEnableOnlineBooking('menutap_monthly','active')).toBe(false);
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','canceled')).toBe(false);
   });
   it('never treats missing or test payment configuration as live',()=>{
     expect(paymentEnvironment(undefined)).toBeNull();

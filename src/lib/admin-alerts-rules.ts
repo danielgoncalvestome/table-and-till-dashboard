@@ -7,6 +7,7 @@ const DAY = 864e5;
 export type AlertSub = { user_id: string; status: string; current_period_end: string | null; cancel_at_period_end: boolean; environment: string };
 export type AlertRestaurant = { id: string; name: string; created_by: string | null; published: boolean; is_demo: boolean; trial_ends_at: string | null; created_at: string };
 export type PlatformAlert = { level: "high" | "medium" | "low"; restaurantId?: string; text: string };
+export type DeviceInfo = { devices: number; submitted: number | null; tables: number };
 
 export function daysLeft(iso: string | null, now = Date.now()) {
   return iso ? Math.ceil((new Date(iso).getTime() - now) / DAY) : null;

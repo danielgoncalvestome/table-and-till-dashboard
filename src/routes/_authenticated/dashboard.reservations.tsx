@@ -41,7 +41,7 @@ function Reservations() {
     if (error) return toast.error(error.message);
     toast.success(`Planta submetida: ${data} mesas`);
   }
-  async function setMode(m: string) { if (!canEditRoom) return; await supabase.from("restaurants").update({ res_mode: m }).eq("id", r.id); refresh(); }
+  async function setMode(m: string) { if (!canEditRoom) return; const { error } = await supabase.rpc("set_room_mode", { _restaurant_id: r.id, _mode: m }); if (error) return toast.error(error.message); refresh(); }
   return (
     <div>
       <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />

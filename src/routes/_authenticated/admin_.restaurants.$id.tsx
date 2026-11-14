@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, LayoutDashboard, Trash2 } from "lucide-react";
+import { ChevronDown, ExternalLink, History, LayoutDashboard, Pencil, Trash2 } from "lucide-react";
 import { ThemeToggle } from "@/lib/panel-theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +49,8 @@ function AdminRestaurant() {
 
   const [f, setF] = useState<Partial<R>>({});
   const [trialEnd, setTrialEnd] = useState("");
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openLog, setOpenLog] = useState(false);
   useEffect(() => { if (r) { setF(r); setTrialEnd(r.trial_ends_at ? r.trial_ends_at.slice(0, 10) : ""); } }, [r]);
 
   if (isLoading) return null;
@@ -146,8 +148,11 @@ function AdminRestaurant() {
       <TableLinks restaurantId={id} slug={r.slug} />
 
       <section className={box}>
-        <div className="mb-5 flex items-center justify-between"><h2 className="font-sans text-sm font-semibold">Editar restaurante</h2><Button onClick={save}>Guardar alterações</Button></div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setOpenEdit((v) => !v)} className="flex items-center gap-2 font-sans text-sm font-semibold"><Pencil className="h-4 w-4 text-muted-foreground" />Editar restaurante<ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${openEdit ? "rotate-180" : ""}`} /></button>
+          {openEdit && <Button onClick={save}>Guardar alterações</Button>}
+        </div>
+        {openEdit && <div className="mt-5 grid gap-4 md:grid-cols-3">
           {field("name", "Nome")}{field("slug", "Endereço (/r/…)")}
           <div><Label>Estado</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.status ?? "draft"} onChange={(e) => set("status", e.target.value)}>{STATUSES.map((s) => <option key={s}>{s}</option>)}</select></div>
           {field("address", "Morada")}{field("phone", "Telefone", "tel")}{field("email", "Email do restaurante", "email")}
@@ -157,13 +162,13 @@ function AdminRestaurant() {
           <div><Label>Idioma predefinido</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.default_lang ?? "pt"} onChange={(e) => set("default_lang", e.target.value)}><option value="pt">PT</option><option value="en">EN</option></select></div>
           <label className="flex items-center gap-2 text-sm"><Switch checked={(f.languages ?? []).includes("en")} onCheckedChange={(v) => set("languages", v ? ["pt", "en"] : ["pt"])} />Inglês ativo</label>
           <label className="flex items-center gap-2 text-sm"><Switch checked={!!f.published} onCheckedChange={(v) => set("published", v)} />Publicado</label>
-        </div>
-        <div className="mt-4"><Label>Descrição</Label><Textarea value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} /></div>
+        </div>}
+        {openEdit && <div className="mt-4"><Label>Descrição</Label><Textarea value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} /></div>}
       </section>
 
       <section className={box}>
-        <h2 className="mb-4 font-sans text-sm font-semibold">Atividade</h2>
-        {logs?.length ? <ul className="divide-y text-sm">{logs.map((l) => <li key={l.id} className="flex justify-between py-2"><span>{l.action}</span><span className="text-muted-foreground">{formatDate(l.created_at, lang)}</span></li>)}</ul> : <p className="text-sm text-muted-foreground">Sem atividade.</p>}
+        <button onClick={() => setOpenLog((v) => !v)} className="flex items-center gap-2 font-sans text-sm font-semibold"><History className="h-4 w-4 text-muted-foreground" />Atividade<ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${openLog ? "rotate-180" : ""}`} /></button>
+        {openLog && (logs?.length ? <ul className="mt-4 divide-y text-sm">{logs.map((l) => <li key={l.id} className="flex justify-between py-2"><span>{l.action}</span><span className="text-muted-foreground">{formatDate(l.created_at, lang)}</span></li>)}</ul> : <p className="mt-4 text-sm text-muted-foreground">Sem atividade.</p>)}
       </section>
     </div>
   );

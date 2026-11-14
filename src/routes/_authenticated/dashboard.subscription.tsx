@@ -12,7 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { formatDate, formatPrice } from "@/lib/menu";
-import { PLANS, planByPrice } from "@/lib/billing-rules";
+import { planByPrice } from "@/lib/billing-rules";
+import { usePlans } from "@/lib/use-plans";
 
 export const Route = createFileRoute("/_authenticated/dashboard/subscription")({
   head: () => ({ meta: [{ title: "Subscrição — MenuTap" }, { name: "description", content: "Gerir a subscrição, pagamentos e período experimental da sua conta MenuTap." }, { property: "og:title", content: "Subscrição — MenuTap" }, { property: "og:description", content: "Gerir os pagamentos da sua conta MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -24,6 +25,7 @@ function Sub() {
   const { t, lang } = useI18n();
   const { restaurant: r } = useRestaurant();
   const environment = getPaddleEnvironment();
+  const PLANS = usePlans();
   const { checkout } = Route.useSearch();
   const portal = useServerFn(createPortalSession);
   const [busy, setBusy] = useState<string | null>(null);
@@ -81,13 +83,14 @@ function Sub() {
           <p className="mt-3 text-xs text-muted-foreground">{t("sub.keep")}</p>
         </Panel>
       </div>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {PLANS.map(p => (
           <div key={p.priceId} className={`rounded-md border bg-card p-5 ${current?.priceId === p.priceId && running ? "border-primary" : ""}`}>
             <p className="font-display text-3xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-sm text-muted-foreground">{t("pricing.per")}</span></p>
             <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
             <p className="mt-3 text-sm font-medium">{p.name}</p>
-                <p className="text-xs text-muted-foreground">{t("plans.devices").replace("{n}", String(p.devices))}</p>
+            <p className="text-xs text-muted-foreground">{t(p.reservations ? "plans.withRes" : "plans.menuOnly")}</p>
+                <p className="text-xs text-muted-foreground">{p.devices === "per_table" ? t("plans.perTable") : t("plans.devices").replace("{n}", String(p.devices))}</p>
             {owner && (current?.priceId === p.priceId && running
               ? <p className="mt-4 text-sm text-primary">{t("plans.current")}</p>
               : !running && <Button className="mt-4 w-full" disabled={!!busy || !environment || !published} onClick={() => buy(p.priceId)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.choose")}</Button>)}

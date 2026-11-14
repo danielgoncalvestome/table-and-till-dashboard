@@ -23,3 +23,24 @@ export const createPortalSession = createServerFn({ method: 'POST' }).middleware
     const portal = await getPaddleClient(data.environment).customerPortalSessions.create(sub.paddle_customer_id, sub.paddle_subscription_id ? [sub.paddle_subscription_id] : []);
     return { url: portal.urls.general.overview };
   });
+export const updatePlanPrice = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ priceId: z.string().refine(id => PLANS.some(p => p.priceId === id)), cents: z.number().int().min(100).max(100000) }))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' });
+    if (!isAdmin) throw new Error('Forbidden');
+    const { gatewayFetch } = await import('@/lib/paddle.server');
+    const results: Record<string, string> = {};
+    for (const environment of ['sandbox', 'live'] as const) {
+      try {
+        const res = await gatewayFetch(environment, `/prices?external_id=${encodeURIComponent(data.priceId)}`);
+        const price = (await res.json()).data?.[0];
+        if (!price) { results[environment] = 'not_found'; continue; }
+        const up = await gatewayFetch(environment, `/prices/${price.id}`, { method: 'PATCH', body: JSON.stringify({ unit_price: { amount: String(data.cents), currency_code: price.unit_price.currency_code } }) });
+        results[environment] = up.ok ? 'ok' : `error_${up.status}`;
+      } catch { results[environment] = 'unavailable'; }
+    }
+    if (results.sandbox !== 'ok' && results.live !== 'ok') throw new Error('Não foi possível atualizar o preço no sistema de pagamentos');
+    const { error } = await context.supabase.from('plan_prices').upsert({ price_id: data.priceId, cents: data.cents, updated_at: new Date().toISOString() });
+    if (error) throw new Error(error.message);
+    return results;
+  });

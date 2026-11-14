@@ -12,7 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { audit, useIsAdmin } from "@/lib/restaurant";
 import { formatDate } from "@/lib/menu";
-import { planByPrice } from "@/lib/billing-rules";
+import { planByPrice, validPlanCents } from "@/lib/billing-rules";
+import { usePlans } from "@/lib/use-plans";
+import { useServerFn } from "@tanstack/react-start";
+import { updatePlanPrice } from "@/utils/payments.functions";
 import { activeSub, daysLeft, platformAlerts } from "@/lib/admin-alerts-rules";
 import { AlertDot } from "@/hooks/use-admin-alerts";
 
@@ -57,7 +60,7 @@ function Admin() {
     <div className="mx-auto max-w-7xl space-y-5 p-5 md:p-8">
       <div className="flex items-center justify-between">
         <Link to="/dashboard" className="text-sm text-muted-foreground">← {t("nav.dashboard")}</Link>
-        <div className="flex items-center gap-2"><TrialDaysButton /><ThemeToggle /></div>
+        <div className="flex items-center gap-2"><PlanPricesButton /><TrialDaysButton /><ThemeToggle /></div>
       </div>
       <div><p className="eyebrow">MenuTap</p><h1 className="mt-1 text-3xl md:text-4xl">{t("admin.title")}</h1></div>
 
@@ -166,6 +169,48 @@ function TrialDaysButton() {
         <DialogHeader><DialogTitle>{t("admin.trial")}</DialogTitle></DialogHeader>
         <Label>Dias</Label><Input type="number" min={0} max={365} value={days} onChange={(e) => setDays(Number(e.target.value))} />
         <Button onClick={save}>{t("common.save")}</Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function PlanPricesButton() {
+  const plans = usePlans();
+  const qc = useQueryClient();
+  const update = useServerFn(updatePlanPrice);
+  const [open, setOpen] = useState(false);
+  const [vals, setVals] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { if (open) setVals(Object.fromEntries(plans.map((p) => [p.priceId, (p.cents / 100).toFixed(2)]))); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  async function save() {
+    setBusy(true);
+    try {
+      for (const p of plans) {
+        const cents = Math.round(Number(String(vals[p.priceId]).replace(",", ".")) * 100);
+        if (cents === p.cents) continue;
+        if (!validPlanCents(cents)) throw new Error(`Preço inválido em ${p.name}`);
+        const r = await update({ data: { priceId: p.priceId, cents } });
+        await audit("platform.plan_price", null, { price_id: p.priceId, cents, result: r });
+        if (r.live !== "ok") toast.message(`${p.name}: atualizado no modo de teste; no modo real fica ativo depois de publicar.`);
+      }
+      toast.success("Preços guardados"); setOpen(false);
+      qc.invalidateQueries({ queryKey: ["plan_prices"] });
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro"); }
+    finally { setBusy(false); }
+  }
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild><Button size="sm" variant="outline"><CreditCard />Preços</Button></DialogTrigger>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Preços dos planos (€/mês)</DialogTitle></DialogHeader>
+        {plans.map((p) => (
+          <div key={p.priceId} className="space-y-1">
+            <Label>{p.name}</Label>
+            <Input inputMode="decimal" value={vals[p.priceId] ?? ""} onChange={(e) => setVals((v) => ({ ...v, [p.priceId]: e.target.value }))} />
+          </div>
+        ))}
+        <p className="text-xs text-muted-foreground">O novo preço aplica-se a novas subscrições.</p>
+        <Button disabled={busy} onClick={save}>{busy ? "A guardar…" : "Guardar"}</Button>
       </DialogContent>
     </Dialog>
   );

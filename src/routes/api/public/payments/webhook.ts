@@ -16,6 +16,13 @@ async function upsert(data: any, env: PaddleEnv) {
   const { error } = await supabaseAdmin.from('account_subscriptions').insert({ ...row, price_id: priceId, user_id: userId, environment: env,
     paddle_subscription_id: data.id, paddle_customer_id: data.customerId });
   if (error) throw error;
+  await enableOnlineBooking(supabaseAdmin, userId, priceId, data.status);
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function enableOnlineBooking(supabaseAdmin: any, userId: string, priceId: string | undefined, status: string) {
+  if (priceId !== 'menutap_reservas_monthly' || !['active', 'trialing'].includes(status)) return;
+  const { error } = await supabaseAdmin.from('restaurants').update({ booking_enabled: true }).eq('created_by', userId).eq('is_demo', false);
+  if (error) console.error('Failed to enable online booking', error.message);
 }
 export const Route = createFileRoute('/api/public/payments/webhook')({ server: { handlers: { POST: async ({ request }) => {
   const env = new URL(request.url).searchParams.get('env');

@@ -161,7 +161,7 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Nova reserva</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-3">
-          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => setF({ ...f, walkin: !f.walkin })} className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border px-4 py-3 text-center transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
+          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => { const w = !f.walkin; setF({ ...f, walkin: w }); if (!w) setShowContact(true); }} className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border px-4 py-3 text-center transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
             <DoorOpen className={`h-5 w-5 ${f.walkin ? "text-primary-foreground" : "text-muted-foreground"}`} />
             <span className="text-sm font-semibold">Cliente à porta (sentar agora)</span>
           </button>

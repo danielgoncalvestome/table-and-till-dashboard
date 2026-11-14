@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { AlertTriangle, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { deviceWarnings } from "@/lib/orders";
 
@@ -48,11 +47,10 @@ export function TableLinks({ restaurantId, slug }: { restaurantId: string; slug:
         <h2 className="font-sans text-sm font-semibold">Links NFC por mesa e dispositivos</h2>
         <Button size="sm" onClick={generate}>Criar links para mesas sem link</Button>
       </div>
-      <div className="mb-4 grid gap-3 text-sm sm:grid-cols-4">
+      <div className="mb-4 grid gap-3 text-sm sm:grid-cols-3">
         <div className="rounded-lg border p-3"><p className="text-muted-foreground">Mesas ativas</p><p className="text-2xl font-semibold">{active.length}</p></div>
         <div className="rounded-lg border p-3"><p className="text-muted-foreground">Última planta submetida</p><p className="text-2xl font-semibold">{data.dev?.submitted_tables ?? "—"}</p>{data.dev?.submitted_at && <p className="text-xs text-muted-foreground">{new Date(data.dev.submitted_at).toLocaleDateString("pt-PT")}</p>}</div>
         <div className="rounded-lg border p-3"><p className="text-muted-foreground">Dispositivos enviados</p><div className="mt-1 flex gap-2"><Input type="number" min={0} value={devices} onChange={(e) => setDevices(Number(e.target.value))} className="h-8" /><Button size="sm" variant="outline" onClick={() => saveDev({ devices_count: devices })}>OK</Button></div></div>
-        <label className="flex items-center justify-between gap-2 rounded-lg border p-3"><span>Todos os dispositivos a funcionar</span><Switch checked={!!data.dev?.all_working} onCheckedChange={(v) => saveDev({ all_working: v })} /></label>
       </div>
       {warns.map((w) => <p key={w} className="mb-2 flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm"><AlertTriangle className="h-4 w-4 text-destructive" />{w}</p>)}
       {data.links.length === 0 ? <p className="text-sm text-muted-foreground">Ainda não há links.</p> : (

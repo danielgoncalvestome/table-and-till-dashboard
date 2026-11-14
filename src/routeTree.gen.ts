@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as GestaoDeMesasRouteImport } from './routes/gestao-de-mesas'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundRouteImport } from './routes/refund'
@@ -64,6 +65,11 @@ const FaqRoute = FaqRouteImport.update({
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GestaoDeMesasRoute = GestaoDeMesasRouteImport.update({
+  id: '/gestao-de-mesas',
+  path: '/gestao-de-mesas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/features'
+    | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
     | '/refund'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/features'
+    | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
     | '/refund'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/features'
+    | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
     | '/refund'
@@ -363,6 +375,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   FeaturesRoute: typeof FeaturesRoute
+  GestaoDeMesasRoute: typeof GestaoDeMesasRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
@@ -415,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/features'
       fullPath: '/features'
       preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gestao-de-mesas': {
+      id: '/gestao-de-mesas'
+      path: '/gestao-de-mesas'
+      fullPath: '/gestao-de-mesas'
+      preLoaderRoute: typeof GestaoDeMesasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -623,6 +643,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   FeaturesRoute: FeaturesRoute,
+  GestaoDeMesasRoute: GestaoDeMesasRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,

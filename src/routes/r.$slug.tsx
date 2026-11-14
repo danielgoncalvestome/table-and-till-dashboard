@@ -2,7 +2,8 @@ import { CalendarDays } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft } from "lucide-react";
+import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft, Plus, MoreHorizontal } from "lucide-react";
+import type { CartLine } from "@/lib/orders";
 import { supabase } from "@/integrations/supabase/client";
 import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
@@ -128,6 +129,15 @@ function PublicMenu() {
     data.dishes.filter((d) => d.category_id === cid && (!ql || tr(d.name, d.name_i18n, lang).toLowerCase().includes(ql) || tr(d.description, d.description_i18n, lang).toLowerCase().includes(ql)));
   const featured = data.dishes.filter((d) => d.featured && cats.some((c) => c.id === d.category_id));
 
+  const qtyOf = (id: string) => cart.filter((l) => l.dish_id === id).reduce((a, l) => a + l.qty, 0);
+  function addDish(d: Dish) {
+    setCart((c) => {
+      const i = c.findIndex((l) => l.dish_id === d.id);
+      if (i < 0) return [...c, { dish_id: d.id, name: tr(d.name, d.name_i18n, lang), price: Number(d.promo_price ?? d.price), qty: 1, note: "" }];
+      const n = [...c]; n[i] = { ...n[i], qty: n[i].qty + 1 }; return n;
+    });
+  }
+
   function openDish(d: Dish) {
     setOpen(d);
     track(r.id, "dish_view", { dish_id: d.id, lang });
@@ -221,9 +231,18 @@ function PublicMenu() {
                 {list.map((d) => {
                   const rt = ratingOf(d.id);
                   return (
-                    <button key={d.id} onClick={() => openDish(d)} className={`text-left ${!d.available ? "opacity-50" : ""}`}>
+                    <div key={d.id} className={`text-left ${!d.available ? "opacity-50" : ""}`}>
+                      <div className="relative cursor-pointer" onClick={() => setSel(sel === d.id ? null : d.id)}>
+                      <div className="relative">
                       {d.image_url ? <img src={d.image_url} alt={tr(d.name, d.name_i18n, lang)} loading="lazy" className="aspect-square w-full rounded object-cover" /> : <div className="grid aspect-square w-full place-items-center rounded bg-[var(--m-primary)]/[0.06] text-3xl opacity-40" style={{ fontFamily: "var(--m-font)" }}>{d.name.charAt(0)}</div>}
+                      {qtyOf(d.id) > 0 && <span key={qtyOf(d.id)} className="absolute right-1.5 top-1.5 z-[2] grid h-6 min-w-6 animate-in zoom-in-50 place-items-center rounded-full bg-[var(--m-accent)] px-1.5 text-[11px] font-bold text-[var(--m-bg)] shadow duration-300">{qtyOf(d.id)}</span>}
+                      </div>
                       <p className="mt-2 text-sm font-semibold leading-snug" style={textStyle(r.text_styles, "dish")}>{tr(d.name, d.name_i18n, lang)}</p>
+                      <div aria-hidden={sel !== d.id} className={`absolute -inset-1 z-[1] flex items-center justify-center gap-3 rounded-md backdrop-blur-[2px] transition-all duration-300 ease-out ${sel === d.id ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"}`} style={{ backgroundColor: `color-mix(in srgb, var(--m-accent) 45%, transparent)` }}>
+                        {d.available && <button type="button" aria-label={`Adicionar ${d.name}`} onClick={(e) => { e.stopPropagation(); addDish(d); }} className="grid h-11 w-11 place-items-center rounded-full bg-[var(--m-bg)] text-[var(--m-primary)] shadow-lg transition-transform active:scale-90"><Plus className="h-5 w-5" /></button>}
+                        <button type="button" aria-label={`Detalhes ${d.name}`} onClick={(e) => { e.stopPropagation(); setSel(null); openDish(d); }} className="grid h-11 w-11 place-items-center rounded-full bg-[var(--m-bg)] text-[var(--m-primary)] shadow-lg transition-transform active:scale-90"><MoreHorizontal className="h-5 w-5" /></button>
+                      </div>
+                      </div>
                       {d.description && <p className="mt-0.5 line-clamp-2 text-xs opacity-70" style={textStyle(r.text_styles, "description")}>{tr(d.description, d.description_i18n, lang)}</p>}
                       <div className="mt-1 flex items-center justify-between gap-2 text-sm">
                         <span style={textStyle(r.text_styles, "price")}>
@@ -231,7 +250,7 @@ function PublicMenu() {
                         </span>
                         {!d.available ? <span className="text-[10px] font-semibold uppercase">{u.sold}</span> : rt ? <span className="flex items-center gap-0.5 text-xs opacity-80"><Star className="h-3 w-3 fill-star text-star" />{Number(rt.avg_stars).toFixed(1)}</span> : null}
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -255,7 +274,7 @@ function PublicMenu() {
         )}
       </main>
 
-      <TableOrdering dishes={data.dishes} cats={cats} lang={lang} style={style} />
+      <TableOrdering cart={cart} setCart={setCart} lang={lang} style={style} />
       {open && (
         <div style={style} className="fixed inset-0 z-50 overflow-y-auto bg-[var(--m-bg)] text-[var(--m-primary)]" role="dialog" aria-modal="true">
           <DishDetail key={open.id} dish={open} data={data} lang={lang} onClose={() => setOpen(null)} onOpen={(d) => { track(r.id, "rec_click", { dish_id: d.id, lang }); openDish(d); }} onRated={() => qc.invalidateQueries({ queryKey: ["public-menu", slug] })} />

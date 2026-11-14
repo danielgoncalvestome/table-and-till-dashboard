@@ -14,7 +14,7 @@
 - [x] Landing page /gestao-de-mesas (bordeaux) e novos planos de preço
 
 ## Pedidos ao vivo + links NFC por mesa
-- [ ] Links NFC por mesa (só administração, seguem a planta)
-- [ ] Botão restaurante «Submeter planta» → mensagem admin; contagem de dispositivos, aviso de alteração, indicador «dispositivos a funcionar»
-- [ ] Pedidos ao vivo no menu (plano 19,90 + ativável), opções: estados, som, notas, conta
-- [ ] Limpar pedidos ao libertar mesa
+- [x] Links NFC por mesa (só administração, seguem a planta)
+- [x] Botão restaurante «Submeter planta» → mensagem admin; contagem de dispositivos, aviso de alteração, indicador «dispositivos a funcionar»
+- [x] Pedidos ao vivo no menu (plano 19,90 + ativável), opções: estados, som, notas, conta
+- [x] Limpar pedidos ao libertar mesa

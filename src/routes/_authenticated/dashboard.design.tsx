@@ -76,7 +76,7 @@ function Design() {
           </Panel>
           <Panel>
             <button type="button" onClick={() => setShowText((v) => !v)} className="flex w-full items-center justify-between gap-2 text-left">
-              <span className="font-sans text-sm font-semibold">{lang === "pt" ? "Texto por secção" : "Text per section"}</span>
+              <span className="font-sans text-sm font-semibold">{lang === "pt" ? "Personalizar texto por secção" : "Text per section"}</span>
               <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${showText ? "rotate-180" : ""}`} />
             </button>
             {showText && (

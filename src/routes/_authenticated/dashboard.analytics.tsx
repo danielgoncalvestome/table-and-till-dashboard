@@ -136,7 +136,6 @@ function Analytics() {
   const SRC: Record<string, string> = { online: "Online", staff: pt ? "Equipa" : "Staff", walk_in: pt ? "À porta" : "Walk-in" };
   const srcData = Object.entries(rs.sources).map(([k, v], i) => ({ name: SRC[k] ?? k, value: v, fill: `var(--chart-${(i % 5) + 1})` }));
   const partyData = ["1", "2", "3", "4", "5", "6", "7+"].map((k) => ({ k, v: rs.party[k] ?? 0 }));
-  const langData = s.langs.map(([k, v], i) => ({ name: k.toUpperCase(), value: v, fill: `var(--chart-${(i % 5) + 1})` }));
   const totalRatings = (ratings ?? []).reduce((a, x) => a + Number(x.total), 0);
   const avgStars = totalRatings ? (ratings ?? []).reduce((a, x) => a + Number(x.avg_stars) * Number(x.total), 0) / totalRatings : 0;
   const tip = { contentStyle: { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }, cursor: { fill: "var(--muted)" } };

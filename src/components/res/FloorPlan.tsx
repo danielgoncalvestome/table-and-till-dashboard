@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Circle, Square, RectangleHorizontal, RotateCw, Copy, Trash2, Undo2, Redo2, ZoomIn, ZoomOut, Save, Users, Clock, Grid3x3 } from "lucide-react";
+import { Circle, Square, RectangleHorizontal, RotateCw, Copy, Trash2, Undo2, Redo2, ZoomIn, ZoomOut, Save, Users, Clock, Grid3x3, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,6 +107,9 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
 
   const info = live && selected[0]?.kind === "table" ? selected[0] : null;
   const infoState = info ? tableState(info.id, res, r.late_tolerance_minutes) : null;
+  const POP_W = 250;
+  const popLeft = info ? ((info.x + info.w) * zoom + 10 + POP_W <= size.w * zoom ? (info.x + info.w) * zoom + 10 : Math.max(0, info.x * zoom - POP_W - 10)) : 0;
+  const popTop = info ? Math.max(0, Math.min(info.y * zoom, size.h * zoom - 190)) : 0;
   async function setStatus(id: string, status: ResStatus) {
     await supabase.from("reservations").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
     qc.invalidateQueries({ queryKey: ["reservations", r.id] });
@@ -160,7 +163,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
 
       <div ref={box} className="overflow-auto rounded-md border bg-card" onPointerDown={() => setSel([])}>
         <div className="relative touch-none" style={{ width: size.w * zoom, height: size.h * zoom }} onPointerMove={move} onPointerUp={up}>
-          <div className="absolute left-0 top-0 origin-top-left" style={{ width: size.w, height: size.h, transform: `scale(${zoom})`, backgroundImage: "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
+          <div className="absolute left-0 top-0 origin-top-left" style={{ width: size.w, height: size.h, transform: `scale(${zoom})`, backgroundImage: live ? "none" : "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
             {items.map((it) => {
               const st = it.kind === "table" && live ? tableState(it.id, res, r.late_tolerance_minutes) : null;
               const isSel = sel.includes(it.id);
@@ -177,24 +180,30 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
               );
             })}
           </div>
+          {info && infoState && (
+            <div className="absolute z-10 rounded-md border bg-card p-4 text-sm shadow-lg" style={{ left: popLeft, top: popTop, width: POP_W }} onPointerDown={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-display text-xl">Mesa {info.label}</p>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="flex items-center gap-1"><Users className="h-4 w-4" />{info.seats}</span>
+                  <button type="button" aria-label="Fechar" onClick={() => setSel([])} className="rounded-full p-0.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                </span>
+              </div>
+              <p className="mt-1 text-muted-foreground">{STATE_LABEL[infoState.state]}</p>
+              {infoState.seated && <p className="mt-1">{infoState.seated.name} ({infoState.seated.party}) · liberta {hhmm(infoState.seated.ends_at)}</p>}
+              {infoState.next && <p className="mt-1 flex items-center gap-1"><Clock className="h-3 w-3" />{hhmm(infoState.next.starts_at)} · {infoState.next.name} ({infoState.next.party})</p>}
+              <div className="mt-3 flex gap-2">
+                {infoState.seated ? <Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Libertar</Button>
+                  : infoState.next ? <><Button size="sm" onClick={() => setStatus(infoState.next!.id, "seated")}>Sentar</Button>{infoState.state === "late" && <Button size="sm" variant="outline" onClick={() => setStatus(infoState.next!.id, "no_show")}>No-show</Button>}</>
+                  : <Button size="sm" variant="outline" onClick={() => onBook(info.id)}>Reservar / sentar</Button>}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {live && (
         <div className="flex flex-wrap gap-3 text-xs">{(["free", "reserved", "seated"] as const).map((s) => <span key={s} className="flex items-center gap-1"><span className="h-3 w-3 rounded-full" style={{ background: STATE_BG[s] }} />{STATE_LABEL[s]}</span>)}</div>
-      )}
-      {info && infoState && (
-        <div className="rounded-md border bg-card p-4 text-sm">
-          <div className="flex items-center justify-between"><p className="font-display text-xl">Mesa {info.label}</p><span className="flex items-center gap-1 text-muted-foreground"><Users className="h-4 w-4" />{info.seats}</span></div>
-          <p className="mt-1 text-muted-foreground">{STATE_LABEL[infoState.state]}</p>
-          {infoState.seated && <p className="mt-1">{infoState.seated.name} ({infoState.seated.party}) · liberta {hhmm(infoState.seated.ends_at)}</p>}
-          {infoState.next && <p className="mt-1 flex items-center gap-1"><Clock className="h-3 w-3" />{hhmm(infoState.next.starts_at)} · {infoState.next.name} ({infoState.next.party})</p>}
-          <div className="mt-3 flex gap-2">
-            {infoState.seated ? <Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Libertar</Button>
-              : infoState.next ? <><Button size="sm" onClick={() => setStatus(infoState.next!.id, "seated")}>Sentar</Button>{infoState.state === "late" && <Button size="sm" variant="outline" onClick={() => setStatus(infoState.next!.id, "no_show")}>No-show</Button>}</>
-              : <Button size="sm" variant="outline" onClick={() => onBook(info.id)}>Reservar / sentar</Button>}
-          </div>
-        </div>
       )}
     </div>
   );

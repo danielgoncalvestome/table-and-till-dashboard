@@ -54,7 +54,7 @@ function Team() {
       <Panel title={t("team.title")}>
         {hasPlan === false ? <div className="rounded-md border border-dashed p-5 text-sm">
           <p>Criar contas para funcionários, com permissões por página, está disponível no plano <b>Gestão e Reservas</b>.</p>
-          <Button asChild size="sm" className="mt-3"><Link to="/dashboard/subscription">Ver planos</Link></Button>
+          <Button asChild size="sm" className="mt-3"><Link to="/dashboard/subscription" search={{} as never}>Ver planos</Link></Button>
         </div> : <>
           <ul className="space-y-3">
             {members?.map((m) => <MemberRow key={m.id} m={m} lang={lang} onSave={async (p, pw) => { try { await update({ data: { restaurantId: r.id, memberId: m.id, permissions: p, password: pw || undefined } }); toast.success(t("auth.updated")); refresh(); } catch (e) { toast.error((e as Error).message); } }} onRemove={async () => { if (!confirm("Remover este membro? A conta deixa de ter acesso.")) return; await remove({ data: { restaurantId: r.id, memberId: m.id } }); refresh(); }} />)}

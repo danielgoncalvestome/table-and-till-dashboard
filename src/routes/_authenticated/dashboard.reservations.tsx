@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Users, Clock, AlertTriangle, ExternalLink, DoorOpen } from "lucide-react";
+import { Plus, Minus, Trash2, Users, Clock, AlertTriangle, ExternalLink, DoorOpen, UserRound, StickyNote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -143,6 +143,8 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
   const qc = useQueryClient();
   const nowT = new Date(); const def = `${String(nowT.getHours()).padStart(2, "0")}:${nowT.getMinutes() < 30 ? "30" : "00"}`;
   const [f, setF] = useState({ date, time: def, party: 2, name: "", phone: "", email: "", notes: "", table: tableId ?? "", walkin: false });
+  const [showContact, setShowContact] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [busy, setBusy] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true);
@@ -159,19 +161,51 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Nova reserva</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-3">
-          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => setF({ ...f, walkin: !f.walkin })} className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border px-4 py-3 text-center transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
+          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => { const w = !f.walkin; setF({ ...f, walkin: w }); if (!w) setShowContact(true); }} className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border px-4 py-3 text-center transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
             <DoorOpen className={`h-5 w-5 ${f.walkin ? "text-primary-foreground" : "text-muted-foreground"}`} />
             <span className="text-sm font-semibold">Cliente à porta (sentar agora)</span>
           </button>
           {!f.walkin && <div className="grid grid-cols-2 gap-2"><div><Label>Data</Label><Input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></div><div><Label>Hora</Label><Input type="time" step={900} value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></div></div>}
-          <div className="grid grid-cols-2 gap-2">
-            <div><Label>Pessoas</Label><Input type="number" min={1} max={50} value={f.party} onChange={(e) => setF({ ...f, party: Number(e.target.value) })} /></div>
-            <div><Label>Mesa</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.table} onChange={(e) => setF({ ...f, table: e.target.value })}><option value="">Automática</option>{tables.filter((t) => t.active).map((t) => <option key={t.id} value={t.id}>{t.label} ({t.seats})</option>)}</select></div>
+          <div>
+            <Label>Pessoas</Label>
+            <div className="mt-1 flex items-center justify-between rounded-xl border bg-card px-2 py-1.5">
+              <button type="button" aria-label="Menos pessoas" disabled={f.party <= 1} onClick={() => setF({ ...f, party: Math.max(1, f.party - 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Minus className="h-4 w-4" /></button>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="min-w-8 text-center text-xl font-bold tabular-nums">{f.party}</span>
+              </div>
+              <button type="button" aria-label="Mais pessoas" disabled={f.party >= 50} onClick={() => setF({ ...f, party: Math.min(50, f.party + 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Plus className="h-4 w-4" /></button>
+            </div>
           </div>
-          <Input placeholder="Nome" value={f.name} required={!f.walkin} onChange={(e) => setF({ ...f, name: e.target.value })} />
-          <Input type="tel" placeholder="Telefone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-          <Input type="email" placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
-          <Textarea placeholder="Observações" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
+          <div>
+            <Label>Mesa</Label>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              <button type="button" onClick={() => setF({ ...f, table: "" })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === "" ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>Automática</button>
+              {tables.filter((t) => t.active).map((t) => (
+                <button type="button" key={t.id} onClick={() => setF({ ...f, table: f.table === t.id ? "" : t.id })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === t.id ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{t.label} <span className={`text-xs ${f.table === t.id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>({t.seats})</span></button>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button type="button" aria-expanded={showContact} onClick={() => setShowContact(!showContact)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showContact || f.name || f.phone || f.email ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
+              <UserRound className="h-4 w-4" />Cliente{(f.name || f.phone || f.email) && !showContact ? " •" : ""}
+            </button>
+            <button type="button" aria-expanded={showNotes} onClick={() => setShowNotes(!showNotes)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showNotes || f.notes ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
+              <StickyNote className="h-4 w-4" />Notas{f.notes && !showNotes ? " •" : ""}
+            </button>
+          </div>
+          {showContact && (
+            <div className="space-y-2 rounded-xl border bg-muted/40 p-3">
+              <Input placeholder="Nome" value={f.name} required={!f.walkin} onChange={(e) => setF({ ...f, name: e.target.value })} />
+              <Input type="tel" placeholder="Telefone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
+              <Input type="email" placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+            </div>
+          )}
+          {showNotes && (
+            <div className="rounded-xl border bg-muted/40 p-3">
+              <Textarea placeholder="Observações" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
+            </div>
+          )}
           <Button className="w-full" disabled={busy}>Guardar</Button>
         </form>
       </DialogContent>

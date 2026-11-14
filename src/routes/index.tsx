@@ -1,11 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
 import { PhonePreview } from "@/components/site/PhonePreview";
+import { TablesLanding } from "@/components/site/TablesLanding";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (s: Record<string, unknown>): { p?: "reservas" } =>
+    s.p === "reservas" ? { p: "reservas" } : {},
   head: () => ({
     meta: [
       { title: "MenuTap — Menus digitais com QR code e NFC para restaurantes" },
@@ -96,11 +99,48 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="eyebrow">— {children}</p>;
 }
 
+function HomeSwitch({ active }: { active: "menu" | "reservas" }) {
+  const navigate = useNavigate({ from: "/" });
+  const base = "rounded-full px-4 py-2 text-sm font-medium transition-colors";
+  return (
+    <div className="flex justify-center px-5 pt-6">
+      <div className="inline-flex rounded-full border bg-card p-1" role="tablist" aria-label="Escolher página inicial">
+        <button
+          role="tab"
+          aria-selected={active === "menu"}
+          onClick={() => navigate({ to: "/", search: { p: undefined }, replace: true })}
+          className={`${base} ${active === "menu" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          Menu digital
+        </button>
+        <button
+          role="tab"
+          aria-selected={active === "reservas"}
+          onClick={() => navigate({ to: "/", search: { p: "reservas" }, replace: true })}
+          className={`${base} ${active === "reservas" ? "bg-bordeaux text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          Gestão e reservas
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const { lang } = useI18n();
   const c = C[lang] ?? C.pt;
+  const { p } = Route.useSearch();
+  if (p === "reservas") {
+    return (
+      <SitePage>
+        <HomeSwitch active="reservas" />
+        <TablesLanding />
+      </SitePage>
+    );
+  }
   return (
     <SitePage>
+      <HomeSwitch active="menu" />
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 md:grid-cols-2 md:pt-20">
         <div>
           <Eyebrow>{c.eyebrow}</Eyebrow>

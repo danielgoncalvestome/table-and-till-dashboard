@@ -19,7 +19,7 @@ export function Logo({
   height?: string;
 }) {
   return (
-    <Link to="/" aria-label="MenuTap" className={`inline-flex items-center ${className}`}>
+    <Link to="/" search={{ p: undefined }} aria-label="MenuTap" className={`inline-flex items-center ${className}`}>
       <img
         src={variant === "light" ? logoLight.url : logoDark.url}
         alt="MenuTap"

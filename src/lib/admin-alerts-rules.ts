@@ -26,7 +26,7 @@ export function trialWarning(trialEndsAt: string | null, hasPaid: boolean, now =
   return null;
 }
 
-export function platformAlerts(rs: AlertRestaurant[], subs: AlertSub[], unread: number, now = Date.now()): PlatformAlert[] {
+export function platformAlerts(rs: AlertRestaurant[], subs: AlertSub[], unread: number, now = Date.now(), devices: Record<string, DeviceInfo> = {}): PlatformAlert[] {
   const out: PlatformAlert[] = [];
   if (unread) out.push({ level: "medium", text: `${unread} mensagem(ns) por ler` });
   for (const r of rs) {

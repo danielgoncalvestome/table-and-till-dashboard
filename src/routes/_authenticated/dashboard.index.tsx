@@ -149,4 +149,3 @@ function Kpi({ icon: Icon, label, value, hint }: { icon: typeof Eye; label: stri
   );
 }
 
-function KpiEnd() { return null; }

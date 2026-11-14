@@ -82,7 +82,7 @@ function Orders() {
                   </div>
                 ))}
               </div>
-              {opt.bill && <p className="mt-3 flex justify-between border-t pt-2 font-semibold"><span>Conta</span><span>{formatPrice(total)} €</span></p>}
+              {opt.bill && <p className="mt-3 flex justify-between border-t pt-2 font-semibold"><span>Conta</span><span>{formatPrice(total)}</span></p>}
             </section>
           );
         })}

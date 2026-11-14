@@ -341,13 +341,13 @@ function FloorTimeline({ tables, res, now, tol }: { tables: { id: string; label:
   );
   return (
     <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
-      <Block title="Ficam livres em breve" dot="bg-st-free" empty={!seated.length}>
+      <Block title="FICAMLIVRES EM BREVE" dot="bg-st-free" empty={!seated.length}>
         {seated.slice(0, 5).map((x) => { const d = Date.parse(x.ends_at) - now; return <Row key={x.id} k={x.id} time={hhmm(x.ends_at)} main={`Mesa ${lbl(x.table_id)}`} extra={d > 0 ? `em ${mins(d)} · ${x.name}` : `${x.name}`} warn={d <= 0 ? `excedido ${mins(-d)}` : undefined} />; })}
       </Block>
-      <Block title="Vão ficar ocupadas" dot="bg-st-reserved" empty={!arriving.length}>
+      <Block title="OCUPADAS EM BREVE" dot="bg-st-reserved" empty={!arriving.length}>
         {arriving.slice(0, 5).map((x) => { const d = Date.parse(x.starts_at) - now; const c = clash(x); return <Row key={x.id} k={x.id} time={hhmm(x.starts_at)} main={`Mesa ${lbl(x.table_id)}`} extra={`${d > 0 ? `em ${mins(d)}` : "agora"} · ${x.name} · ${x.party} pax`} warn={c ? "ainda ocupada" : undefined} />; })}
       </Block>
-      <Block title="Livres agora" dot="bg-primary" empty={!freeNow.length}>
+      <Block title="LIVRES" dot="bg-primary" empty={!freeNow.length}>
         {freeNow.slice(0, 5).map(({ t, until }) => <Row key={t.id} k={t.id} time={until ? hhmm(new Date(until).toISOString()) : "—"} main={`Mesa ${t.label}`} extra={until ? `livre durante ${mins(until - now)}` : "livre o resto do dia"} />)}
       </Block>
       <Block title="Atrasadas" dot="bg-destructive" empty={!late.length}>

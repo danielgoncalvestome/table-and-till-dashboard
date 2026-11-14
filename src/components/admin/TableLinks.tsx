@@ -21,7 +21,7 @@ export function TableLinks({ restaurantId, slug }: { restaurantId: string; slug:
   useEffect(() => { setDevices(data?.dev?.devices_count ?? 0); }, [data?.dev?.devices_count]);
   if (!data) return null;
   const active = data.tables.filter((t) => t.active);
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const origin = "https://menutap.pt";
   const url = (token: string) => `${origin}/r/${slug}?t=${token}&src=nfc`;
   const warns = deviceWarnings(active.length, data.dev?.submitted_tables, data.dev?.devices_count ?? 0);
 

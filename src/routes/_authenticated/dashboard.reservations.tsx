@@ -143,6 +143,8 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
   const qc = useQueryClient();
   const nowT = new Date(); const def = `${String(nowT.getHours()).padStart(2, "0")}:${nowT.getMinutes() < 30 ? "30" : "00"}`;
   const [f, setF] = useState({ date, time: def, party: 2, name: "", phone: "", email: "", notes: "", table: tableId ?? "", walkin: false });
+  const [showContact, setShowContact] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [busy, setBusy] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true);

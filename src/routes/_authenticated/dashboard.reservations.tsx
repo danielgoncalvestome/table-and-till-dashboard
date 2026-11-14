@@ -17,6 +17,7 @@ import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError,
 
 export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
   head: () => ({ meta: [{ title: "Reservas e mesas — MenuTap" }, { name: "description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:title", content: "Reservas e mesas — MenuTap" }, { property: "og:description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  validateSearch: (s: Record<string, unknown>): { nova?: 1 } => (s.nova ? { nova: 1 } : {}),
   component: Reservations,
 });
 
@@ -26,7 +27,8 @@ const STATUS_CLS: Record<string, string> = { free: "border-st-free/50 bg-st-free
 function Reservations() {
   const [tab, setTab] = useState<(typeof TABS)[number][0]>("today");
   const [date, setDate] = useState(todayStr());
-  const [open, setOpen] = useState<{ tableId?: string } | null>(null);
+  const search = Route.useSearch();
+  const [open, setOpen] = useState<{ tableId?: string } | null>(search.nova ? {} : null);
   const { restaurant: r, refresh } = useRestaurant();
   const [editPlan, setEditPlan] = useState(false);
   const adv = r.res_mode === "advanced";

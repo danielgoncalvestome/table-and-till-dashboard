@@ -40,7 +40,14 @@ function Admin() {
   const [filter, setFilter] = useState<"all" | "paid" | "trial" | "draft" | "expired">("all");
 
   const unread = (msgs ?? []).filter((m) => !m.read).length;
-  const alerts = useMemo(() => platformAlerts(rs ?? [], subs ?? [], unread), [rs, subs, unread]);
+  const deviceInfo = useMemo(() => {
+    const m: Record<string, DeviceInfo> = {};
+    for (const r of rs ?? []) m[r.id] = { devices: 0, submitted: null, tables: 0 };
+    for (const d of devs ?? []) if (m[d.restaurant_id]) m[d.restaurant_id] = { ...m[d.restaurant_id], devices: d.devices_count ?? 0, submitted: d.submitted_tables ?? null };
+    for (const tb of tables ?? []) if (m[tb.restaurant_id]) m[tb.restaurant_id].tables += 1;
+    return m;
+  }, [rs, devs, tables]);
+  const alerts = useMemo(() => platformAlerts(rs ?? [], subs ?? [], unread, Date.now(), deviceInfo), [rs, subs, unread, deviceInfo]);
   const liveSubs = (subs ?? []).filter((s) => s.environment === "live" && ["active", "trialing", "past_due"].includes(s.status));
   const mrr = liveSubs.reduce((a, s) => a + (planByPrice(s.price_id)?.cents ?? 0), 0) / 100;
 

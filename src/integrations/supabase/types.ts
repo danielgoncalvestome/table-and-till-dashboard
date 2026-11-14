@@ -1316,6 +1316,7 @@ export type Database = {
         Args: { _ends: string; _restaurant_id: string }
         Returns: undefined
       }
+      can_edit_room: { Args: { _restaurant_id: string }; Returns: boolean }
       dish_rating_summary: {
         Args: { _restaurant_id: string }
         Returns: {
@@ -1422,6 +1423,10 @@ export type Database = {
         Returns: undefined
       }
       restaurant_billing_access: { Args: { _id: string }; Returns: boolean }
+      set_room_mode: {
+        Args: { _mode: string; _restaurant_id: string }
+        Returns: undefined
+      }
       staff_book: {
         Args: {
           _email: string

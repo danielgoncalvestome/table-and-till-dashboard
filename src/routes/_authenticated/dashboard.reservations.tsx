@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Users, Clock, AlertTriangle, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Users, Clock, AlertTriangle, ExternalLink, DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,7 +159,13 @@ function NewReservation({ date, tableId, onClose }: { date: string; tableId?: st
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Nova reserva</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-3">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.walkin} onChange={(e) => setF({ ...f, walkin: e.target.checked })} />Cliente à porta (sentar agora)</label>
+          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => setF({ ...f, walkin: !f.walkin })} className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
+            <DoorOpen className={`h-5 w-5 shrink-0 ${f.walkin ? "text-primary-foreground" : "text-muted-foreground"}`} />
+            <span className="min-w-0 flex-1 text-sm font-semibold">Cliente à porta (sentar agora)</span>
+            <span className={`inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors ${f.walkin ? "bg-primary-foreground/30" : "bg-muted-foreground/25"}`}>
+              <span className={`h-5 w-5 rounded-full bg-background shadow transition-transform ${f.walkin ? "translate-x-5" : ""}`} />
+            </span>
+          </button>
           {!f.walkin && <div className="grid grid-cols-2 gap-2"><div><Label>Data</Label><Input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></div><div><Label>Hora</Label><Input type="time" step={900} value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></div></div>}
           <div className="grid grid-cols-2 gap-2">
             <div><Label>Pessoas</Label><Input type="number" min={1} max={50} value={f.party} onChange={(e) => setF({ ...f, party: Number(e.target.value) })} /></div>

@@ -24,6 +24,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
   const [sel, setSel] = useState<string[]>([]);
   const [zoom, setZoom] = useState(0.8);
   const [snap, setSnap] = useState(true);
+  const [statusColors, setStatusColors] = useState(false);
   const [deleted, setDeleted] = useState<string[]>([]);
   const [dirty, setDirty] = useState(false);
   const drag = useRef<{ mode: "move" | "resize"; sx: number; sy: number; orig: Item[] } | null>(null);
@@ -116,6 +117,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
       <div className="flex flex-wrap items-center gap-2">
         {zones.map((z) => <button key={z.id} onClick={() => { if (dirty && !confirm("Descartar alterações não guardadas?")) return; setDirty(false); setSel([]); setZoneId(z.id); }} className={`rounded-full border px-3 py-1 text-xs ${zone?.id === z.id ? "bg-foreground text-background" : ""}`}>{z.name}</button>)}
         <div className="ml-auto flex items-center gap-1">
+          {live && <Button size="sm" variant="outline" onClick={() => setStatusColors((v) => !v)}><span className="h-3 w-3 rounded-full" style={{ background: statusColors ? STATE_BG.free : "var(--secondary)", border: "1px solid var(--border)" }} />{statusColors ? "Cores de disponibilidade" : "Cores da planta"}</Button>}
           <Button size="icon" variant="ghost" aria-label="Diminuir zoom" onClick={() => setZoom((z) => Math.max(0.3, z / 1.2))}><ZoomOut className="h-4 w-4" /></Button>
           <span className="w-10 text-center text-xs">{Math.round(zoom * 100)}%</span>
           <Button size="icon" variant="ghost" aria-label="Aumentar zoom" onClick={() => setZoom((z) => Math.min(2, z * 1.2))}><ZoomIn className="h-4 w-4" /></Button>
@@ -162,12 +164,14 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
             {items.map((it) => {
               const st = it.kind === "table" && live ? tableState(it.id, res, r.late_tolerance_minutes) : null;
               const isSel = sel.includes(it.id);
-              const bg = st ? STATE_BG[st.state] : it.color ?? (it.kind === "decor" ? "var(--muted-foreground)" : "var(--secondary)");
+              const full = !!st && statusColors;
+              const bg = full ? STATE_BG[st.state] : it.color ?? (it.kind === "decor" ? "var(--muted-foreground)" : "var(--secondary)");
               return (
                 <div key={it.id} onPointerDown={(e) => down(e, it, "move")}
                   className={`absolute flex select-none flex-col items-center justify-center text-center ${live ? "cursor-pointer" : "cursor-move"} ${isSel ? "ring-2 ring-primary ring-offset-2" : ""} ${st?.state === "late" ? "animate-pulse" : ""} ${it.type === "round" || it.type === "plant" ? "rounded-full" : it.kind === "table" ? "rounded-md" : "rounded-sm"}`}
-                  style={{ left: it.x, top: it.y, width: it.w, height: it.h, transform: `rotate(${it.rotation}deg)`, background: bg, color: st ? "var(--primary-foreground)" : "var(--foreground)", opacity: it.kind === "decor" ? 0.55 : 1, border: it.kind === "table" ? "1px solid var(--border)" : undefined }}>
+                  style={{ left: it.x, top: it.y, width: it.w, height: it.h, transform: `rotate(${it.rotation}deg)`, background: bg, color: full ? "var(--primary-foreground)" : "var(--foreground)", opacity: it.kind === "decor" ? 0.55 : 1, border: it.kind === "table" ? "1px solid var(--border)" : undefined }}>
                   {it.kind === "table" && <><span className="text-sm font-bold leading-none">{it.label}</span><span className="text-[10px] opacity-80">{it.seats}p{st?.next && st.state !== "seated" ? ` · ${hhmm(st.next.starts_at)}` : st?.seated ? ` · ${hhmm(st.seated.ends_at)}` : ""}</span></>}
+                  {st && !full && <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full ring-1 ring-card" style={{ background: STATE_BG[st.state] }} />}
                   {!live && isSel && sel.length === 1 && <span onPointerDown={(e) => down(e, it, "resize")} className="absolute -bottom-1.5 -right-1.5 h-3 w-3 cursor-nwse-resize rounded-sm border bg-card" />}
                 </div>
               );

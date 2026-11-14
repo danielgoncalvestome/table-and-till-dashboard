@@ -117,7 +117,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
       <div className="flex flex-wrap items-center gap-2">
         {zones.map((z) => <button key={z.id} onClick={() => { if (dirty && !confirm("Descartar alterações não guardadas?")) return; setDirty(false); setSel([]); setZoneId(z.id); }} className={`rounded-full border px-3 py-1 text-xs ${zone?.id === z.id ? "bg-foreground text-background" : ""}`}>{z.name}</button>)}
         <div className="ml-auto flex items-center gap-1">
-          {live && <Button size="sm" variant="outline" onClick={() => setStatusColors((v) => !v)}><span className="h-3 w-3 rounded-full" style={{ background: statusColors ? STATE_BG.free : "var(--secondary)", border: "1px solid var(--border)" }} />{statusColors ? "Cores de disponibilidade" : "Cores da planta"}</Button>}
+          {live && <Button size="sm" variant="outline" onClick={() => setStatusColors((v) => !v)}><span className="h-3 w-3 rounded-full" style={{ background: statusColors ? STATE_BG.free : "var(--secondary)", border: "1px solid var(--border)" }} />{statusColors ? "Disponibilidade" : "Cores da planta"}</Button>}
           <Button size="icon" variant="ghost" aria-label="Diminuir zoom" onClick={() => setZoom((z) => Math.max(0.3, z / 1.2))}><ZoomOut className="h-4 w-4" /></Button>
           <span className="w-10 text-center text-xs">{Math.round(zoom * 100)}%</span>
           <Button size="icon" variant="ghost" aria-label="Aumentar zoom" onClick={() => setZoom((z) => Math.min(2, z * 1.2))}><ZoomIn className="h-4 w-4" /></Button>

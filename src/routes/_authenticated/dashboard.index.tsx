@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { trialWarning } from "@/lib/admin-alerts-rules";
 import { useResData } from "@/components/res/data";
-import { BLOCKING, STATUS_LABEL, hhmm, tableState, todayStr, type ResStatus } from "@/lib/reservations";
+import { BLOCKING, STATUS_LABEL, hhmm, isLate, tableState, todayStr, type ResStatus } from "@/lib/reservations";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL, type CartLine } from "@/lib/orders";
 import { formatPrice } from "@/lib/menu";
 import { fetchReservations, fillRows, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
@@ -213,12 +213,15 @@ function Overview() {
       </div>
     ),
     floor: active.length ? (
+      <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Donut parts={[{ v: cnt.seated, cls: "stroke-st-seated" }, { v: cnt.reserved, cls: "stroke-st-reserved" }, { v: cnt.free, cls: "stroke-st-free" }]} center={`${Math.round(((cnt.seated + cnt.reserved) / active.length) * 100)}%`} sub="ocupação" />
         <ul className="min-w-0 flex-1 space-y-2 text-sm">
           {[["Livres", cnt.free, "bg-st-free"], ["Reservadas", cnt.reserved, "bg-st-reserved"], ["Ocupadas", cnt.seated, "bg-st-seated"]].map(([l, v, c]) => <li key={l as string} className="flex items-center gap-2"><span className={`h-2.5 w-2.5 rounded-full ${c}`} /><span className="flex-1">{l}</span><strong>{v}</strong></li>)}
           <li><Link to="/dashboard/reservations" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">Abrir sala <ArrowUpRight className="h-3 w-3" /></Link></li>
         </ul>
+      </div>
+      <FloorTimeline tables={active} res={res} now={now} tol={r.late_tolerance_minutes ?? 15} />
       </div>
     ) : <p className="text-sm text-muted-foreground">Ainda não tem mesas. <Link to="/dashboard/reservations" className="text-primary hover:underline">Criar mesas</Link></p>,
     orders: openOrders.length ? (
@@ -310,4 +313,46 @@ function Overview() {
 
 function EditBtn({ label, onClick, icon: Icon }: { label: string; onClick: () => void; icon: LucideIcon }) {
   return <button type="button" aria-label={label} title={label} onClick={onClick} className="grid h-7 w-7 place-items-center rounded-md hover:bg-muted"><Icon className="h-3.5 w-3.5" /></button>;
+}
+
+type TLRes = { id: string; table_id: string | null; status: string; starts_at: string; ends_at: string; name: string; party: number };
+function mins(ms: number) { const m = Math.round(ms / 60000); return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, "0")}`; }
+function FloorTimeline({ tables, res, now, tol }: { tables: { id: string; label: string }[]; res: TLRes[]; now: number; tol: number }) {
+  const lbl = (id: string | null) => tables.find((t) => t.id === id)?.label ?? "?";
+  const mine = res.filter((x) => x.table_id && tables.some((t) => t.id === x.table_id));
+  const seated = mine.filter((x) => x.status === "seated").sort((a, b) => Date.parse(a.ends_at) - Date.parse(b.ends_at));
+  const coming = mine.filter((x) => (x.status === "pending" || x.status === "confirmed") && Date.parse(x.ends_at) > now).sort((a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at));
+  const late = coming.filter((x) => isLate(x.status, x.starts_at, tol, now));
+  const arriving = coming.filter((x) => !late.includes(x));
+  const busy = new Set([...seated, ...coming.filter((x) => Date.parse(x.starts_at) <= now)].map((x) => x.table_id));
+  const freeNow = tables.filter((t) => !busy.has(t.id)).map((t) => {
+    const nx = coming.find((x) => x.table_id === t.id && Date.parse(x.starts_at) > now);
+    return { t, until: nx ? Date.parse(nx.starts_at) : null };
+  }).sort((a, b) => (a.until ?? Infinity) - (b.until ?? Infinity));
+  const clash = (x: TLRes) => seated.find((s) => s.table_id === x.table_id && Date.parse(s.ends_at) > Date.parse(x.starts_at));
+  const Block = ({ title, dot, children, empty }: { title: string; dot: string; children: ReactNode; empty: boolean }) => (
+    <div>
+      <p className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground"><span className={`h-2 w-2 rounded-full ${dot}`} />{title}</p>
+      {empty ? <p className="text-xs text-muted-foreground">—</p> : <ul className="space-y-1 text-sm">{children}</ul>}
+    </div>
+  );
+  const Row = ({ k, time, main, extra, warn }: { k: string; time: string; main: string; extra: string; warn?: string }) => (
+    <li key={k} className="flex items-baseline gap-2"><span className="w-11 shrink-0 font-mono text-xs">{time}</span><span className="min-w-0 flex-1 truncate"><strong className="font-medium">{main}</strong> <span className="text-muted-foreground">· {extra}</span>{warn && <span className="ml-1 text-xs text-destructive">{warn}</span>}</span></li>
+  );
+  return (
+    <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
+      <Block title="Ficam livres em breve" dot="bg-st-free" empty={!seated.length}>
+        {seated.slice(0, 5).map((x) => { const d = Date.parse(x.ends_at) - now; return <Row key={x.id} k={x.id} time={hhmm(x.ends_at)} main={`Mesa ${lbl(x.table_id)}`} extra={d > 0 ? `em ${mins(d)} · ${x.name}` : `${x.name}`} warn={d <= 0 ? `excedido ${mins(-d)}` : undefined} />; })}
+      </Block>
+      <Block title="Vão ficar ocupadas" dot="bg-st-reserved" empty={!arriving.length}>
+        {arriving.slice(0, 5).map((x) => { const d = Date.parse(x.starts_at) - now; const c = clash(x); return <Row key={x.id} k={x.id} time={hhmm(x.starts_at)} main={`Mesa ${lbl(x.table_id)}`} extra={`${d > 0 ? `em ${mins(d)}` : "agora"} · ${x.name} · ${x.party} pax`} warn={c ? "ainda ocupada" : undefined} />; })}
+      </Block>
+      <Block title="Livres agora" dot="bg-primary" empty={!freeNow.length}>
+        {freeNow.slice(0, 5).map(({ t, until }) => <Row key={t.id} k={t.id} time={until ? hhmm(new Date(until).toISOString()) : "—"} main={`Mesa ${t.label}`} extra={until ? `livre durante ${mins(until - now)}` : "livre o resto do dia"} />)}
+      </Block>
+      <Block title="Atrasadas" dot="bg-destructive" empty={!late.length}>
+        {late.slice(0, 5).map((x) => <Row key={x.id} k={x.id} time={hhmm(x.starts_at)} main={`Mesa ${lbl(x.table_id)}`} extra={`${x.name} · ${x.party} pax`} warn={`+${mins(now - Date.parse(x.starts_at))}`} />)}
+      </Block>
+    </div>
+  );
 }

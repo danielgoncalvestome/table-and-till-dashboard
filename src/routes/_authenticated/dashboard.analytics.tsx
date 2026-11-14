@@ -274,7 +274,7 @@ function DonutChart({ data, empty }: { data: { name: string; value: number; fill
         </svg>
         <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-lg leading-none">{total}</div>
       </div>
-      <ul className="min-w-0 space-y-1 text-xs">{data.map((d) => <li key={d.name} className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="max-w-[10rem] truncate">{d.name}</span><span className="text-muted-foreground">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
+      <ul className="min-w-0 flex-1 space-y-1 text-xs sm:max-w-xs">{data.map((d) => <li key={d.name} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="truncate">{d.name}</span><span className="text-muted-foreground tabular-nums">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
     </div>
   );
 }

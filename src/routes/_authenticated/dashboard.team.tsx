@@ -76,7 +76,7 @@ function Team() {
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div><Label htmlFor="tm-name">Nome</Label><Input id="tm-name" required maxLength={80} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
                   <div><Label htmlFor="tm-user">{t("auth.username")}</Label><Input id="tm-user" required pattern="[A-Za-z0-9_]{3,30}" title="3–30 letras, números ou _" value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
-                  <div><Label htmlFor="tm-pass">Password inicial</Label><Input id="tm-pass" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
+                  <div><Label htmlFor="tm-pass">Password</Label><Input id="tm-pass" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
                 </div>
                 <p className="text-xs text-muted-foreground">Páginas a que tem acesso (a Visão Geral e a Ajuda estão sempre disponíveis; Equipa e Subscrição só para o proprietário):</p>
                 <PermGrid value={perms} onChange={setPerms} lang={lang} />

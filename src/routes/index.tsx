@@ -1,11 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
 import { PhonePreview } from "@/components/site/PhonePreview";
+import { TablesLanding } from "@/components/site/TablesLanding";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    p: s.p === "reservas" ? ("reservas" as const) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "MenuTap — Menus digitais com QR code e NFC para restaurantes" },

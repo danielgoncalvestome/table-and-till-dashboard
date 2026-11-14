@@ -777,6 +777,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          permissions: Json
           restaurant_id: string
           role: Database["public"]["Enums"]["member_role"]
           user_id: string
@@ -784,6 +785,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          permissions?: Json
           restaurant_id: string
           role?: Database["public"]["Enums"]["member_role"]
           user_id: string
@@ -791,6 +793,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          permissions?: Json
           restaurant_id?: string
           role?: Database["public"]["Enums"]["member_role"]
           user_id?: string
@@ -1337,6 +1340,10 @@ export type Database = {
         Returns: boolean
       }
       has_orders_plan: { Args: { _restaurant_id: string }; Returns: boolean }
+      has_perm: {
+        Args: { _perm: string; _restaurant_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1350,6 +1357,7 @@ export type Database = {
         Args: { _restaurant_id: string }
         Returns: boolean
       }
+      is_true_owner: { Args: { _restaurant_id: string }; Returns: boolean }
       move_reservation: {
         Args: { _id: string; _table_id: string }
         Returns: undefined

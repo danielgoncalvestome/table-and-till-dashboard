@@ -129,7 +129,7 @@ function Analytics() {
     doc.save(`menutap-${r.slug ?? "relatorio"}-${days}d.pdf`);
   };
   const pct = (x: number) => `${Math.round(x * 100)}%`;
-  const hourData = Array.from({ length: 24 }, (_, h) => ({ h: `${h}h`, menu: s.hours[h], reservas: rs.hours[h], pedidos: os.hours[h] })).filter((x, i) => i >= 8 || x.menu || x.reservas || x.pedidos);
+  const hourData = Array.from({ length: 24 }, (_, h) => ({ h: String(h), menu: s.hours[h], reservas: rs.hours[h], pedidos: os.hours[h] })).filter((x, i) => i >= 8 || x.menu || x.reservas || x.pedidos);
   const weekData = WEEKDAYS[lang].map((d, i) => ({ d, menu: s.days[i], pessoas: rs.days[i] }));
   const STATUS_COLORS: Record<string, string> = { pending: "var(--st-reserved)", confirmed: "var(--chart-2)", seated: "var(--st-seated)", completed: "var(--chart-1)", cancelled: "var(--muted-foreground)", no_show: "var(--destructive)" };
   const statusData = Object.entries(rs.status).map(([k, v]) => ({ name: STATUS_LABEL[k as ResStatus] ?? k, value: v, fill: STATUS_COLORS[k] ?? "var(--chart-3)" }));
@@ -165,7 +165,7 @@ function Analytics() {
 
       {tab === "menu" && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={t("an.days")}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={t("ov.topDishes")}><BarList items={s.topDishes.slice(0, 8).map(([k, v]) => [dn(k), v])} empty={t("ov.noData")} /></Card>
           <Card title={t("ov.topCats")}><BarList items={s.topCats.slice(0, 8).map(([k, v]) => [cn(k), v])} empty={t("ov.noData")} /></Card>
@@ -176,7 +176,7 @@ function Analytics() {
       )}
       {tab === "res" && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Pessoas por dia da semana" : "Guests by weekday"}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pessoas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Estado das reservas" : "Booking status"}><DonutChart data={statusData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
           <Card title={pt ? "Origem das reservas" : "Booking source"}><DonutChart data={srcData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
@@ -187,7 +187,7 @@ function Analytics() {
       {tab === "orders" && (
         <div className="grid gap-4 md:grid-cols-2">
           <Card title={pt ? "Valor por dia" : "Value per day"}><Chart><BarChart data={daily} margin={{ left: -16 }}><XAxis dataKey="day" {...axis} minTickGap={16} /><YAxis {...axis} /><Tooltip {...tip} formatter={(v: number) => formatPrice(v)} /><Bar dataKey="valor" name={pt ? "Valor" : "Value"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} interval={0} minTickGap={0} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
           <Card title={pt ? "Pratos mais pedidos" : "Most ordered dishes"}><BarList items={os.topItems.slice(0, 8)} empty={pt ? "Ainda sem pedidos." : "No orders yet."} /></Card>
           <Card title={pt ? "Resumo" : "Summary"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Pedidos" : "Orders"} value={os.count} /><Mini label={pt ? "Valor total" : "Total"} value={formatPrice(os.revenue)} /><Mini label={pt ? "Valor médio" : "Average"} value={formatPrice(os.avg)} /><Mini label={pt ? "Cancelados" : "Cancelled"} value={os.cancelled} /></div></Card>
         </div>

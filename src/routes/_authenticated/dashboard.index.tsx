@@ -149,27 +149,5 @@ function Kpi({ icon: Icon, label, value, hint }: { icon: typeof Eye; label: stri
   );
 }
 
-function QrCard() {
-  const { t, lang } = useI18n();
-  const { restaurant: r } = useRestaurant();
-  const [origin, setOrigin] = useState("");
-  const [png, setPng] = useState("");
-  useEffect(() => setOrigin(window.location.origin), []);
-  const url = `${origin}/r/${r.slug}`;
-  useEffect(() => {
-    if (!origin) return;
-    QRCode.toDataURL(`${url}?src=qr`, { margin: 2, width: 1024, color: { dark: r.primary_color, light: "#FFFFFF" }, errorCorrectionLevel: "M" }).then(setPng);
-  }, [origin, url, r.primary_color]);
-  const download = () => { const a = document.createElement("a"); a.href = png; a.download = `${r.slug}-qr.png`; a.click(); };
-  return (
-    <Card>
-      <h2 className="mb-4 font-sans text-sm font-semibold">{lang === "pt" ? "QR code e link do menu" : "Menu QR code & link"}</h2>
-      {png && <img src={png} alt="QR" className="mx-auto w-36 rounded-lg" />}
-      <div className="mt-4 flex items-center gap-1 rounded-lg bg-muted px-3 py-1.5 font-mono text-xs">
-        <a href={url} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate hover:underline">{url.replace(/^https?:\/\//, "")}</a>
-        <Button size="icon" variant="ghost" aria-label={t("common.copy")} onClick={() => { navigator.clipboard.writeText(url); toast.success(t("common.copied")); }}><Copy /></Button>
-      </div>
-      <Button className="mt-3 w-full" variant="outline" onClick={download} disabled={!png}><Download />PNG</Button>
-    </Card>
-  );
-}
+function KpiEnd() { return null; }
+

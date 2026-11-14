@@ -18,4 +18,4 @@
 - [x] Botão restaurante «Submeter planta» → mensagem admin; contagem de dispositivos, aviso de alteração, indicador «dispositivos a funcionar»
 - [x] Pedidos ao vivo no menu (plano 19,90 + ativável), opções: estados, som, notas, conta
 - [x] Limpar pedidos ao libertar mesa
-- [ ] Equipa com permissões só no plano Gestão e Reservas (19,90)
+- [x] Equipa com permissões só no plano Gestão e Reservas (19,90)

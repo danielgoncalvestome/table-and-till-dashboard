@@ -38,6 +38,8 @@ export const createTeamMember = createServerFn({ method: "POST" })
   .inputValidator(z.object({ restaurantId: z.string().uuid(), name: z.string().trim().min(1).max(80), username: usernameSchema, password: z.string().min(8).max(128), permissions: permsSchema }))
   .handler(async ({ data, context }) => {
     await assertOwner(context, data.restaurantId);
+    const { data: plan } = await context.supabase.rpc("has_orders_plan", { _restaurant_id: data.restaurantId });
+    if (!plan) return { error: "plan" as const };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: free } = await supabaseAdmin.rpc("username_available", { _username: data.username });
     if (!free) return { error: "taken" as const };

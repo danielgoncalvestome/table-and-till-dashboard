@@ -19,7 +19,7 @@ import { useResData } from "@/components/res/data";
 import { BLOCKING, STATUS_LABEL, hhmm, tableState, todayStr, type ResStatus } from "@/lib/reservations";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL, type CartLine } from "@/lib/orders";
 import { formatPrice } from "@/lib/menu";
-import { DEFAULT_LAYOUT, SECTION_IDS, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
+import { DEFAULT_LAYOUT, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Visão geral — MenuTap" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Visão geral — MenuTap" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
@@ -150,11 +150,10 @@ function Overview() {
     { to: "/dashboard/reservations", search: { nova: 1 as const }, icon: CalendarPlus, label: "Nova reserva", cls: "bg-primary text-primary-foreground" },
     { to: "/dashboard/reservations", icon: LayoutGrid, label: "Sala", cls: "bg-secondary text-primary" },
     { to: "/dashboard/orders", icon: ChefHat, label: "Pedidos", cls: "bg-secondary text-primary", badge: newOrders },
-    { to: "/dashboard/menus", icon: BookOpen, label: t2("Menus"), cls: "bg-secondary text-primary" },
+    { to: "/dashboard/menus", icon: BookOpen, label: "Menus", cls: "bg-secondary text-primary" },
     { to: "/dashboard/design", icon: Palette, label: "Design", cls: "bg-secondary text-primary" },
     { to: "/dashboard/analytics", icon: BarChart3, label: "Análise", cls: "bg-secondary text-primary" },
   ] as const;
-  function t2(x: string) { return x; }
 
   const sections: Record<SectionId, ReactNode> = {
     actions: (
@@ -292,7 +291,6 @@ function Overview() {
           );
         })}
       </div>
-      <span className="hidden">{SECTION_IDS.length}</span>
     </div>
   );
 }

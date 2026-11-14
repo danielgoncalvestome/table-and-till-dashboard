@@ -14,9 +14,13 @@ export function cartTotal(lines: { price: number; qty: number }[]) {
   return Math.round(lines.reduce((a, l) => a + l.price * l.qty, 0) * 100) / 100;
 }
 /** Warn admin when the active table count no longer matches the submitted plan or the devices sent. */
-export function deviceWarnings(activeTables: number, submitted: number | null | undefined, devices: number) {
-  const w: string[] = [];
-  if (submitted != null && submitted !== activeTables) w.push(`A planta mudou: ${activeTables} mesas ativas, ${submitted} na última submissão.`);
-  if (devices !== activeTables) w.push(`Dispositivos (${devices}) diferente do número de mesas ativas (${activeTables}).`);
+export type DeviceWarning = { kind: "plan_changed" | "device_mismatch"; text: string };
+export function deviceWarningItems(activeTables: number, submitted: number | null | undefined, devices: number): DeviceWarning[] {
+  const w: DeviceWarning[] = [];
+  if (submitted != null && submitted !== activeTables) w.push({ kind: "plan_changed", text: `A planta mudou: ${activeTables} mesas ativas, ${submitted} na última submissão.` });
+  if (devices !== activeTables) w.push({ kind: "device_mismatch", text: `Dispositivos (${devices}) diferente do número de mesas ativas (${activeTables}).` });
   return w;
+}
+export function deviceWarnings(activeTables: number, submitted: number | null | undefined, devices: number) {
+  return deviceWarningItems(activeTables, submitted, devices).map((w) => w.text);
 }

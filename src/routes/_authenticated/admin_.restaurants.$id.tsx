@@ -18,6 +18,9 @@ import { audit, useIsAdmin } from "@/lib/restaurant";
 import { formatDate, slugify } from "@/lib/menu";
 import { planByPrice } from "@/lib/billing-rules";
 import { daysLeft } from "@/lib/admin-alerts-rules";
+import { useServerFn } from "@tanstack/react-start";
+import { adminAssignPlan } from "@/utils/payments.functions";
+import { PLANS } from "@/lib/billing-rules";
 
 export const Route = createFileRoute("/_authenticated/admin_/restaurants/$id")({
   head: () => ({ meta: [{ title: "Restaurante — Administração MenuTap" }, { name: "description", content: "Ficha completa do restaurante." }, { property: "og:title", content: "Restaurante — Administração MenuTap" }, { property: "og:description", content: "Ficha completa do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -38,6 +41,14 @@ function AdminRestaurant() {
   const { data: r, refetch } = useQuery({ queryKey: ["admin-r", id], enabled: en, queryFn: async () => (await supabase.from("restaurants").select("*").eq("id", id).maybeSingle()).data });
   const owner = r?.created_by ?? null;
   const { data: subs } = useQuery({ queryKey: ["admin-r-subs", owner], enabled: en && !!owner, queryFn: async () => (await supabase.from("account_subscriptions").select("*").eq("user_id", owner!).order("created_at", { ascending: false })).data ?? [] });
+  const assignFn = useServerFn(adminAssignPlan);
+  const qcPlan = useQueryClient();
+  const manual = subs?.find((s) => !s.paddle_subscription_id && !s.stripe_subscription_id && s.environment === "live" && s.status === "active");
+  async function assign(priceId: string | null) {
+    if (!owner) return;
+    try { await assignFn({ data: { userId: owner, priceId } }); toast.success(priceId ? "Plano atribuído" : "Plano removido"); qcPlan.invalidateQueries({ queryKey: ["admin-r-subs", owner] }); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Erro"); }
+  }
   const { data: info } = useQuery({ queryKey: ["admin-owner", owner], enabled: en && !!owner, queryFn: async () => (await supabase.rpc("admin_owner_info", { _user_id: owner! })).data?.[0] ?? null });
   const { data: counts } = useQuery({ queryKey: ["admin-r-counts", id], enabled: en, queryFn: async () => {
     const c = (tb: "menus" | "categories" | "dishes" | "restaurant_members") => supabase.from(tb).select("id", { count: "exact", head: true }).eq("restaurant_id", id).then((x) => x.count ?? 0);
@@ -132,6 +143,14 @@ function AdminRestaurant() {
               ))}
             </ul>
           ) : <p className="text-sm text-muted-foreground">Sem subscrição paga.</p>}
+          <div className="mt-5 border-t pt-4">
+            <p className="text-sm font-semibold">Atribuir plano</p>
+            <p className="text-xs text-muted-foreground">{manual ? `Atribuído manualmente: ${planByPrice(manual.price_id)?.name}` : "Sem plano atribuído manualmente"} · sem pagamento, válido até ser removido</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PLANS.map((p) => <Button key={p.priceId} size="sm" variant={manual?.price_id === p.priceId ? "default" : "outline"} disabled={!owner} onClick={() => assign(p.priceId)}>{p.name}</Button>)}
+              {manual && <Button size="sm" variant="ghost" onClick={() => assign(null)}>Remover</Button>}
+            </div>
+          </div>
           <div className="mt-5 border-t pt-4">
             <p className="text-sm font-semibold">Período experimental</p>
             <p className="text-xs text-muted-foreground">{r.trial_ends_at ? `Termina a ${formatDate(r.trial_ends_at, lang)} (${tl! >= 0 ? `${tl} dias` : "terminado"})` : "Ainda não iniciado (começa ao publicar)"}</p>

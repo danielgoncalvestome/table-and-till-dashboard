@@ -34,6 +34,8 @@ function Admin() {
   const { data: subs } = useQuery({ queryKey: ["admin-subs"], enabled: en, queryFn: async () => (await supabase.from("account_subscriptions").select("*").order("created_at", { ascending: false })).data ?? [] });
   const { data: msgs } = useQuery({ queryKey: ["admin-messages"], enabled: en, queryFn: async () => (await supabase.from("contact_submissions").select("*").order("created_at", { ascending: false })).data ?? [] });
   const { data: logs } = useQuery({ queryKey: ["admin-audit"], enabled: en, queryFn: async () => (await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(15)).data ?? [] });
+  const { data: devs } = useQuery({ queryKey: ["admin-devices"], enabled: en, queryFn: async () => (await supabase.from("restaurant_devices").select("*")).data ?? [] });
+  const { data: tables } = useQuery({ queryKey: ["admin-tables"], enabled: en, queryFn: async () => (await supabase.from("dining_tables").select("restaurant_id").eq("active", true)).data ?? [] });
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "paid" | "trial" | "draft" | "expired">("all");
 

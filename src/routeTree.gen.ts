@@ -29,9 +29,11 @@ import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_a
 import { Route as AuthenticatedDashboardDesignRouteImport } from './routes/_authenticated/dashboard.design'
 import { Route as AuthenticatedDashboardHelpRouteImport } from './routes/_authenticated/dashboard.help'
 import { Route as AuthenticatedDashboardMenusRouteImport } from './routes/_authenticated/dashboard.menus'
+import { Route as AuthenticatedDashboardReservationsRouteImport } from './routes/_authenticated/dashboard.reservations'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
 import { Route as AuthenticatedDashboardTeamRouteImport } from './routes/_authenticated/dashboard.team'
+import { Route as RSlugReservarRouteImport } from './routes/r.$slug_.reservar'
 import { Route as AuthenticatedAdminRestaurantsIdRouteImport } from './routes/_authenticated/admin_.restaurants.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -140,6 +142,12 @@ const AuthenticatedDashboardMenusRoute =
     path: '/menus',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardReservationsRoute =
+  AuthenticatedDashboardReservationsRouteImport.update({
+    id: '/reservations',
+    path: '/reservations',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardSettingsRoute =
   AuthenticatedDashboardSettingsRouteImport.update({
     id: '/settings',
@@ -158,6 +166,11 @@ const AuthenticatedDashboardTeamRoute =
     path: '/team',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const RSlugReservarRoute = RSlugReservarRouteImport.update({
+  id: '/r/$slug_/reservar',
+  path: '/r/$slug/reservar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRestaurantsIdRoute =
   AuthenticatedAdminRestaurantsIdRouteImport.update({
     id: '/admin_/restaurants/$id',
@@ -190,9 +203,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
+  '/r/$slug/reservar': typeof RSlugReservarRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/admin/restaurants/$id': typeof AuthenticatedAdminRestaurantsIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -215,9 +230,11 @@ export interface FileRoutesByTo {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
+  '/r/$slug/reservar': typeof RSlugReservarRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/admin/restaurants/$id': typeof AuthenticatedAdminRestaurantsIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -243,9 +260,11 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/_authenticated/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/_authenticated/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/_authenticated/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/team': typeof AuthenticatedDashboardTeamRoute
+  '/r/$slug_/reservar': typeof RSlugReservarRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/admin_/restaurants/$id': typeof AuthenticatedAdminRestaurantsIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -271,9 +290,11 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
+    | '/dashboard/reservations'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
+    | '/r/$slug/reservar'
     | '/dashboard/'
     | '/admin/restaurants/$id'
     | '/api/public/payments/webhook'
@@ -296,9 +317,11 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
+    | '/dashboard/reservations'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
+    | '/r/$slug/reservar'
     | '/dashboard'
     | '/admin/restaurants/$id'
     | '/api/public/payments/webhook'
@@ -323,9 +346,11 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/design'
     | '/_authenticated/dashboard/help'
     | '/_authenticated/dashboard/menus'
+    | '/_authenticated/dashboard/reservations'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/team'
+    | '/r/$slug_/reservar'
     | '/_authenticated/dashboard/'
     | '/_authenticated/admin_/restaurants/$id'
     | '/api/public/payments/webhook'
@@ -344,6 +369,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
   RSlugRoute: typeof RSlugRoute
+  RSlugReservarRoute: typeof RSlugReservarRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -489,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardMenusRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/reservations': {
+      id: '/_authenticated/dashboard/reservations'
+      path: '/reservations'
+      fullPath: '/dashboard/reservations'
+      preLoaderRoute: typeof AuthenticatedDashboardReservationsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/settings': {
       id: '/_authenticated/dashboard/settings'
       path: '/settings'
@@ -509,6 +542,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/team'
       preLoaderRoute: typeof AuthenticatedDashboardTeamRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/r/$slug_/reservar': {
+      id: '/r/$slug_/reservar'
+      path: '/r/$slug/reservar'
+      fullPath: '/r/$slug/reservar'
+      preLoaderRoute: typeof RSlugReservarRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin_/restaurants/$id': {
       id: '/_authenticated/admin_/restaurants/$id'
@@ -532,6 +572,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDesignRoute: typeof AuthenticatedDashboardDesignRoute
   AuthenticatedDashboardHelpRoute: typeof AuthenticatedDashboardHelpRoute
   AuthenticatedDashboardMenusRoute: typeof AuthenticatedDashboardMenusRoute
+  AuthenticatedDashboardReservationsRoute: typeof AuthenticatedDashboardReservationsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardTeamRoute: typeof AuthenticatedDashboardTeamRoute
@@ -544,6 +585,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardDesignRoute: AuthenticatedDashboardDesignRoute,
     AuthenticatedDashboardHelpRoute: AuthenticatedDashboardHelpRoute,
     AuthenticatedDashboardMenusRoute: AuthenticatedDashboardMenusRoute,
+    AuthenticatedDashboardReservationsRoute:
+      AuthenticatedDashboardReservationsRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
     AuthenticatedDashboardSubscriptionRoute:
       AuthenticatedDashboardSubscriptionRoute,
@@ -586,6 +629,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
   RSlugRoute: RSlugRoute,
+  RSlugReservarRoute: RSlugReservarRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

@@ -238,6 +238,90 @@ export type Database = {
         }
         Relationships: []
       }
+      dining_tables: {
+        Row: {
+          active: boolean
+          color: string | null
+          combinable: boolean
+          created_at: string
+          h: number
+          id: string
+          label: string
+          live_status: string
+          max_seats: number
+          min_seats: number
+          online: boolean
+          position: number
+          restaurant_id: string
+          rotation: number
+          seats: number
+          shape: string
+          w: number
+          x: number
+          y: number
+          zone_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          color?: string | null
+          combinable?: boolean
+          created_at?: string
+          h?: number
+          id?: string
+          label: string
+          live_status?: string
+          max_seats?: number
+          min_seats?: number
+          online?: boolean
+          position?: number
+          restaurant_id: string
+          rotation?: number
+          seats?: number
+          shape?: string
+          w?: number
+          x?: number
+          y?: number
+          zone_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          color?: string | null
+          combinable?: boolean
+          created_at?: string
+          h?: number
+          id?: string
+          label?: string
+          live_status?: string
+          max_seats?: number
+          min_seats?: number
+          online?: boolean
+          position?: number
+          restaurant_id?: string
+          rotation?: number
+          seats?: number
+          shape?: string
+          w?: number
+          x?: number
+          y?: number
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dining_tables_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dining_tables_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dish_ratings: {
         Row: {
           created_at: string
@@ -570,6 +654,72 @@ export type Database = {
           },
         ]
       }
+      reservations: {
+        Row: {
+          created_at: string
+          email: string | null
+          ends_at: string
+          id: string
+          name: string
+          notes: string | null
+          party: number
+          phone: string | null
+          restaurant_id: string
+          source: string
+          starts_at: string
+          status: string
+          table_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          ends_at: string
+          id?: string
+          name: string
+          notes?: string | null
+          party: number
+          phone?: string | null
+          restaurant_id: string
+          source?: string
+          starts_at: string
+          status?: string
+          table_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          ends_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          party?: number
+          phone?: string | null
+          restaurant_id?: string
+          source?: string
+          starts_at?: string
+          status?: string
+          table_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "dining_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurant_members: {
         Row: {
           created_at: string
@@ -607,6 +757,11 @@ export type Database = {
           accent_color: string
           address: string | null
           background_color: string
+          booking_close: string
+          booking_enabled: boolean
+          booking_open: string
+          buffer_minutes: number
+          closed_days: number[]
           cover_color: string | null
           cover_url: string | null
           created_at: string
@@ -621,7 +776,11 @@ export type Database = {
           instagram_url: string | null
           is_demo: boolean
           languages: string[]
+          late_tolerance_minutes: number
           logo_url: string | null
+          max_days_ahead: number
+          meal_minutes: number
+          min_notice_minutes: number
           name: string
           opening_hours: string | null
           phone: string | null
@@ -631,6 +790,7 @@ export type Database = {
           status: Database["public"]["Enums"]["restaurant_status"]
           template: string
           text_styles: Json
+          timezone: string
           trial_ends_at: string | null
           trial_started_at: string | null
           updated_at: string
@@ -640,6 +800,11 @@ export type Database = {
           accent_color?: string
           address?: string | null
           background_color?: string
+          booking_close?: string
+          booking_enabled?: boolean
+          booking_open?: string
+          buffer_minutes?: number
+          closed_days?: number[]
           cover_color?: string | null
           cover_url?: string | null
           created_at?: string
@@ -654,7 +819,11 @@ export type Database = {
           instagram_url?: string | null
           is_demo?: boolean
           languages?: string[]
+          late_tolerance_minutes?: number
           logo_url?: string | null
+          max_days_ahead?: number
+          meal_minutes?: number
+          min_notice_minutes?: number
           name: string
           opening_hours?: string | null
           phone?: string | null
@@ -664,6 +833,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
           text_styles?: Json
+          timezone?: string
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
@@ -673,6 +843,11 @@ export type Database = {
           accent_color?: string
           address?: string | null
           background_color?: string
+          booking_close?: string
+          booking_enabled?: boolean
+          booking_open?: string
+          buffer_minutes?: number
+          closed_days?: number[]
           cover_color?: string | null
           cover_url?: string | null
           created_at?: string
@@ -687,7 +862,11 @@ export type Database = {
           instagram_url?: string | null
           is_demo?: boolean
           languages?: string[]
+          late_tolerance_minutes?: number
           logo_url?: string | null
+          max_days_ahead?: number
+          meal_minutes?: number
+          min_notice_minutes?: number
           name?: string
           opening_hours?: string | null
           phone?: string | null
@@ -697,6 +876,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
           text_styles?: Json
+          timezone?: string
           trial_ends_at?: string | null
           trial_started_at?: string | null
           updated_at?: string
@@ -868,6 +1048,50 @@ export type Database = {
         }
         Relationships: []
       }
+      zones: {
+        Row: {
+          active: boolean
+          created_at: string
+          height: number
+          id: string
+          name: string
+          online: boolean
+          position: number
+          restaurant_id: string
+          width: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          height?: number
+          id?: string
+          name: string
+          online?: boolean
+          position?: number
+          restaurant_id: string
+          width?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          height?: number
+          id?: string
+          name?: string
+          online?: boolean
+          position?: number
+          restaurant_id?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zones_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -895,6 +1119,17 @@ export type Database = {
           total: number
         }[]
       }
+      find_free_table: {
+        Args: {
+          _end: string
+          _exclude?: string
+          _online_only: boolean
+          _party: number
+          _restaurant_id: string
+          _start: string
+        }
+        Returns: string
+      }
       has_account_access: {
         Args: { _environment: string; _user_id: string }
         Returns: boolean
@@ -912,11 +1147,56 @@ export type Database = {
         Args: { _restaurant_id: string }
         Returns: boolean
       }
+      public_book: {
+        Args: {
+          _date: string
+          _email: string
+          _name: string
+          _notes: string
+          _party: number
+          _phone: string
+          _slug: string
+          _time: string
+        }
+        Returns: string
+      }
+      public_booking_info: {
+        Args: { _slug: string }
+        Returns: {
+          background_color: string
+          closed_days: number[]
+          logo_url: string
+          max_days_ahead: number
+          name: string
+          primary_color: string
+          timezone: string
+        }[]
+      }
+      public_slots: {
+        Args: { _date: string; _party: number; _slug: string }
+        Returns: {
+          slot: string
+        }[]
+      }
       rate_dish: {
         Args: { _dish_id: string; _session_id: string; _stars: number }
         Returns: undefined
       }
       restaurant_billing_access: { Args: { _id: string }; Returns: boolean }
+      staff_book: {
+        Args: {
+          _email: string
+          _name: string
+          _notes: string
+          _party: number
+          _phone: string
+          _restaurant_id: string
+          _source?: string
+          _start: string
+          _table_id?: string
+        }
+        Returns: string
+      }
       username_available: { Args: { _username: string }; Returns: boolean }
     }
     Enums: {

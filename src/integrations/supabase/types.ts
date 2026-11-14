@@ -811,6 +811,7 @@ export type Database = {
           address: string | null
           background_color: string
           booking_close: string
+          booking_design: Json
           booking_enabled: boolean
           booking_open: string
           buffer_minutes: number
@@ -857,6 +858,7 @@ export type Database = {
           address?: string | null
           background_color?: string
           booking_close?: string
+          booking_design?: Json
           booking_enabled?: boolean
           booking_open?: string
           buffer_minutes?: number
@@ -903,6 +905,7 @@ export type Database = {
           address?: string | null
           background_color?: string
           booking_close?: string
+          booking_design?: Json
           booking_enabled?: boolean
           booking_open?: string
           buffer_minutes?: number
@@ -1368,6 +1371,7 @@ export type Database = {
         Args: { _slug: string }
         Returns: {
           background_color: string
+          booking_design: Json
           closed_days: number[]
           logo_url: string
           max_days_ahead: number

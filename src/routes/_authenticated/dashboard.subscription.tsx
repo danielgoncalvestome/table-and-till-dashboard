@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CreditCard, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPaddleEnvironment, openPlanCheckout } from "@/lib/paddle";
-import { createPortalSession } from "@/utils/payments.functions";
+import { changePlan, createPortalSession } from "@/utils/payments.functions";
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +28,7 @@ function Sub() {
   const PLANS = usePlans();
   const { checkout } = Route.useSearch();
   const portal = useServerFn(createPortalSession);
+  const change = useServerFn(changePlan);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { data: user } = useQuery({ queryKey: ["billing-user"], queryFn: async () => (await supabase.auth.getUser()).data.user });
@@ -53,6 +54,13 @@ function Sub() {
     if (!user) return;
     setBusy(priceId); setError(null);
     try { await openPlanCheckout({ priceId, userId: user.id, email: user.email?.endsWith(".invalid") ? undefined : user.email, lang }); }
+    catch (e) { setError(e instanceof Error ? e.message : t("common.error")); }
+    finally { setBusy(null); }
+  }
+  async function switchTo(priceId: string, name: string) {
+    if (!environment || !confirm(t("plans.switchConfirm").replace("{p}", name))) return;
+    setBusy(priceId); setError(null);
+    try { await change({ data: { priceId, environment } }); }
     catch (e) { setError(e instanceof Error ? e.message : t("common.error")); }
     finally { setBusy(null); }
   }
@@ -93,7 +101,8 @@ function Sub() {
                 <p className="text-xs text-muted-foreground">{p.devices === "per_table" ? t("plans.perTable") : t("plans.devices").replace("{n}", String(p.devices))}</p>
             {owner && (current?.priceId === p.priceId && running
               ? <p className="mt-4 text-sm text-primary">{t("plans.current")}</p>
-              : !running && <Button className="mt-4 w-full" disabled={!!busy || !environment || !published} onClick={() => buy(p.priceId)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.choose")}</Button>)}
+              : running ? <Button className="mt-4 w-full" variant="outline" disabled={!!busy} onClick={() => switchTo(p.priceId, p.name)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.switch")}</Button>
+              : <Button className="mt-4 w-full" disabled={!!busy || !environment || !published} onClick={() => buy(p.priceId)}><CreditCard />{busy === p.priceId ? t("common.loading") : t("plans.choose")}</Button>)}
           </div>
         ))}
       </div>

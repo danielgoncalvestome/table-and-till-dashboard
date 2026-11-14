@@ -548,6 +548,24 @@ export type Database = {
           },
         ]
       }
+      plan_prices: {
+        Row: {
+          cents: number
+          price_id: string
+          updated_at: string
+        }
+        Insert: {
+          cents: number
+          price_id: string
+          updated_at?: string
+        }
+        Update: {
+          cents?: number
+          price_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           currency: string

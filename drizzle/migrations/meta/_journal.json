@@ -141,6 +141,13 @@
       "when": 1794687386660,
       "tag": "0019_table_orders_nfc_links",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794689120121,
+      "tag": "0020_booking_design",
+      "breakpoints": true
     }
   ]
 }

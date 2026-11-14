@@ -786,6 +786,7 @@ export type Database = {
           phone: string | null
           primary_color: string
           published: boolean
+          res_mode: string
           slug: string
           status: Database["public"]["Enums"]["restaurant_status"]
           template: string
@@ -829,6 +830,7 @@ export type Database = {
           phone?: string | null
           primary_color?: string
           published?: boolean
+          res_mode?: string
           slug: string
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
@@ -872,6 +874,7 @@ export type Database = {
           phone?: string | null
           primary_color?: string
           published?: boolean
+          res_mode?: string
           slug?: string
           status?: Database["public"]["Enums"]["restaurant_status"]
           template?: string
@@ -1048,10 +1051,52 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          party: number
+          phone: string | null
+          restaurant_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          party?: number
+          phone?: string | null
+          restaurant_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          party?: number
+          phone?: string | null
+          restaurant_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       zones: {
         Row: {
           active: boolean
           created_at: string
+          decor: Json
           height: number
           id: string
           name: string
@@ -1063,6 +1108,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          decor?: Json
           height?: number
           id?: string
           name: string
@@ -1074,6 +1120,7 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          decor?: Json
           height?: number
           id?: string
           name?: string
@@ -1146,6 +1193,10 @@ export type Database = {
       is_public_restaurant: {
         Args: { _restaurant_id: string }
         Returns: boolean
+      }
+      move_reservation: {
+        Args: { _id: string; _table_id: string }
+        Returns: undefined
       }
       public_book: {
         Args: {

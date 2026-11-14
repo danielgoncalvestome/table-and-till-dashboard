@@ -16,3 +16,19 @@ export function todayStr(d = new Date()) {
 export function hhmm(iso: string) { return new Date(iso).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" }); }
 export const RES_ERRORS: Record<string, string> = { unavailable: "Sem disponibilidade para esse horário.", table_busy: "Essa mesa já está ocupada nesse horário.", contact_required: "Indique telefone ou email.", invalid: "Dados inválidos." };
 export function resError(msg: string) { const k = Object.keys(RES_ERRORS).find((k) => msg.includes(k)); return k ? RES_ERRORS[k] : msg; }
+
+export type TableState = "free" | "reserved" | "seated" | "late";
+type ResLite = { id: string; table_id: string | null; status: string; starts_at: string; ends_at: string; name: string; party: number };
+/** Operational state of one table, given the day's reservations. */
+export function tableState(tableId: string, res: ResLite[], toleranceMin: number, now = Date.now()) {
+  const mine = res.filter((x) => x.table_id === tableId && (BLOCKING as string[]).includes(x.status));
+  const seated = mine.find((x) => x.status === "seated");
+  const next = mine.find((x) => x.status !== "seated" && Date.parse(x.ends_at) > now);
+  const late = !!next && isLate(next.status, next.starts_at, toleranceMin, now);
+  const state: TableState = seated ? "seated" : late ? "late" : next ? "reserved" : "free";
+  return { state, seated, next };
+}
+/** Customer key used to group reservation history. */
+export function customerKey(x: { phone: string | null; email: string | null; name: string }) {
+  return (x.phone?.replace(/\D/g, "") || x.email?.toLowerCase().trim() || x.name.toLowerCase().trim());
+}

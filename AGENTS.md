@@ -38,3 +38,4 @@ use the editor.
 - Public menu access is checked by restaurant_billing_access through RLS, while members retain draft and expired-menu read access. Why: enforce expiry without deleting restaurant content.
 - No physical goods anywhere: plans differ by tier name (Base, Pro, Business, Enterprise) and number of compatible devices (4, 6, 9, 16); never say devices are supplied, offered, shipped or sold. Why: Paddle rejects products that include physical goods.
 - Admin-only privileged actions (trial end, owner account info) go through has_role-checked SECURITY DEFINER RPCs; alert rules live in src/lib/admin-alerts-rules.ts. Why: trial fields are trigger-protected and auth.users is not client-readable.
+- Reservations: availability/booking runs only in SECURITY DEFINER RPCs (staff_book, public_book, move_reservation) that lock the restaurant row; the client never decides table conflicts. Why: prevent double bookings.

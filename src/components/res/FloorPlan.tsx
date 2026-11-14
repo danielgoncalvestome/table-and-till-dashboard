@@ -180,24 +180,30 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
               );
             })}
           </div>
+          {info && infoState && (
+            <div className="absolute z-10 rounded-md border bg-card p-4 text-sm shadow-lg" style={{ left: popLeft, top: popTop, width: POP_W }} onPointerDown={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-display text-xl">Mesa {info.label}</p>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="flex items-center gap-1"><Users className="h-4 w-4" />{info.seats}</span>
+                  <button type="button" aria-label="Fechar" onClick={() => setSel([])} className="rounded-full p-0.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                </span>
+              </div>
+              <p className="mt-1 text-muted-foreground">{STATE_LABEL[infoState.state]}</p>
+              {infoState.seated && <p className="mt-1">{infoState.seated.name} ({infoState.seated.party}) · liberta {hhmm(infoState.seated.ends_at)}</p>}
+              {infoState.next && <p className="mt-1 flex items-center gap-1"><Clock className="h-3 w-3" />{hhmm(infoState.next.starts_at)} · {infoState.next.name} ({infoState.next.party})</p>}
+              <div className="mt-3 flex gap-2">
+                {infoState.seated ? <Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Libertar</Button>
+                  : infoState.next ? <><Button size="sm" onClick={() => setStatus(infoState.next!.id, "seated")}>Sentar</Button>{infoState.state === "late" && <Button size="sm" variant="outline" onClick={() => setStatus(infoState.next!.id, "no_show")}>No-show</Button>}</>
+                  : <Button size="sm" variant="outline" onClick={() => onBook(info.id)}>Reservar / sentar</Button>}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {live && (
         <div className="flex flex-wrap gap-3 text-xs">{(["free", "reserved", "seated"] as const).map((s) => <span key={s} className="flex items-center gap-1"><span className="h-3 w-3 rounded-full" style={{ background: STATE_BG[s] }} />{STATE_LABEL[s]}</span>)}</div>
-      )}
-      {info && infoState && (
-        <div className="rounded-md border bg-card p-4 text-sm">
-          <div className="flex items-center justify-between"><p className="font-display text-xl">Mesa {info.label}</p><span className="flex items-center gap-1 text-muted-foreground"><Users className="h-4 w-4" />{info.seats}</span></div>
-          <p className="mt-1 text-muted-foreground">{STATE_LABEL[infoState.state]}</p>
-          {infoState.seated && <p className="mt-1">{infoState.seated.name} ({infoState.seated.party}) · liberta {hhmm(infoState.seated.ends_at)}</p>}
-          {infoState.next && <p className="mt-1 flex items-center gap-1"><Clock className="h-3 w-3" />{hhmm(infoState.next.starts_at)} · {infoState.next.name} ({infoState.next.party})</p>}
-          <div className="mt-3 flex gap-2">
-            {infoState.seated ? <Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Libertar</Button>
-              : infoState.next ? <><Button size="sm" onClick={() => setStatus(infoState.next!.id, "seated")}>Sentar</Button>{infoState.state === "late" && <Button size="sm" variant="outline" onClick={() => setStatus(infoState.next!.id, "no_show")}>No-show</Button>}</>
-              : <Button size="sm" variant="outline" onClick={() => onBook(info.id)}>Reservar / sentar</Button>}
-          </div>
-        </div>
       )}
     </div>
   );

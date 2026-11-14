@@ -21,7 +21,7 @@ async function upsert(data: any, env: PaddleEnv) {
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function enableOnlineBooking(supabaseAdmin: any, userId: string, priceId: string | undefined, status: string) {
-  if (priceId !== 'menutap_reservas_monthly' || !['active', 'trialing'].includes(status)) return;
+  if (!shouldEnableOnlineBooking(priceId, status)) return;
   const { error } = await supabaseAdmin.from('restaurants').update({ booking_enabled: true }).eq('created_by', userId).eq('is_demo', false);
   if (error) console.error('Failed to enable online booking', error.message);
 }

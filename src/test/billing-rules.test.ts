@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {PLANS,hasPaidAccess,paymentEnvironment,withPrices,validPlanCents,planByPrice} from '@/lib/billing-rules';
+import {PLANS,hasPaidAccess,paymentEnvironment,withPrices,validPlanCents,planByPrice,shouldEnableOnlineBooking} from '@/lib/billing-rules';
 describe('account subscription rules',()=>{
   const now=Date.parse('2026-11-10T17:00:00Z');
   it('keeps account access until the canceled paid period ends',()=>{

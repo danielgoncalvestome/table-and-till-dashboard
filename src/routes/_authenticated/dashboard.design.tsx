@@ -131,6 +131,21 @@ function Design() {
             )}
           </Panel>
         </div>
+        {target === "reservas" ? (
+          <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color, fontFamily: font }}>
+            <div className="flex h-28 items-center justify-center bg-cover bg-center" style={{ backgroundImage: f.cover_url ? `url(${f.cover_url})` : undefined, backgroundColor: f.cover_url ? undefined : f.cover_color || undefined }}>
+              {f.logo_url ? <img src={f.logo_url} alt="" className="h-20 w-auto max-w-[80%] object-contain" /> : <p className="text-2xl" style={textStyle(f.text_styles, "name")}>{r.name}</p>}
+            </div>
+            <div className="p-4">
+              <p className="text-center text-sm opacity-70" style={textStyle(f.text_styles, "bk_title")}>Reservar mesa</p>
+              <div className="mt-3 rounded-lg border bg-card p-4 text-card-foreground">
+                <p className="text-sm font-medium" style={textStyle(f.text_styles, "bk_label")}>Quantas pessoas?</p>
+                <div className="mt-2 rounded border py-2 text-center text-xl">2</div>
+                <button type="button" className="mt-3 w-full rounded py-2 text-sm text-primary-foreground" style={{ background: f.accent_color || f.primary_color, ...textStyle(f.text_styles, "bk_button") }}>Ver horários</button>
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color }}>
           {f.logo_url ? (
             <div className="flex h-28 items-center justify-center bg-cover bg-center" style={{ backgroundImage: f.cover_url ? `url(${f.cover_url})` : undefined, backgroundColor: f.cover_url ? undefined : f.cover_color || undefined }}>
@@ -143,6 +158,7 @@ function Design() {
             <div className="mt-2 grid grid-cols-2 gap-3">{[1, 2].map((i) => <div key={i}><div className="aspect-square rounded" style={{ background: f.primary_color, opacity: 0.12 }} /><p className="mt-1 text-sm font-semibold" style={textStyle(f.text_styles, "dish")}>Prato {i}</p><p className="text-xs opacity-70" style={textStyle(f.text_styles, "description")}>Descrição</p><p className="text-sm" style={textStyle(f.text_styles, "price")}>12,00</p></div>)}</div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

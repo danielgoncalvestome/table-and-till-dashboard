@@ -82,3 +82,32 @@ export function reservationInsights(s: ReturnType<typeof summarizeReservations>,
   if (s.upcomingCovers) out.push(pt ? `${s.upcomingCovers} pessoa(s) já esperadas nas próximas reservas.` : `${s.upcomingCovers} guest(s) expected in upcoming bookings.`);
   return out;
 }
+
+type MenuSummary = { views: number; hours: number[]; topDishes: [string, number][]; topCats: [string, number][]; recClicks: [string, number][]; searches: [string, number][] };
+type Cat = { dishes: { id: string; name: string; image_url: string | null }[]; cats: { id: string; name: string }[] };
+export function menuInsights(s: MenuSummary, cat: Cat, pt = true): string[] {
+  const out: string[] = [];
+  const dn = (id: string) => cat.dishes.find((d) => d.id === id)?.name ?? "—";
+  if (s.topDishes[0]) out.push(pt ? `“${dn(s.topDishes[0][0])}” é o prato mais consultado (${s.topDishes[0][1]} visualizações).` : `“${dn(s.topDishes[0][0])}” is the most viewed dish (${s.topDishes[0][1]} views).`);
+  const viewed = new Set(s.topCats.map(([k]) => k));
+  const unexplored = cat.cats.filter((c) => !viewed.has(c.id));
+  if (s.views > 0 && unexplored.length) out.push(pt ? `Categorias pouco exploradas: ${unexplored.map((c) => c.name).join(", ")}. Considere destacá-las.` : `Least explored categories: ${unexplored.map((c) => c.name).join(", ")}. Consider featuring them.`);
+  if (s.views > 0) out.push(pt ? `Maior procura do menu por volta das ${argmax(s.hours)}h.` : `Menu peak around ${argmax(s.hours)}:00.`);
+  if (s.recClicks[0]) out.push(pt ? `A recomendação mais clicada é “${dn(s.recClicks[0][0])}”.` : `Most clicked recommendation: “${dn(s.recClicks[0][0])}”.`);
+  if (s.searches[0]) out.push(pt ? `Pesquisa mais feita: “${s.searches[0][0]}”.` : `Top search: “${s.searches[0][0]}”.`);
+  const noPhoto = s.topDishes.slice(0, 5).filter(([id]) => !cat.dishes.find((d) => d.id === id)?.image_url);
+  if (noPhoto.length) out.push(pt ? `Pratos populares sem fotografia: ${noPhoto.map(([id]) => dn(id)).join(", ")}.` : `Popular dishes without a photo: ${noPhoto.map(([id]) => dn(id)).join(", ")}.`);
+  return out;
+}
+
+/** Decides which half-width items must stretch to full width so the 2-column grid has no empty cells. */
+export function fillRows(items: { wide: boolean }[]): boolean[] {
+  const out = items.map((x) => x.wide);
+  let col = 0;
+  for (let i = 0; i < items.length; i++) {
+    if (out[i]) { col = 0; continue; }
+    if (col === 0 && (i === items.length - 1 || out[i + 1])) { out[i] = true; continue; }
+    col = col === 0 ? 1 : 0;
+  }
+  return out;
+}

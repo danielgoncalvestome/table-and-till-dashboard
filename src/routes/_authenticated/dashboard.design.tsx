@@ -11,14 +11,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { FONTS, TEMPLATES, uploadImage } from "@/lib/menu";
-import { TEXT_SECTIONS, textStyle, type TextStyles, type TextStyle } from "@/lib/text-styles";
+import { BOOKING_SECTIONS, MENU_SECTIONS, TEXT_SECTIONS, textStyle, type TextStyles, type TextStyle } from "@/lib/text-styles";
 
 export const Route = createFileRoute("/_authenticated/dashboard/design")({ head: () => ({ meta: [{ title: "Aparência — MenuTap" }, { name: "description", content: "Personalize a aparência do seu menu digital." }, { property: "og:title", content: "Aparência — MenuTap" }, { property: "og:description", content: "Personalize a aparência do seu menu digital." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Design });
 
 function Design() {
   const { t, lang } = useI18n();
   const { restaurant: r, refresh } = useRestaurant();
-  const [f, setF] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "", text_styles: (r.text_styles ?? {}) as TextStyles });
+  const [target, setTarget] = useState<"menu" | "reservas">("menu");
+  const [fm, setFm] = useState({ primary_color: r.primary_color, background_color: r.background_color, accent_color: r.accent_color, font: r.font, template: r.template, logo_url: r.logo_url ?? "", cover_url: r.cover_url ?? "", cover_color: r.cover_color ?? "", text_styles: (r.text_styles ?? {}) as TextStyles });
+  const [fb, setFb] = useState(() => ({ ...fm, ...((r as { booking_design?: object }).booking_design ?? {}) } as typeof fm));
+  const f = target === "menu" ? fm : fb;
+  const setF = target === "menu" ? setFm : setFb;
+  const sections = TEXT_SECTIONS.filter((x) => (target === "menu" ? MENU_SECTIONS : BOOKING_SECTIONS).includes(x.id));
   const [busy, setBusy] = useState(false);
   const [showText, setShowText] = useState(false);
 
@@ -27,6 +32,11 @@ function Design() {
     try { setBusy(true); const url = await uploadImage(r.id, file); setF((p) => ({ ...p, [k]: url })); } catch { toast.error(t("common.error")); } finally { setBusy(false); }
   }
   async function save() {
+    if (target === "reservas") {
+      const { error } = await supabase.from("restaurants").update({ booking_design: fb as never }).eq("id", r.id);
+      if (error) return toast.error(t("common.error"));
+      toast.success(t("common.saved")); return refresh();
+    }
     const { error } = await supabase.from("restaurants").update({ ...f, logo_url: f.logo_url || null, cover_url: f.cover_url || null, cover_color: f.cover_color || null, text_styles: f.text_styles as never }).eq("id", r.id);
     if (error) return toast.error(t("common.error"));
     toast.success(t("common.saved")); refresh();
@@ -37,6 +47,12 @@ function Design() {
   return (
     <div>
       <PageTitle title={t("design.title")} action={<Button onClick={save} disabled={busy}>{t("common.save")}</Button>} />
+      <div className="mb-5 flex justify-center">
+        <div className="inline-flex rounded-full border bg-card p-1" role="tablist">
+          <button role="tab" aria-selected={target === "menu"} onClick={() => setTarget("menu")} className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${target === "menu" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>{lang === "pt" ? "Menu digital" : "Digital menu"}</button>
+          <button role="tab" aria-selected={target === "reservas"} onClick={() => setTarget("reservas")} className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${target === "reservas" ? "bg-bordeaux text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>{lang === "pt" ? "Página de reservas" : "Booking page"}</button>
+        </div>
+      </div>
       <div className="grid gap-6 md:grid-cols-[1fr_320px]">
         <div className="space-y-4">
           <Panel title={t("design.template")}>
@@ -81,7 +97,7 @@ function Design() {
             </button>
             {showText && (
             <div className="mt-4 space-y-3">
-              {TEXT_SECTIONS.map((sec) => {
+              {sections.map((sec) => {
                 const v = (f.text_styles as Record<string, TextStyle>)[sec.id] ?? {};
                 return (
                   <div key={sec.id} className="rounded border p-3">

@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, LayoutDashboard, Trash2 } from "lucide-react";
+import { ChevronDown, ExternalLink, History, LayoutDashboard, Pencil, Trash2 } from "lucide-react";
 import { ThemeToggle } from "@/lib/panel-theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

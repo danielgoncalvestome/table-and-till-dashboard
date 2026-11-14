@@ -11,8 +11,10 @@ export const Route = createFileRoute("/gestao-de-mesas")({
 
 function Landing() {
   return (
-    <SitePage>
-      <TablesLanding />
-    </SitePage>
+    <div className="theme-bordeaux">
+      <SitePage>
+        <TablesLanding />
+      </SitePage>
+    </div>
   );
 }

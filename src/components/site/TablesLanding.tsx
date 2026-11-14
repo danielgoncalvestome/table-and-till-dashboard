@@ -107,7 +107,7 @@ const Benefit = ({ children }: { children: ReactNode }) => <li className="flex i
 
 export function TablesLanding() {
   return (
-      <div className="theme-bordeaux">
+      <>
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 md:grid-cols-2 md:pt-24">
           <div>
             <p className="eyebrow text-primary">Mesas e reservas</p>

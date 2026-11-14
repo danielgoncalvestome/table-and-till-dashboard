@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import QRCode from "qrcode";
+import { useMemo } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, ArrowUpRight, BarChart3, BookOpen, CheckCircle2, Copy, Download, Eye, Palette, Star, Users } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, BarChart3, BookOpen, CheckCircle2, Eye, Palette, Star, Users } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
 import { fetchEvents, summarize } from "@/lib/analytics";

@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageIntro, SitePage } from "@/components/site/SiteLayout";
 import { useI18n } from "@/lib/i18n";
-import { PLANS } from "@/lib/billing-rules";
+import { usePlans } from "@/lib/use-plans";
 import { formatPrice } from "@/lib/menu";
 import logoDark from "@/assets/menutap-logo.png.asset.json";
 
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/pricing")({
 
 function Pricing() {
   const { t, lang } = useI18n();
+  const PLANS = usePlans();
   return (
     <SitePage>
       <PageIntro eyebrow={t("nav.pricing")} title={t("pricing.title")} />
@@ -35,13 +36,14 @@ function Pricing() {
             ))}
           </ul>
           <p className="mt-6 text-sm">{t("plans.free")}</p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 ">
             {PLANS.map((p) => (
               <div key={p.priceId} className="rounded-md border p-5">
                 <p className="font-display text-4xl text-primary">{formatPrice(p.cents / 100, lang)}<span className="text-base text-muted-foreground">{t("pricing.per")}</span></p>
                 <p className="mt-1 text-xs text-muted-foreground">{t("pricing.vat")}</p>
                 <p className="mt-3 text-sm font-medium">{p.name}</p>
-                <p className="text-xs text-muted-foreground">{t("plans.devices").replace("{n}", String(p.devices))}</p>
+                <p className="text-xs text-muted-foreground">{t(p.reservations ? "plans.withRes" : "plans.menuOnly")}</p>
+                <p className="text-xs text-muted-foreground">{p.devices === "per_table" ? t("plans.perTable") : t("plans.devices").replace("{n}", String(p.devices))}</p>
               </div>
             ))}
           </div>

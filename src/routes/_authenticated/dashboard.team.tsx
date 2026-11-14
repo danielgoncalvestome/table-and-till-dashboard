@@ -78,7 +78,7 @@ function Team() {
                   <div><Label htmlFor="tm-user">{t("auth.username")}</Label><Input id="tm-user" required pattern="[A-Za-z0-9_]{3,30}" title="3–30 letras, números ou _" value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
                   <div><Label htmlFor="tm-pass">Password</Label><Input id="tm-pass" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
                 </div>
-                <p className="text-xs text-muted-foreground">Páginas a que tem acesso (a Visão Geral e a Ajuda estão sempre disponíveis; Equipa e Subscrição só para o proprietário):</p>
+                <p className="text-xs text-muted-foreground">Permissões (a Visão Geral e a Ajuda estão sempre disponíveis; Equipa e Subscrição só para o proprietário):</p>
                 <PermGrid value={perms} onChange={setPerms} lang={lang} />
                 <Button disabled={busy} className="w-full sm:w-auto">{busy ? "A criar…" : "Criar membro"}</Button>
               </form>
@@ -105,7 +105,7 @@ function MemberRow({ m, lang, onSave, onRemove }: { m: Member; lang: string; onS
   const [p, setP] = useState<PermMap>(m.permissions);
   const [pw, setPw] = useState("");
   const [open, setOpen] = useState(false);
-  const owner = m.role === "owner" || m.role === "manager";
+  const owner = m.role === "owner";
   return <li className="rounded-md border p-3">
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0"><p className="truncate font-medium">{m.name ?? m.username}</p><p className="text-xs text-muted-foreground">{m.username ? `@${m.username}` : ""}</p></div>

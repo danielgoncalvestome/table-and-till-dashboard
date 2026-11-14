@@ -8,3 +8,7 @@
 - [x] Botão de definições junto ao modo claro/escuro
 - [x] Página de ajuda: formulário de mensagem no topo + dúvidas frequentes alargadas
 - [x] Design e marca → Tipografia: mais tipos de letra disponíveis (14 no total; carregamento e aplicação no menu público verificados)
+- [x] Reservas fase 1: zonas, mesas (mín/ideal/máx), motor atómico, modo simples (Sala), lista, regras, reserva online pública
+- [ ] Reservas: editor visual da planta (arrastar/redimensionar/rodar)
+- [ ] Reservas: agenda/timeline, lista de espera, ficha de clientes, estatísticas
+- [ ] Landing page /gestao-de-mesas (bordeaux) e novos planos de preço

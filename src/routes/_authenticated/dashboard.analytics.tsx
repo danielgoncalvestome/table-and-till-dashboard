@@ -197,7 +197,7 @@ function Analytics() {
         <Kpi icon={Eye} label={t("ov.views")} value={s.views} />
         <Kpi icon={Users} label={t("ov.sessions")} value={s.sessions} />
         <Kpi icon={CalendarDays} label={pt ? "Reservas" : "Bookings"} value={rs.total} sub={`${rs.covers} ${pt ? "pessoas" : "guests"}`} />
-        <Kpi icon={TrendingUp} label={pt ? "Não comparência" : "No-show"} value={pct(rs.noShowRate)} />
+        <Kpi icon={TrendingUp} label={pt ? "NO-SHOWS" : "No-show"} value={pct(rs.noShowRate)} />
         <Kpi icon={ChefHat} label={pt ? "Pedidos" : "Orders"} value={os.count} sub={formatPrice(os.revenue)} />
         <Kpi icon={Star} label={t("an.ratings")} value={totalRatings ? avgStars.toFixed(1) : "—"} sub={`${totalRatings} ${pt ? "aval." : "ratings"}`} />
       </div>

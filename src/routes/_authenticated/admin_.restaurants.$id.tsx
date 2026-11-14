@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { TableLinks } from "@/components/admin/TableLinks";
 import { QrBox } from "@/components/dash/QrBox";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -141,6 +142,8 @@ function AdminRestaurant() {
           <QrBox slug={r.slug} color={r.primary_color} nfc />
         </section>
       </div>
+
+      <TableLinks restaurantId={id} slug={r.slug} />
 
       <section className={box}>
         <div className="mb-5 flex items-center justify-between"><h2 className="font-sans text-sm font-semibold">Editar restaurante</h2><Button onClick={save}>Guardar alterações</Button></div>

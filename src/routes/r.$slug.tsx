@@ -6,6 +6,7 @@ import { Phone, Instagram, Star, Search, X, MapPin, Clock, ChevronLeft } from "l
 import { supabase } from "@/integrations/supabase/client";
 import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
+import { TableOrdering } from "@/components/orders/TableOrdering";
 import { textStyle } from "@/lib/text-styles";
 import logoDark from "@/assets/menutap-logo.png.asset.json";
 import logoLight from "@/assets/menutap-logo-light.png.asset.json";
@@ -254,6 +255,7 @@ function PublicMenu() {
         )}
       </main>
 
+      <TableOrdering dishes={data.dishes} cats={cats} lang={lang} style={style} />
       {open && (
         <div style={style} className="fixed inset-0 z-50 overflow-y-auto bg-[var(--m-bg)] text-[var(--m-primary)]" role="dialog" aria-modal="true">
           <DishDetail key={open.id} dish={open} data={data} lang={lang} onClose={() => setOpen(null)} onOpen={(d) => { track(r.id, "rec_click", { dish_id: d.id, lang }); openDish(d); }} onRated={() => qc.invalidateQueries({ queryKey: ["public-menu", slug] })} />

@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, CalendarDays, ExternalLink, LogOut, Shield, Menu as MenuIcon,
-} from "lucide-react";
+  ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,6 +58,7 @@ function DashboardLayout() {
     { to: "/dashboard", icon: LayoutDashboard, label: t("dash.overview"), exact: true },
     { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus") },
     { to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations") },
+    { to: "/dashboard/orders", icon: ClipboardList, label: t("dash.orders") },
     { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics") },
     { to: "/dashboard/design", icon: Palette, label: t("dash.design") },
     { to: "/dashboard/team", icon: Users, label: t("dash.team") },

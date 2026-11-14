@@ -12,3 +12,9 @@
 - [x] Reservas: editor visual da planta (arrastar/redimensionar/rodar)
 - [x] Reservas: agenda/timeline, lista de espera, ficha de clientes, estatísticas
 - [x] Landing page /gestao-de-mesas (bordeaux) e novos planos de preço
+
+## Pedidos ao vivo + links NFC por mesa
+- [x] Links NFC por mesa (só administração, seguem a planta)
+- [x] Botão restaurante «Submeter planta» → mensagem admin; contagem de dispositivos, aviso de alteração, indicador «dispositivos a funcionar»
+- [x] Pedidos ao vivo no menu (plano 19,90 + ativável), opções: estados, som, notas, conta
+- [x] Limpar pedidos ao libertar mesa

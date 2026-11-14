@@ -134,6 +134,13 @@
       "when": 1794685576835,
       "tag": "0018_plan_prices",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794687386660,
+      "tag": "0019_table_orders_nfc_links",
+      "breakpoints": true
     }
   ]
 }

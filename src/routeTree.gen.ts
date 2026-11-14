@@ -30,6 +30,7 @@ import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_a
 import { Route as AuthenticatedDashboardDesignRouteImport } from './routes/_authenticated/dashboard.design'
 import { Route as AuthenticatedDashboardHelpRouteImport } from './routes/_authenticated/dashboard.help'
 import { Route as AuthenticatedDashboardMenusRouteImport } from './routes/_authenticated/dashboard.menus'
+import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard.orders'
 import { Route as AuthenticatedDashboardReservationsRouteImport } from './routes/_authenticated/dashboard.reservations'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
@@ -148,6 +149,12 @@ const AuthenticatedDashboardMenusRoute =
     path: '/menus',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardOrdersRoute =
+  AuthenticatedDashboardOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardReservationsRoute =
   AuthenticatedDashboardReservationsRouteImport.update({
     id: '/reservations',
@@ -210,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
@@ -238,6 +246,7 @@ export interface FileRoutesByTo {
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
@@ -269,6 +278,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/_authenticated/dashboard/help': typeof AuthenticatedDashboardHelpRoute
   '/_authenticated/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
+  '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/_authenticated/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
+    | '/dashboard/orders'
     | '/dashboard/reservations'
     | '/dashboard/settings'
     | '/dashboard/subscription'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/dashboard/design'
     | '/dashboard/help'
     | '/dashboard/menus'
+    | '/dashboard/orders'
     | '/dashboard/reservations'
     | '/dashboard/settings'
     | '/dashboard/subscription'
@@ -358,6 +370,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/design'
     | '/_authenticated/dashboard/help'
     | '/_authenticated/dashboard/menus'
+    | '/_authenticated/dashboard/orders'
     | '/_authenticated/dashboard/reservations'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/subscription'
@@ -535,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardMenusRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/orders': {
+      id: '/_authenticated/dashboard/orders'
+      path: '/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof AuthenticatedDashboardOrdersRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/reservations': {
       id: '/_authenticated/dashboard/reservations'
       path: '/reservations'
@@ -592,6 +612,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDesignRoute: typeof AuthenticatedDashboardDesignRoute
   AuthenticatedDashboardHelpRoute: typeof AuthenticatedDashboardHelpRoute
   AuthenticatedDashboardMenusRoute: typeof AuthenticatedDashboardMenusRoute
+  AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
   AuthenticatedDashboardReservationsRoute: typeof AuthenticatedDashboardReservationsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
@@ -605,6 +626,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardDesignRoute: AuthenticatedDashboardDesignRoute,
     AuthenticatedDashboardHelpRoute: AuthenticatedDashboardHelpRoute,
     AuthenticatedDashboardMenusRoute: AuthenticatedDashboardMenusRoute,
+    AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
     AuthenticatedDashboardReservationsRoute:
       AuthenticatedDashboardReservationsRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,

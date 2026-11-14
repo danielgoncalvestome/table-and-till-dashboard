@@ -738,6 +738,41 @@ export type Database = {
           },
         ]
       }
+      restaurant_devices: {
+        Row: {
+          all_working: boolean
+          devices_count: number
+          restaurant_id: string
+          submitted_at: string | null
+          submitted_tables: number | null
+          updated_at: string
+        }
+        Insert: {
+          all_working?: boolean
+          devices_count?: number
+          restaurant_id: string
+          submitted_at?: string | null
+          submitted_tables?: number | null
+          updated_at?: string
+        }
+        Update: {
+          all_working?: boolean
+          devices_count?: number
+          restaurant_id?: string
+          submitted_at?: string | null
+          submitted_tables?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_devices_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: true
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurant_members: {
         Row: {
           created_at: string
@@ -801,6 +836,8 @@ export type Database = {
           min_notice_minutes: number
           name: string
           opening_hours: string | null
+          order_options: Json
+          orders_enabled: boolean
           phone: string | null
           primary_color: string
           published: boolean
@@ -845,6 +882,8 @@ export type Database = {
           min_notice_minutes?: number
           name: string
           opening_hours?: string | null
+          order_options?: Json
+          orders_enabled?: boolean
           phone?: string | null
           primary_color?: string
           published?: boolean
@@ -889,6 +928,8 @@ export type Database = {
           min_notice_minutes?: number
           name?: string
           opening_hours?: string | null
+          order_options?: Json
+          orders_enabled?: boolean
           phone?: string | null
           primary_color?: string
           published?: boolean
@@ -1051,6 +1092,99 @@ export type Database = {
           },
         ]
       }
+      table_links: {
+        Row: {
+          created_at: string
+          id: string
+          restaurant_id: string
+          table_id: string | null
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          restaurant_id: string
+          table_id?: string | null
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          restaurant_id?: string
+          table_id?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_links_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "table_links_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "dining_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      table_orders: {
+        Row: {
+          cleared: boolean
+          created_at: string
+          id: string
+          items: Json
+          restaurant_id: string
+          status: string
+          table_id: string | null
+          table_label: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          cleared?: boolean
+          created_at?: string
+          id?: string
+          items?: Json
+          restaurant_id: string
+          status?: string
+          table_id?: string | null
+          table_label?: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          cleared?: boolean
+          created_at?: string
+          id?: string
+          items?: Json
+          restaurant_id?: string
+          status?: string
+          table_id?: string | null
+          table_label?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_orders_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "table_orders_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "dining_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -1199,6 +1333,7 @@ export type Database = {
         Args: { _environment: string; _user_id: string }
         Returns: boolean
       }
+      has_orders_plan: { Args: { _restaurant_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1241,10 +1376,33 @@ export type Database = {
           timezone: string
         }[]
       }
+      public_place_order: {
+        Args: { _items: Json; _token: string }
+        Returns: string
+      }
       public_slots: {
         Args: { _date: string; _party: number; _slug: string }
         Returns: {
           slot: string
+        }[]
+      }
+      public_table_info: {
+        Args: { _token: string }
+        Returns: {
+          options: Json
+          orders_on: boolean
+          restaurant_id: string
+          table_label: string
+        }[]
+      }
+      public_table_orders: {
+        Args: { _token: string }
+        Returns: {
+          created_at: string
+          id: string
+          items: Json
+          status: string
+          total: number
         }[]
       }
       rate_dish: {
@@ -1266,6 +1424,7 @@ export type Database = {
         }
         Returns: string
       }
+      submit_floor_plan: { Args: { _restaurant_id: string }; Returns: number }
       username_available: { Args: { _username: string }; Returns: boolean }
     }
     Enums: {

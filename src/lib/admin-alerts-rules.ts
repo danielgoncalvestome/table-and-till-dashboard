@@ -39,6 +39,8 @@ export function platformAlerts(rs: AlertRestaurant[], subs: AlertSub[], unread: 
     if (sub?.cancel_at_period_end) out.push({ level: "medium", restaurantId: r.id, text: `${r.name}: subscrição cancela em ${daysLeft(sub.current_period_end, now) ?? "?"} dia(s)` });
     else if (sub && sub.current_period_end && (daysLeft(sub.current_period_end, now) ?? 99) <= 3) out.push({ level: "low", restaurantId: r.id, text: `${r.name}: renovação em ${daysLeft(sub.current_period_end, now)} dia(s)` });
     if (!r.published && !r.trial_ends_at && now - new Date(r.created_at).getTime() > 7 * DAY) out.push({ level: "low", restaurantId: r.id, text: `${r.name}: criado há mais de 7 dias e nunca publicado` });
+    const d = devices[r.id];
+    if (d) for (const w of deviceWarningItems(d.tables, d.submitted, d.devices)) out.push({ level: w.kind === "device_mismatch" ? "medium" : "low", restaurantId: r.id, text: `${r.name}: ${w.text}` });
   }
   const rank = { high: 0, medium: 1, low: 2 };
   return out.sort((a, b) => rank[a.level] - rank[b.level]);

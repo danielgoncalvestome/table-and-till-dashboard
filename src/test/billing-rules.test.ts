@@ -19,6 +19,12 @@ describe('account subscription rules',()=>{
   it('still names retired tiers for existing subscribers',()=>{
     expect(planByPrice('menutap_6_monthly')?.name).toBe('Pro');
   });
+  it('switches online booking on only for an active reservations-plan subscription',()=>{
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','active')).toBe(true);
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','trialing')).toBe(true);
+    expect(shouldEnableOnlineBooking('menutap_monthly','active')).toBe(false);
+    expect(shouldEnableOnlineBooking('menutap_reservas_monthly','canceled')).toBe(false);
+  });
   it('never treats missing or test payment configuration as live',()=>{
     expect(paymentEnvironment(undefined)).toBeNull();
     expect(paymentEnvironment('test_abc')).toBe('sandbox');

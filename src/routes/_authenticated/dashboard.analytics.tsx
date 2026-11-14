@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { WEEKDAYS } from "@/lib/menu";
 import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, ChefHat, Download, Eye, FileText, Sparkles, Star, TrendingUp, Users, Utensils, type LucideIcon } from "lucide-react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fetchOrders, fetchReservations, menuInsights, reservationInsights, summarizeOrders, summarizeReservations } from "@/lib/insights";
 import { STATUS_LABEL, type ResStatus } from "@/lib/reservations";
 import { formatPrice } from "@/lib/menu";
@@ -263,13 +263,18 @@ function Mini({ label, value }: { label: string; value: ReactNode }) {
 function DonutChart({ data, empty }: { data: { name: string; value: number; fill: string }[]; empty: string }) {
   const total = data.reduce((a, x) => a + x.value, 0);
   if (!total) return <p className="text-sm text-muted-foreground">{empty}</p>;
+  const C = 2 * Math.PI * 40;
+  let acc = 0;
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 overflow-hidden">
-      <div className="relative h-28 w-28 shrink-0">
-        <PieChart width={112} height={112}><Pie data={data} cx={56} cy={56} dataKey="value" nameKey="name" innerRadius={33} outerRadius={51} isAnimationActive={false} paddingAngle={2} stroke="none">{data.map((d) => <Cell key={d.name} fill={d.fill} />)}</Pie><Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} /></PieChart>
-        <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-lg">{total}</div>
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+      <div className="relative h-24 w-24 shrink-0">
+        <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+          <circle cx="50" cy="50" r="40" fill="none" strokeWidth="11" className="stroke-muted" />
+          {data.map((d) => { const len = (d.value / total) * C; const el = <circle key={d.name} cx="50" cy="50" r="40" fill="none" strokeWidth="11" stroke={d.fill} strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-acc}><title>{`${d.name}: ${d.value}`}</title></circle>; acc += len; return el; })}
+        </svg>
+        <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-lg leading-none">{total}</div>
       </div>
-      <ul className="min-w-0 flex-1 space-y-1 text-xs">{data.map((d) => <li key={d.name} className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="flex-1 truncate">{d.name}</span><span className="text-muted-foreground">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
+      <ul className="min-w-0 space-y-1 text-xs">{data.map((d) => <li key={d.name} className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="max-w-[10rem] truncate">{d.name}</span><span className="text-muted-foreground">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>
     </div>
   );
 }

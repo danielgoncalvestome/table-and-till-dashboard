@@ -16,7 +16,7 @@ import { planByPrice, validPlanCents } from "@/lib/billing-rules";
 import { usePlans } from "@/lib/use-plans";
 import { useServerFn } from "@tanstack/react-start";
 import { updatePlanPrice } from "@/utils/payments.functions";
-import { activeSub, daysLeft, platformAlerts } from "@/lib/admin-alerts-rules";
+import { activeSub, daysLeft, platformAlerts, type DeviceInfo } from "@/lib/admin-alerts-rules";
 import { AlertDot } from "@/hooks/use-admin-alerts";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,11 +34,20 @@ function Admin() {
   const { data: subs } = useQuery({ queryKey: ["admin-subs"], enabled: en, queryFn: async () => (await supabase.from("account_subscriptions").select("*").order("created_at", { ascending: false })).data ?? [] });
   const { data: msgs } = useQuery({ queryKey: ["admin-messages"], enabled: en, queryFn: async () => (await supabase.from("contact_submissions").select("*").order("created_at", { ascending: false })).data ?? [] });
   const { data: logs } = useQuery({ queryKey: ["admin-audit"], enabled: en, queryFn: async () => (await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(15)).data ?? [] });
+  const { data: devs } = useQuery({ queryKey: ["admin-devices"], enabled: en, queryFn: async () => (await supabase.from("restaurant_devices").select("*")).data ?? [] });
+  const { data: tables } = useQuery({ queryKey: ["admin-tables"], enabled: en, queryFn: async () => (await supabase.from("dining_tables").select("restaurant_id").eq("active", true)).data ?? [] });
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "paid" | "trial" | "draft" | "expired">("all");
 
   const unread = (msgs ?? []).filter((m) => !m.read).length;
-  const alerts = useMemo(() => platformAlerts(rs ?? [], subs ?? [], unread), [rs, subs, unread]);
+  const deviceInfo = useMemo(() => {
+    const m: Record<string, DeviceInfo> = {};
+    for (const r of rs ?? []) m[r.id] = { devices: 0, submitted: null, tables: 0 };
+    for (const d of devs ?? []) if (m[d.restaurant_id]) m[d.restaurant_id] = { ...m[d.restaurant_id], devices: d.devices_count ?? 0, submitted: d.submitted_tables ?? null };
+    for (const tb of tables ?? []) if (m[tb.restaurant_id]) m[tb.restaurant_id].tables += 1;
+    return m;
+  }, [rs, devs, tables]);
+  const alerts = useMemo(() => platformAlerts(rs ?? [], subs ?? [], unread, Date.now(), deviceInfo), [rs, subs, unread, deviceInfo]);
   const liveSubs = (subs ?? []).filter((s) => s.environment === "live" && ["active", "trialing", "past_due"].includes(s.status));
   const mrr = liveSubs.reduce((a, s) => a + (planByPrice(s.price_id)?.cents ?? 0), 0) / 100;
 

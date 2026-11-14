@@ -5,6 +5,8 @@ import { Circle, Square, RectangleHorizontal, RotateCw, Copy, Trash2, Undo2, Red
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useRestaurant } from "@/lib/restaurant";
+import { canAccess } from "@/lib/team-rules";
 import { useResData } from "./data";
 import { hhmm, tableState, type ResStatus } from "@/lib/reservations";
 
@@ -13,7 +15,10 @@ const DECOR = [["wall", "Parede", 200, 12], ["door", "Porta", 70, 12], ["window"
 const STATE_BG = { free: "var(--st-free)", reserved: "var(--st-reserved)", seated: "var(--st-seated)", late: "var(--st-reserved)" } as const;
 const STATE_LABEL = { free: "Livre", reserved: "Reservada", seated: "Ocupada", late: "Atrasada" } as const;
 
-export function FloorPlan({ date, live, onBook }: { date: string; live: boolean; onBook: (tableId: string) => void }) {
+export function FloorPlan({ date, live: operational, onBook }: { date: string; live: boolean; onBook: (tableId: string) => void }) {
+  const { restaurant } = useRestaurant();
+  const canEditRoom = canAccess(restaurant.role, restaurant.permissions, "room_edit");
+  const live = operational || !canEditRoom;
   const { r, zones, tables, res } = useResData(date);
   const qc = useQueryClient();
   const [zoneId, setZoneId] = useState<string>("");
@@ -67,14 +72,19 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
     commit(items.filter((i) => !sel.includes(i.id))); setSel([]);
   }
   async function save() {
-    if (!zone) return;
+    if (!zone || live) return;
     const ts = items.filter((i) => i.kind === "table");
     for (const t of ts) {
       const row = { label: t.label, seats: t.seats, max_seats: Math.max(t.seats, tables.find((x) => x.id === t.id)?.max_seats ?? t.seats), shape: t.type, x: t.x, y: t.y, w: t.w, h: t.h, rotation: t.rotation, color: t.color, zone_id: zone.id };
-      if (t.id.startsWith("new-")) await supabase.from("dining_tables").insert({ ...row, restaurant_id: r.id, min_seats: 1 });
-      else await supabase.from("dining_tables").update(row).eq("id", t.id);
+      const { error } = t.id.startsWith("new-")
+        ? await supabase.from("dining_tables").insert({ ...row, restaurant_id: r.id, min_seats: 1 })
+        : await supabase.from("dining_tables").update(row).eq("id", t.id);
+      if (error) return toast.error(error.message);
     }
-    if (deleted.length) await supabase.from("dining_tables").delete().in("id", deleted);
+    if (deleted.length) {
+      const { error } = await supabase.from("dining_tables").delete().in("id", deleted);
+      if (error) return toast.error(error.message);
+    }
     const decor = items.filter((i) => i.kind === "decor").map(({ kind: _k, ...d }) => d);
     const { error } = await supabase.from("zones").update({ decor, width: size.w, height: size.h }).eq("id", zone.id);
     if (error) return toast.error(error.message);
@@ -92,7 +102,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
     drag.current = { mode, sx: e.clientX, sy: e.clientY, orig: items };
   }
   function move(e: React.PointerEvent) {
-    const d = drag.current; if (!d) return;
+    const d = drag.current; if (!d || live) return;
     const dx = (e.clientX - d.sx) / zoom, dy = (e.clientY - d.sy) / zoom;
     setItems(d.orig.map((i) => {
       if (!sel.includes(i.id)) return i;

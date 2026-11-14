@@ -19,3 +19,4 @@
 - [x] Pedidos ao vivo no menu (plano 19,90 + ativável), opções: estados, som, notas, conta
 - [x] Limpar pedidos ao libertar mesa
 - [x] Equipa com permissões só no plano Gestão e Reservas (19,90)
+- [x] Permissão independente «Editar sala», com bloqueio das alterações não autorizadas (6 testes; opção e acesso do proprietário verificados no ecrã)

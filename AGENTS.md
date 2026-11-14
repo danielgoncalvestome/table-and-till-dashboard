@@ -39,3 +39,4 @@ use the editor.
 - No physical goods anywhere: plans differ by features and compatible-device allowance; never say devices are supplied, offered, shipped or sold. Why: Paddle rejects products that include physical goods.
 - Admin-only privileged actions (trial end, owner account info) go through has_role-checked SECURITY DEFINER RPCs; alert rules live in src/lib/admin-alerts-rules.ts. Why: trial fields are trigger-protected and auth.users is not client-readable.
 - Reservations: availability/booking runs only in SECURITY DEFINER RPCs (staff_book, public_book, move_reservation) that lock the restaurant row; the client never decides table conflicts. Why: prevent double bookings.
+- Room editing uses the explicit room_edit permission for non-owners, enforced by database triggers and the room UI; owners and platform admins retain access. Why: operational reservations access must not allow structural room changes.

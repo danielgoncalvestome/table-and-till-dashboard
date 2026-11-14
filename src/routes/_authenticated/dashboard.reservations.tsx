@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useRestaurant } from "@/lib/restaurant";
+import { canAccess } from "@/lib/team-rules";
 import { FloorPlan } from "@/components/res/FloorPlan";
 import { Agenda, Customers, ResStats, Waitlist } from "@/components/res/Panels";
 import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError, todayStr, type ResStatus } from "@/lib/reservations";
@@ -30,35 +31,37 @@ function Reservations() {
   const search = Route.useSearch();
   const [open, setOpen] = useState<{ tableId?: string } | null>(search.nova ? {} : null);
   const { restaurant: r, refresh } = useRestaurant();
+  const canEditRoom = canAccess(r.role, r.permissions, "room_edit");
   const [editPlan, setEditPlan] = useState(false);
   const adv = r.res_mode === "advanced";
   async function submitPlan() {
+    if (!canEditRoom) return;
     if (!confirm("Enviar a planta atual à MenuTap para contabilizar os dispositivos (1 por mesa ativa)?")) return;
     const { data, error } = await supabase.rpc("submit_floor_plan", { _restaurant_id: r.id });
     if (error) return toast.error(error.message);
     toast.success(`Planta submetida: ${data} mesas`);
   }
-  async function setMode(m: string) { await supabase.from("restaurants").update({ res_mode: m }).eq("id", r.id); refresh(); }
+  async function setMode(m: string) { if (!canEditRoom) return; const { error } = await supabase.rpc("set_room_mode", { _restaurant_id: r.id, _mode: m }); if (error) return toast.error(error.message); refresh(); }
   return (
     <div>
-      <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}<Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button><Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
+      <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
       <div className="mb-5 flex gap-1 overflow-x-auto rounded-lg border bg-card p-1">
-        {TABS.map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{l}</button>)}
+        {TABS.filter(([k]) => k !== "tables" || canEditRoom).map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{l}</button>)}
       </div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {(tab === "today" || tab === "list" || tab === "agenda") && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto" />}
-        <div className="ml-auto inline-flex rounded-md border bg-card p-0.5 text-xs" role="group" aria-label="Modo">
+        {canEditRoom && <div className="ml-auto inline-flex rounded-md border bg-card p-0.5 text-xs" role="group" aria-label="Modo">
           {[["simple", "Modo simples"], ["advanced", "Modo avançado"]].map(([k, l]) => <button key={k} onClick={() => setMode(k)} className={`rounded px-3 py-1 ${r.res_mode === k ? "bg-foreground text-background" : ""}`}>{l}</button>)}
-        </div>
+        </div>}
       </div>
-      {tab === "today" && adv && <div className="space-y-3"><div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <button key={String(k)} onClick={() => setEditPlan(k as boolean)} className={`rounded px-3 py-1 ${editPlan === k ? "bg-foreground text-background" : ""}`}>{l as string}</button>)}</div><FloorPlan date={date} live={!editPlan} onBook={(tableId) => setOpen({ tableId })} /></div>}
+      {tab === "today" && adv && <div className="space-y-3">{canEditRoom && <div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <Button variant={editPlan === k ? "secondary" : "ghost"} size="sm" key={String(k)} onClick={() => setEditPlan(k as boolean)}>{l as string}</Button>)}</div>}<FloorPlan date={date} live={!editPlan || !canEditRoom} onBook={(tableId) => setOpen({ tableId })} /></div>}
       {tab === "today" && !adv && <Floor date={date} onBook={(tableId) => setOpen({ tableId })} />}
       {tab === "agenda" && <Agenda date={date} setDate={setDate} />}
       {tab === "wait" && <Waitlist />}
       {tab === "clients" && <Customers />}
       {tab === "stats" && <ResStats />}
       {tab === "list" && <List date={date} />}
-      {tab === "tables" && <TablesConfig />}
+      {tab === "tables" && canEditRoom && <TablesConfig />}
       {tab === "settings" && <Rules />}
       {open && <NewReservation date={date} tableId={open.tableId} onClose={() => setOpen(null)} />}
     </div>

@@ -112,6 +112,7 @@ function Design() {
                 );
               })}
             </div>
+            )}
           </Panel>
         </div>
         <div className="sticky top-6 h-fit overflow-hidden rounded-md border" style={{ background: f.background_color, color: f.primary_color }}>

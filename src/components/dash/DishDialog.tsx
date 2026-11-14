@@ -11,6 +11,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useI18n } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, uploadImage } from "@/lib/menu";
 import { useCatalog } from "@/lib/use-catalog";
+import { ImageUploadField } from "@/components/dash/ImageUploadField";
 
 type Dish = Database["public"]["Tables"]["dishes"]["Row"];
 type Cat = Database["public"]["Tables"]["categories"]["Row"];
@@ -95,23 +96,16 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
           </div>
           <div>
             <Label>{t("dish.image")}</Label>
-            <div className="mt-1 flex items-center gap-3">
-              {f.image_url && <img src={f.image_url} alt="" className="h-16 w-16 rounded object-cover" />}
-              <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => onFile(e.target.files?.[0])} />
-              {f.image_url && <Button type="button" variant="ghost" size="sm" onClick={() => setF({ ...f, image_url: "" })}>{t("common.delete")}</Button>}
-            </div>
+            <div className="mt-1"><ImageUploadField value={f.image_url || undefined} accept="image/jpeg,image/png,image/webp" disabled={busy} onFile={(files) => onFile(files?.[0])} onRemove={() => setF({ ...f, image_url: "" })} /></div>
           </div>
           <div>
             <Label>{lang === "pt" ? "Imagens secundárias (aparecem ao abrir o prato)" : "Secondary images (shown when the dish is opened)"}</Label>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
+            <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-3">
               {f.gallery.map((g, i) => (
-                <div key={g} className="relative">
-                  <img src={g} alt="" className="h-16 w-16 rounded object-cover" />
-                  <button type="button" aria-label={t("common.delete")} onClick={() => setF((p) => ({ ...p, gallery: p.gallery.filter((_, j) => j !== i) }))} className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-destructive text-xs text-destructive-foreground">×</button>
-                </div>
+                <ImageUploadField key={g} value={g} disabled={busy} onFile={(files) => { const file = files?.[0]; if (!file) return; void (async () => { try { setBusy(true); const url = await uploadImage(restaurantId, file); setF((p) => ({ ...p, gallery: p.gallery.map((x, j) => (j === i ? url : x)) })); } catch { toast.error(t("common.error")); } finally { setBusy(false); } })(); }} onRemove={() => setF((p) => ({ ...p, gallery: p.gallery.filter((_, j) => j !== i) }))} />
               ))}
+              <ImageUploadField accept="image/jpeg,image/png,image/webp" multiple disabled={busy} onFile={(files) => onGallery(files)} hint={lang === "pt" ? "Adicionar imagens" : "Add images"} />
             </div>
-            <Input className="mt-2" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(e) => { onGallery(e.target.files); e.target.value = ""; }} />
           </div>
           <div><Label>{lang === "pt" ? "Descrição detalhada (página do prato)" : "Detailed description (dish page)"}</Label><Textarea rows={4} value={f.longDesc} onChange={(e) => setF({ ...f, longDesc: e.target.value })} /></div>
           <div><Label>{lang === "pt" ? "Ingredientes (opcional)" : "Ingredients (optional)"}</Label><Textarea rows={2} placeholder={lang === "pt" ? "Ex.: bacalhau, batata, cebola, azeite" : "E.g. cod, potato, onion, olive oil"} value={f.ingredients} onChange={(e) => setF({ ...f, ingredients: e.target.value })} /></div>

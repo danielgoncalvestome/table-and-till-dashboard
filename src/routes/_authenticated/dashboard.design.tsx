@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTitle, Panel } from "@/components/dash/ui";
+import { ImageUploadField } from "@/components/dash/ImageUploadField";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useRestaurant } from "@/lib/restaurant";
@@ -58,8 +59,8 @@ function Design() {
           </Panel>
           <Panel>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div><Label>{t("f.logo")}</Label>{f.logo_url && <img src={f.logo_url} alt="" className="my-2 h-16 w-auto max-w-full object-contain" />}<Input type="file" accept="image/*" onChange={(e) => up("logo_url", e.target.files?.[0])} /></div>
-              <div><Label>{t("f.cover")}</Label>{f.cover_url && <img src={f.cover_url} alt="" className="my-2 h-16 w-full rounded object-cover" />}<Input type="file" accept="image/*" onChange={(e) => up("cover_url", e.target.files?.[0])} />{f.cover_url && <button type="button" onClick={() => setF({ ...f, cover_url: "" })} className="mt-1 text-xs text-muted-foreground underline">{lang === "pt" ? "Remover foto de capa" : "Remove cover photo"}</button>}</div>
+              <div><Label>{t("f.logo")}</Label><div className="mt-1"><ImageUploadField value={f.logo_url || undefined} contain disabled={busy} onFile={(files) => up("logo_url", files?.[0])} onRemove={() => setF({ ...f, logo_url: "" })} /></div></div>
+              <div><Label>{t("f.cover")}</Label><div className="mt-1"><ImageUploadField value={f.cover_url || undefined} disabled={busy} onFile={(files) => up("cover_url", files?.[0])} onRemove={() => setF({ ...f, cover_url: "" })} /></div></div>
             </div>
             {!f.cover_url && (
               <div className="mt-4"><Label>{lang === "pt" ? "Cor de fundo da capa" : "Cover background colour"}</Label>

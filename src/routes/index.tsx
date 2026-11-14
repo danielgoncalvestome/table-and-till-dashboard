@@ -132,10 +132,12 @@ function Index() {
   const { p } = Route.useSearch();
   if (p === "reservas") {
     return (
-      <SitePage>
-        <HomeSwitch active="reservas" />
-        <TablesLanding />
-      </SitePage>
+      <div className="theme-bordeaux">
+        <SitePage>
+          <HomeSwitch active="reservas" />
+          <TablesLanding />
+        </SitePage>
+      </div>
     );
   }
   return (

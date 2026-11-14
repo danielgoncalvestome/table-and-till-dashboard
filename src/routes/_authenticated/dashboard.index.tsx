@@ -66,7 +66,7 @@ function Overview() {
   }
 
   const tiles = [
-    { to: "/dashboard/menus", icon: BookOpen, title: t("dash.menus"), sub: pt ? `${dishes.length} pratos` : `${dishes.length} dishes` },
+    { to: "/dashboard/menus", icon: BookOpen, title: t("dash.menus"), sub: pt ? `${dishes.length} itens` : `${dishes.length} dishes` },
     { to: "/dashboard/design", icon: Palette, title: t("dash.design"), sub: pt ? "Cores, logótipo e capa" : "Colours, logo and cover" },
     { to: "/dashboard/analytics", icon: BarChart3, title: t("dash.analytics"), sub: pt ? "Estatística detalhada" : "Detailed statistics" },
   ] as const;

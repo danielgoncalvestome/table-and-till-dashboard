@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
@@ -36,15 +37,20 @@ function Team() {
   const [f, setF] = useState({ name: "", username: "", password: "" });
   const [perms, setPerms] = useState<PermMap>({ reservations: true, orders: true });
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState(""); const [addr, setAddr] = useState("");
   const refresh = () => qc.invalidateQueries({ queryKey: ["team", r.id] });
+  const staff = (members ?? []).filter((m) => m.role !== "owner");
 
   async function add(e: React.FormEvent) {
     e.preventDefault(); setBusy(true);
     try {
       const res = await create({ data: { restaurantId: r.id, ...f, username: f.username.trim().toLowerCase(), permissions: perms } });
       if ("error" in res) toast.error(res.error === "taken" ? "Este username já existe." : res.error === "plan" ? "Disponível só no plano Gestão e Reservas." : t("common.error"));
-      else { toast.success("Membro criado. Já pode entrar com o username e a password."); setF({ name: "", username: "", password: "" }); refresh(); }
+      else {
+        toast.success("Membro criado. Já pode entrar com o username e a password.");
+        setF({ name: "", username: "", password: "" }); setPerms({ reservations: true, orders: true }); setOpen(false); refresh();
+      }
     } catch (err) { toast.error((err as Error).message); } finally { setBusy(false); }
   }
 
@@ -56,20 +62,28 @@ function Team() {
           <p>Criar contas para funcionários, com permissões por página, está disponível no plano <b>Gestão e Reservas</b>.</p>
           <Button asChild size="sm" className="mt-3"><Link to="/dashboard/subscription" search={{} as never}>Ver planos</Link></Button>
         </div> : <>
-          <ul className="space-y-3">
-            {members?.map((m) => <MemberRow key={m.id} m={m} lang={lang} onSave={async (p, pw) => { try { await update({ data: { restaurantId: r.id, memberId: m.id, permissions: p, password: pw || undefined } }); toast.success(t("auth.updated")); refresh(); } catch (e) { toast.error((e as Error).message); } }} onRemove={async () => { if (!confirm("Remover este membro? A conta deixa de ter acesso.")) return; await remove({ data: { restaurantId: r.id, memberId: m.id } }); refresh(); }} />)}
-          </ul>
-          <form onSubmit={add} className="mt-6 space-y-3 border-t pt-5">
-            <p className="flex items-center gap-2 text-sm font-semibold"><UserPlus className="h-4 w-4" />Adicionar membro</p>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div><Label htmlFor="tm-name">Nome</Label><Input id="tm-name" required maxLength={80} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
-              <div><Label htmlFor="tm-user">{t("auth.username")}</Label><Input id="tm-user" required pattern="[A-Za-z0-9_]{3,30}" title="3–30 letras, números ou _" value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
-              <div><Label htmlFor="tm-pass">Password inicial</Label><Input id="tm-pass" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
-            </div>
-            <p className="text-xs text-muted-foreground">Páginas a que tem acesso (a Visão Geral e a Ajuda estão sempre disponíveis; Equipa e Subscrição só para o proprietário):</p>
-            <PermGrid value={perms} onChange={setPerms} lang={lang} />
-            <Button disabled={busy}>Criar membro</Button>
-          </form>
+          {staff.length ? <ul className="space-y-3">
+            {staff.map((m) => <MemberRow key={m.id} m={m} lang={lang} onSave={async (p, pw) => { try { await update({ data: { restaurantId: r.id, memberId: m.id, permissions: p, password: pw || undefined } }); toast.success(t("auth.updated")); refresh(); } catch (e) { toast.error((e as Error).message); } }} onRemove={async () => { if (!confirm("Remover este membro? A conta deixa de ter acesso.")) return; await remove({ data: { restaurantId: r.id, memberId: m.id } }); refresh(); }} />)}
+          </ul> : <p className="text-sm text-muted-foreground">Ainda não há membros da equipa.</p>}
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setBusy(false); }}>
+            <DialogTrigger asChild><Button className="mt-4 gap-2"><UserPlus className="h-4 w-4" />Adicionar membro</Button></DialogTrigger>
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Adicionar membro</DialogTitle>
+                <DialogDescription>Crie o acesso de um funcionário e escolha as páginas que pode usar.</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={add} className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div><Label htmlFor="tm-name">Nome</Label><Input id="tm-name" required maxLength={80} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
+                  <div><Label htmlFor="tm-user">{t("auth.username")}</Label><Input id="tm-user" required pattern="[A-Za-z0-9_]{3,30}" title="3–30 letras, números ou _" value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
+                  <div><Label htmlFor="tm-pass">Password inicial</Label><Input id="tm-pass" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
+                </div>
+                <p className="text-xs text-muted-foreground">Páginas a que tem acesso (a Visão Geral e a Ajuda estão sempre disponíveis; Equipa e Subscrição só para o proprietário):</p>
+                <PermGrid value={perms} onChange={setPerms} lang={lang} />
+                <Button disabled={busy} className="w-full sm:w-auto">{busy ? "A criar…" : "Criar membro"}</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </>}
       </Panel>
       <Panel title={t("team.locations")} className="mt-4">
@@ -94,7 +108,7 @@ function MemberRow({ m, lang, onSave, onRemove }: { m: Member; lang: string; onS
   const owner = m.role === "owner" || m.role === "manager";
   return <li className="rounded-md border p-3">
     <div className="flex items-center justify-between gap-2">
-      <div className="min-w-0"><p className="truncate font-medium">{m.name ?? m.username}{m.isMe && " (eu)"}</p><p className="text-xs text-muted-foreground">{m.username ? `@${m.username}` : ""}</p></div>
+      <div className="min-w-0"><p className="truncate font-medium">{m.name ?? m.username}</p><p className="text-xs text-muted-foreground">{m.username ? `@${m.username}` : ""}</p></div>
       {owner ? <span className="flex items-center gap-1 text-xs text-muted-foreground"><Crown className="h-3.5 w-3.5" />{m.role === "owner" ? "Proprietário" : "Gerente"} · acesso total</span>
         : <div className="flex gap-1"><Button size="sm" variant="outline" onClick={() => setOpen(!open)}>Permissões</Button><Button size="icon" variant="ghost" aria-label="Remover" onClick={onRemove}><Trash2 /></Button></div>}
     </div>

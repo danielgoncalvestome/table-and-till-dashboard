@@ -49,6 +49,8 @@ function AdminRestaurant() {
 
   const [f, setF] = useState<Partial<R>>({});
   const [trialEnd, setTrialEnd] = useState("");
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openLog, setOpenLog] = useState(false);
   useEffect(() => { if (r) { setF(r); setTrialEnd(r.trial_ends_at ? r.trial_ends_at.slice(0, 10) : ""); } }, [r]);
 
   if (isLoading) return null;

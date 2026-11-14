@@ -163,7 +163,7 @@ export function FloorPlan({ date, live, onBook }: { date: string; live: boolean;
 
       <div ref={box} className="overflow-auto rounded-md border bg-card" onPointerDown={() => setSel([])}>
         <div className="relative touch-none" style={{ width: size.w * zoom, height: size.h * zoom }} onPointerMove={move} onPointerUp={up}>
-          <div className="absolute left-0 top-0 origin-top-left" style={{ width: size.w, height: size.h, transform: `scale(${zoom})`, backgroundImage: "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
+          <div className="absolute left-0 top-0 origin-top-left" style={{ width: size.w, height: size.h, transform: `scale(${zoom})`, backgroundImage: live ? "none" : "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
             {items.map((it) => {
               const st = it.kind === "table" && live ? tableState(it.id, res, r.late_tolerance_minutes) : null;
               const isSel = sel.includes(it.id);

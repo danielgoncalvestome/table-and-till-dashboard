@@ -122,7 +122,7 @@ const pt = {
   "an.recs": "Recomendações", "an.impr": "impressões", "an.clicks": "cliques", "an.insights": "Menu Intelligence",
   "an.sources": "Origem", "an.ratings": "Avaliações",
   "design.title": "Design e marca", "design.primary": "Cor principal", "design.bg": "Cor de fundo",
-  "design.accent": "Cor de destaque", "design.font": "Tipografia", "design.template": "Modelo",
+  "design.accent": "Cor de destaque", "design.font": "Tipografia", "design.template": "Sugestões modelo",
   "qr.title": "QR & NFC", "qr.url": "Link permanente", "qr.png": "Descarregar PNG", "qr.svg": "Descarregar SVG",
   "qr.print": "Imprimir QR", "qr.nfc": "Etiquetas NFC",
   "qr.nfcHelp": "Grave apenas este link (registo NDEF URI) numa etiqueta NTAG213 ou compatível, com uma app como NFC Tools. Nunca grave o conteúdo do menu na etiqueta — assim as alterações aparecem automaticamente.",

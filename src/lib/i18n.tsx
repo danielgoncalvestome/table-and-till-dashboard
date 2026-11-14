@@ -90,7 +90,7 @@ const pt = {
   "common.confirmDelete": "Tem a certeza? Esta ação não pode ser desfeita.", "common.signout": "Sair",
   "common.open": "Abrir", "common.copy": "Copiar", "common.copied": "Copiado", "common.empty": "Ainda não há nada aqui.",
   "common.demo": "Demonstração",
-  "dash.overview": "Visão geral", "dash.menus": "Menus e pratos", "dash.recs": "Recomendações",
+  "dash.overview": "Visão geral", "dash.menus": "Menus", "dash.recs": "Recomendações",
   "dash.analytics": "Análise", "dash.design": "Design", "dash.qr": "QR & NFC", "dash.team": "Equipa e locais",
   "dash.sub": "Subscrição", "dash.settings": "Restaurante", "dash.help": "Ajuda", "dash.admin": "Administração",
   "dash.viewMenu": "Ver menu público",

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
   const [f, setF] = useState(blank);
   const [busy, setBusy] = useState(false);
   const [tag, setTag] = useState("");
+  const [showEn, setShowEn] = useState(false);
   const { data: catalog } = useCatalog(restaurantId);
   const [recs, setRecs] = useState<string[]>([]);
   const others = (catalog?.dishes ?? []).filter((d) => !d.archived && d.id !== dish?.id);
@@ -109,15 +111,20 @@ export function DishDialog({ dish, cats, restaurantId, defaultCategoryId, open, 
           </div>
           <div><Label>{lang === "pt" ? "Descrição detalhada (página do prato)" : "Detailed description (dish page)"}</Label><Textarea rows={4} value={f.longDesc} onChange={(e) => setF({ ...f, longDesc: e.target.value })} /></div>
           <div><Label>{lang === "pt" ? "Ingredientes (opcional)" : "Ingredients (optional)"}</Label><Textarea rows={2} placeholder={lang === "pt" ? "Ex.: bacalhau, batata, cebola, azeite" : "E.g. cod, potato, onion, olive oil"} value={f.ingredients} onChange={(e) => setF({ ...f, ingredients: e.target.value })} /></div>
-          <fieldset className="rounded border p-3">
-            <legend className="px-1 text-sm font-semibold">{t("dish.translations")}</legend>
-            <div className="space-y-3">
-              <div><Label>{t("dish.nameEn")}</Label><Input value={f.nameEn} onChange={(e) => setF({ ...f, nameEn: e.target.value })} /></div>
-              <div><Label>{t("dish.descEn")}</Label><Textarea value={f.descEn} onChange={(e) => setF({ ...f, descEn: e.target.value })} /></div>
-              <div><Label>{lang === "pt" ? "Descrição detalhada (EN)" : "Detailed description (EN)"}</Label><Textarea value={f.longDescEn} onChange={(e) => setF({ ...f, longDescEn: e.target.value })} /></div>
-              <div><Label>{lang === "pt" ? "Ingredientes (EN)" : "Ingredients (EN)"}</Label><Input value={f.ingredientsEn} onChange={(e) => setF({ ...f, ingredientsEn: e.target.value })} /></div>
-            </div>
-          </fieldset>
+          <div className="rounded border">
+            <button type="button" onClick={() => setShowEn((v) => !v)} className="flex w-full items-center justify-between px-3 py-2.5 text-sm font-semibold">
+              {t("dish.translations")}
+              <ChevronDown className={`h-4 w-4 transition-transform ${showEn ? "rotate-180" : ""}`} />
+            </button>
+            {showEn && (
+              <div className="space-y-3 border-t p-3">
+                <div><Label>{t("dish.nameEn")}</Label><Input value={f.nameEn} onChange={(e) => setF({ ...f, nameEn: e.target.value })} /></div>
+                <div><Label>{t("dish.descEn")}</Label><Textarea value={f.descEn} onChange={(e) => setF({ ...f, descEn: e.target.value })} /></div>
+                <div><Label>{lang === "pt" ? "Descrição detalhada (EN)" : "Detailed description (EN)"}</Label><Textarea value={f.longDescEn} onChange={(e) => setF({ ...f, longDescEn: e.target.value })} /></div>
+                <div><Label>{lang === "pt" ? "Ingredientes (EN)" : "Ingredients (EN)"}</Label><Input value={f.ingredientsEn} onChange={(e) => setF({ ...f, ingredientsEn: e.target.value })} /></div>
+              </div>
+            )}
+          </div>
           <fieldset className="rounded border p-3">
             <legend className="px-1 text-sm font-semibold">{t("dish.allergens")}</legend>
             <div className="flex flex-wrap gap-2">

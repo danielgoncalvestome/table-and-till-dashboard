@@ -106,7 +106,7 @@ function AdminRestaurant() {
           <div><p className="eyebrow">/r/{r.slug}</p><h1 className="mt-1 text-3xl md:text-4xl">{r.name}</h1></div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" asChild><a href={`/r/${r.slug}`} target="_blank" rel="noreferrer">Ver menu <ExternalLink /></a></Button>
+          <Button variant="outline" asChild><a href={`https://menutap.pt/r/${r.slug}`} target="_blank" rel="noreferrer">Ver menu <ExternalLink /></a></Button>
           <Button variant="outline" onClick={manage}><LayoutDashboard />Gerir menus e pratos</Button>
           <Button variant="destructive" onClick={remove}><Trash2 />Eliminar</Button>
         </div>

@@ -44,7 +44,7 @@ function Reservations() {
   async function setMode(m: string) { if (!canEditRoom) return; const { error } = await supabase.rpc("set_room_mode", { _restaurant_id: r.id, _mode: m }); if (error) return toast.error(error.message); refresh(); }
   return (
     <div>
-      <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
+      <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`https://menutap.pt/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
       <div className="mb-5 flex gap-1 overflow-x-auto rounded-lg border bg-card p-1">
         {TABS.filter(([k]) => k !== "tables" || canEditRoom).map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{l}</button>)}
       </div>

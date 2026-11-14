@@ -273,7 +273,7 @@ function Overview() {
         </div>
       </div>
       {editing && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground">Use as setas para mudar a ordem, o olho para mostrar/esconder e o ícone de tamanho para alternar entre meia largura e largura total.</p>}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-flow-row-dense lg:grid-cols-2">
         {shown.map((item) => {
           const i = layout.findIndex((x) => x.id === item.id);
           return (

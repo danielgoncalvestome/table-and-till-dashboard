@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, ExternalLink, LogOut, Shield, Menu as MenuIcon,
+  LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, CalendarDays, ExternalLink, LogOut, Shield, Menu as MenuIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +57,7 @@ function DashboardLayout() {
   const nav = [
     { to: "/dashboard", icon: LayoutDashboard, label: t("dash.overview"), exact: true },
     { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus") },
+    { to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations") },
     { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics") },
     { to: "/dashboard/design", icon: Palette, label: t("dash.design") },
     { to: "/dashboard/team", icon: Users, label: t("dash.team") },

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function QrBox({ slug, color, nfc = false }: { slug: string; color: string; nfc?: boolean }) {
   const [origin, setOrigin] = useState("");
   const [png, setPng] = useState("");
-  useEffect(() => setOrigin(window.location.origin), []);
+  useEffect(() => setOrigin("https://menutap.pt"), []);
   const url = `${origin}/r/${slug}`;
   useEffect(() => {
     if (origin) QRCode.toDataURL(`${url}?src=qr`, { margin: 2, width: 1024, color: { dark: color, light: "#FFFFFF" }, errorCorrectionLevel: "M" }).then(setPng);

@@ -148,8 +148,11 @@ function AdminRestaurant() {
       <TableLinks restaurantId={id} slug={r.slug} />
 
       <section className={box}>
-        <div className="mb-5 flex items-center justify-between"><h2 className="font-sans text-sm font-semibold">Editar restaurante</h2><Button onClick={save}>Guardar alterações</Button></div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setOpenEdit((v) => !v)} className="flex items-center gap-2 font-sans text-sm font-semibold"><Pencil className="h-4 w-4 text-muted-foreground" />Editar restaurante<ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${openEdit ? "rotate-180" : ""}`} /></button>
+          {openEdit && <Button onClick={save}>Guardar alterações</Button>}
+        </div>
+        {openEdit && <div className="mt-5 grid gap-4 md:grid-cols-3">
           {field("name", "Nome")}{field("slug", "Endereço (/r/…)")}
           <div><Label>Estado</Label><select className="h-9 w-full rounded-md border bg-card px-2 text-sm" value={f.status ?? "draft"} onChange={(e) => set("status", e.target.value)}>{STATUSES.map((s) => <option key={s}>{s}</option>)}</select></div>
           {field("address", "Morada")}{field("phone", "Telefone", "tel")}{field("email", "Email do restaurante", "email")}

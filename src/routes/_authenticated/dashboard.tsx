@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, CalendarDays, ExternalLink, LogOut, Shield, Menu as MenuIcon,
-, ClipboardList } from "lucide-react";
+  ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

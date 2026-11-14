@@ -168,6 +168,6 @@ export function TablesLanding() {
             </div>
           </div>
         </section>
-      </div>
+      </>
   );
 }

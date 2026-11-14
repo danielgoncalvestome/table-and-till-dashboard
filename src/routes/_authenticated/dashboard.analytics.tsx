@@ -158,6 +158,42 @@ function Analytics() {
         </div>
       </div>
 
+      <div className="flex w-fit rounded-full border bg-card p-1">
+        {([["menu", pt ? "Menu" : "Menu", Utensils], ["res", pt ? "Reservas" : "Bookings", CalendarDays], ["orders", pt ? "Pedidos" : "Orders", ChefHat]] as const).map(([k, l, I]) => (
+          <button key={k} onClick={() => setTab(k)} className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}><I className="h-4 w-4" />{l}</button>
+        ))}
+      </div>
+
+      {tab === "menu" && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={t("an.days")}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={t("ov.topDishes")}><BarList items={s.topDishes.slice(0, 8).map(([k, v]) => [dn(k), v])} empty={t("ov.noData")} /></Card>
+          <Card title={t("ov.topCats")}><BarList items={s.topCats.slice(0, 8).map(([k, v]) => [cn(k), v])} empty={t("ov.noData")} /></Card>
+          <Card title={`${t("an.recs")}`}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={t("an.impr")} value={totalImpr} /><Mini label={t("an.clicks")} value={totalClicks} /><Mini label="CTR" value={totalImpr ? pct(totalClicks / totalImpr) : "—"} /><Mini label={pt ? "Pesquisas" : "Searches"} value={s.searches.reduce((a, [, v]) => a + v, 0)} /></div></Card>
+          <Card title={t("an.searches")}><BarList items={s.searches.slice(0, 8)} empty={t("ov.noData")} /></Card>
+          <Card title={t("an.ratings")}><BarList items={(ratings ?? []).map((x) => [`${dn(x.dish_id)} · ★ ${Number(x.avg_stars).toFixed(1)}`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]).slice(0, 8)} empty={t("ov.noData")} /></Card>
+        </div>
+      )}
+      {tab === "res" && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pessoas por dia da semana" : "Guests by weekday"}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pessoas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Estado das reservas" : "Booking status"}><DonutChart data={statusData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
+          <Card title={pt ? "Origem das reservas" : "Booking source"}><DonutChart data={srcData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
+          <Card title={pt ? "Tamanho dos grupos" : "Party size"}><Chart><BarChart data={partyData} margin={{ left: -24 }}><XAxis dataKey="k" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="v" name={pt ? "Reservas" : "Bookings"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Clientes" : "Customers"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Clientes" : "Customers"} value={rs.customers} /><Mini label={pt ? "Regressaram" : "Returning"} value={rs.returning} /><Mini label={pt ? "Grupo médio" : "Avg party"} value={rs.avgParty.toFixed(1)} /><Mini label={pt ? "Antecedência (dias)" : "Lead (days)"} value={rs.avgLeadDays.toFixed(1)} /><Mini label={pt ? "Cancelamentos" : "Cancellations"} value={pct(rs.cancelRate)} /><Mini label={pt ? "Por confirmar" : "Pending"} value={rs.pending} /></div></Card>
+        </div>
+      )}
+      {tab === "orders" && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card title={pt ? "Valor por dia" : "Value per day"}><Chart><BarChart data={daily} margin={{ left: -16 }}><XAxis dataKey="day" {...axis} minTickGap={16} /><YAxis {...axis} /><Tooltip {...tip} formatter={(v: number) => formatPrice(v)} /><Bar dataKey="valor" name={pt ? "Valor" : "Value"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
+          <Card title={pt ? "Pratos mais pedidos" : "Most ordered dishes"}><BarList items={os.topItems.slice(0, 8)} empty={pt ? "Ainda sem pedidos." : "No orders yet."} /></Card>
+          <Card title={pt ? "Resumo" : "Summary"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Pedidos" : "Orders"} value={os.count} /><Mini label={pt ? "Valor total" : "Total"} value={formatPrice(os.revenue)} /><Mini label={pt ? "Valor médio" : "Average"} value={formatPrice(os.avg)} /><Mini label={pt ? "Cancelados" : "Cancelled"} value={os.cancelled} /></div></Card>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <Kpi icon={Eye} label={t("ov.views")} value={s.views} />
         <Kpi icon={Users} label={t("ov.sessions")} value={s.sessions} />
@@ -197,42 +233,6 @@ function Analytics() {
         </div>
       </Card>
 
-      <div className="flex w-fit rounded-full border bg-card p-1">
-        {([["menu", pt ? "Menu" : "Menu", Utensils], ["res", pt ? "Reservas" : "Bookings", CalendarDays], ["orders", pt ? "Pedidos" : "Orders", ChefHat]] as const).map(([k, l, I]) => (
-          <button key={k} onClick={() => setTab(k)} className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}><I className="h-4 w-4" />{l}</button>
-        ))}
-      </div>
-
-      {tab === "menu" && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card title={t("an.hours")}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={t("an.days")}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="menu" name={pt ? "Visualizações" : "Views"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={t("ov.topDishes")}><BarList items={s.topDishes.slice(0, 8).map(([k, v]) => [dn(k), v])} empty={t("ov.noData")} /></Card>
-          <Card title={t("ov.topCats")}><BarList items={s.topCats.slice(0, 8).map(([k, v]) => [cn(k), v])} empty={t("ov.noData")} /></Card>
-          <Card title={t("ov.langs")}><DonutChart data={langData} empty={t("ov.noData")} /></Card>
-          <Card title={`${t("an.recs")}`}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={t("an.impr")} value={totalImpr} /><Mini label={t("an.clicks")} value={totalClicks} /><Mini label="CTR" value={totalImpr ? pct(totalClicks / totalImpr) : "—"} /><Mini label={pt ? "Pesquisas" : "Searches"} value={s.searches.reduce((a, [, v]) => a + v, 0)} /></div></Card>
-          <Card title={t("an.searches")}><BarList items={s.searches.slice(0, 8)} empty={t("ov.noData")} /></Card>
-          <Card title={t("an.ratings")}><BarList items={(ratings ?? []).map((x) => [`${dn(x.dish_id)} · ★ ${Number(x.avg_stars).toFixed(1)}`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]).slice(0, 8)} empty={t("ov.noData")} /></Card>
-        </div>
-      )}
-      {tab === "res" && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card title={pt ? "Pessoas por hora" : "Guests by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="reservas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Pessoas por dia da semana" : "Guests by weekday"}><Chart><BarChart data={weekData} margin={{ left: -24 }}><XAxis dataKey="d" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pessoas" name={pt ? "Pessoas" : "Guests"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Estado das reservas" : "Booking status"}><DonutChart data={statusData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
-          <Card title={pt ? "Origem das reservas" : "Booking source"}><DonutChart data={srcData} empty={pt ? "Ainda sem reservas." : "No bookings yet."} /></Card>
-          <Card title={pt ? "Tamanho dos grupos" : "Party size"}><Chart><BarChart data={partyData} margin={{ left: -24 }}><XAxis dataKey="k" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="v" name={pt ? "Reservas" : "Bookings"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Clientes" : "Customers"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Clientes" : "Customers"} value={rs.customers} /><Mini label={pt ? "Regressaram" : "Returning"} value={rs.returning} /><Mini label={pt ? "Grupo médio" : "Avg party"} value={rs.avgParty.toFixed(1)} /><Mini label={pt ? "Antecedência (dias)" : "Lead (days)"} value={rs.avgLeadDays.toFixed(1)} /><Mini label={pt ? "Cancelamentos" : "Cancellations"} value={pct(rs.cancelRate)} /><Mini label={pt ? "Por confirmar" : "Pending"} value={rs.pending} /></div></Card>
-        </div>
-      )}
-      {tab === "orders" && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card title={pt ? "Valor por dia" : "Value per day"}><Chart><BarChart data={daily} margin={{ left: -16 }}><XAxis dataKey="day" {...axis} minTickGap={16} /><YAxis {...axis} /><Tooltip {...tip} formatter={(v: number) => formatPrice(v)} /><Bar dataKey="valor" name={pt ? "Valor" : "Value"} fill="var(--chart-1)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Pedidos por hora" : "Orders by hour"}><Chart><BarChart data={hourData} margin={{ left: -24 }}><XAxis dataKey="h" {...axis} /><YAxis {...axis} allowDecimals={false} /><Tooltip {...tip} /><Bar dataKey="pedidos" name={pt ? "Pedidos" : "Orders"} fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></Chart></Card>
-          <Card title={pt ? "Pratos mais pedidos" : "Most ordered dishes"}><BarList items={os.topItems.slice(0, 8)} empty={pt ? "Ainda sem pedidos." : "No orders yet."} /></Card>
-          <Card title={pt ? "Resumo" : "Summary"}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={pt ? "Pedidos" : "Orders"} value={os.count} /><Mini label={pt ? "Valor total" : "Total"} value={formatPrice(os.revenue)} /><Mini label={pt ? "Valor médio" : "Average"} value={formatPrice(os.avg)} /><Mini label={pt ? "Cancelados" : "Cancelled"} value={os.cancelled} /></div></Card>
-        </div>
-      )}
     </div>
   );
 }
@@ -267,7 +267,7 @@ function DonutChart({ data, empty }: { data: { name: string; value: number; fill
   return (
     <div className="flex items-center gap-4">
       <div className="relative h-40 w-40 shrink-0">
-        <ResponsiveContainer><PieChart><Pie data={data} dataKey="value" nameKey="name" innerRadius={48} outerRadius={70} paddingAngle={2} stroke="none">{data.map((d) => <Cell key={d.name} fill={d.fill} />)}</Pie><Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} /></PieChart></ResponsiveContainer>
+        <PieChart width={160} height={160}><Pie data={data} cx={80} cy={80} dataKey="value" nameKey="name" innerRadius={50} outerRadius={74} isAnimationActive={false} paddingAngle={2} stroke="none">{data.map((d) => <Cell key={d.name} fill={d.fill} />)}</Pie><Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }} /></PieChart>
         <div className="pointer-events-none absolute inset-0 grid place-items-center font-display text-2xl">{total}</div>
       </div>
       <ul className="min-w-0 flex-1 space-y-1.5 text-sm">{data.map((d) => <li key={d.name} className="flex items-center gap-2"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: d.fill }} /><span className="flex-1 truncate">{d.name}</span><span className="text-muted-foreground">{Math.round((d.value / total) * 100)}%</span></li>)}</ul>

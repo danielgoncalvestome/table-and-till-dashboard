@@ -1,15 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CalendarCheck, Clock, Hand, LayoutGrid, Map as MapIcon, RefreshCw, Smartphone, Sparkles, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SitePage } from "@/components/site/SiteLayout";
-
-const TITLE = "Gestão de Mesas e Reservas para Restaurantes | MenuTap";
-const DESC = "Simplifique a gestão de mesas e reservas do seu restaurante com o MenuTap. Escolha entre um sistema simples ou avançado, com reservas online e atribuição automática de mesas.";
-export const Route = createFileRoute("/gestao-de-mesas")({
-  head: () => ({ meta: [{ title: TITLE }, { name: "description", content: DESC }, { property: "og:title", content: TITLE }, { property: "og:description", content: DESC }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
-  component: Landing,
-});
 
 type S = "free" | "reserved" | "seated";
 const COLOR: Record<S, string> = { free: "var(--st-free)", reserved: "var(--st-reserved)", seated: "var(--st-seated)" };

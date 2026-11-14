@@ -134,7 +134,6 @@ function Overview() {
             </ul>
           ) : <p className="text-sm text-muted-foreground">{pt ? "Ainda sem avaliações." : "No ratings yet."}</p>}
         </Card>
-        <QrCard />
       </div>
     </div>
   );

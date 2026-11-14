@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { PageTitle, Panel } from "@/components/dash/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useRestaurant } from "@/lib/restaurant";
+import { FloorPlan } from "@/components/res/FloorPlan";
+import { Agenda, Customers, ResStats, Waitlist } from "@/components/res/Panels";
 import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError, todayStr, type ResStatus } from "@/lib/reservations";
 
 export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
@@ -18,22 +20,35 @@ export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
   component: Reservations,
 });
 
-const TABS = [["today", "Sala"], ["list", "Reservas"], ["tables", "Mesas e zonas"], ["settings", "Regras"]] as const;
+const TABS = [["today", "Sala"], ["list", "Reservas"], ["agenda", "Agenda"], ["wait", "Espera"], ["clients", "Clientes"], ["stats", "Estatísticas"], ["tables", "Mesas e zonas"], ["settings", "Regras"]] as const;
 const STATUS_CLS: Record<string, string> = { free: "border-st-free/50 bg-st-free/10", reserved: "border-st-reserved/70 bg-st-reserved/15", seated: "border-st-seated/60 bg-st-seated/10", late: "border-st-reserved bg-st-reserved/30 animate-pulse" };
 
 function Reservations() {
   const [tab, setTab] = useState<(typeof TABS)[number][0]>("today");
   const [date, setDate] = useState(todayStr());
   const [open, setOpen] = useState<{ tableId?: string } | null>(null);
-  const { restaurant: r } = useRestaurant();
+  const { restaurant: r, refresh } = useRestaurant();
+  const [editPlan, setEditPlan] = useState(false);
+  const adv = r.res_mode === "advanced";
+  async function setMode(m: string) { await supabase.from("restaurants").update({ res_mode: m }).eq("id", r.id); refresh(); }
   return (
     <div>
       <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
       <div className="mb-5 flex gap-1 overflow-x-auto rounded-lg border bg-card p-1">
         {TABS.map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{l}</button>)}
       </div>
-      {(tab === "today" || tab === "list") && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mb-4 w-auto" />}
-      {tab === "today" && <Floor date={date} onBook={(tableId) => setOpen({ tableId })} />}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {(tab === "today" || tab === "list" || tab === "agenda") && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto" />}
+        <div className="ml-auto inline-flex rounded-md border bg-card p-0.5 text-xs" role="group" aria-label="Modo">
+          {[["simple", "Modo simples"], ["advanced", "Modo avançado"]].map(([k, l]) => <button key={k} onClick={() => setMode(k)} className={`rounded px-3 py-1 ${r.res_mode === k ? "bg-foreground text-background" : ""}`}>{l}</button>)}
+        </div>
+      </div>
+      {tab === "today" && adv && <div className="space-y-3"><div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <button key={String(k)} onClick={() => setEditPlan(k as boolean)} className={`rounded px-3 py-1 ${editPlan === k ? "bg-foreground text-background" : ""}`}>{l as string}</button>)}</div><FloorPlan date={date} live={!editPlan} onBook={(tableId) => setOpen({ tableId })} /></div>}
+      {tab === "today" && !adv && <Floor date={date} onBook={(tableId) => setOpen({ tableId })} />}
+      {tab === "agenda" && <Agenda date={date} setDate={setDate} />}
+      {tab === "wait" && <Waitlist />}
+      {tab === "clients" && <Customers />}
+      {tab === "stats" && <ResStats />}
       {tab === "list" && <List date={date} />}
       {tab === "tables" && <TablesConfig />}
       {tab === "settings" && <Rules />}
@@ -109,7 +124,10 @@ function List({ date }: { date: string }) {
         {res.map((x) => (
           <li key={x.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
             <span className="w-12 font-semibold">{hhmm(x.starts_at)}</span>
-            <div className="min-w-0 flex-1"><p className="truncate font-medium">{x.name} · {x.party} pax · Mesa {tables.find((t) => t.id === x.table_id)?.label ?? "—"}</p><p className="truncate text-xs text-muted-foreground">{[x.phone, x.email, x.source === "online" ? "Online" : null, x.notes].filter(Boolean).join(" · ")}</p></div>
+            <div className="min-w-0 flex-1"><p className="truncate font-medium">{x.name} · {x.party} pax{!x.table_id && <span className="text-destructive"> · sem mesa</span>}</p><p className="truncate text-xs text-muted-foreground">{[x.phone, x.email, x.source === "online" ? "Online" : null, x.notes].filter(Boolean).join(" · ")}</p></div>
+            <select aria-label="Mesa" className="rounded border bg-card px-2 py-1 text-xs" value={x.table_id ?? ""} onChange={async (e) => { const { error } = await supabase.rpc("move_reservation", { _id: x.id, _table_id: e.target.value }); if (error) toast.error(resError(error.message)); qc.invalidateQueries({ queryKey: ["reservations", r.id] }); }}>
+              <option value="" disabled>Mesa…</option>{tables.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+            </select>
             <select className="rounded border bg-card px-2 py-1 text-xs" value={x.status} onChange={async (e) => { await supabase.from("reservations").update({ status: e.target.value, updated_at: new Date().toISOString() }).eq("id", x.id); qc.invalidateQueries({ queryKey: ["reservations", r.id] }); }}>
               {RES_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
             </select>

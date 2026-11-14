@@ -2,8 +2,8 @@ export const PERMISSIONS = ["menus", "reservations", "room_edit", "orders", "ana
 export type Permission = (typeof PERMISSIONS)[number];
 export type PermMap = Partial<Record<Permission, boolean>>;
 export const PERM_LABELS: Record<Permission, { pt: string; en: string }> = {
-  menus: { pt: "Menus e pratos", en: "Menus & dishes" },
-  reservations: { pt: "Reservas e sala", en: "Reservations & floor" },
+  menus: { pt: "Menus\u00a0", en: "Menus & dishes" },
+  reservations: { pt: "Reservas\u00a0", en: "Reservations & floor" },
   room_edit: { pt: "Editar sala", en: "Edit floor plan" },
   orders: { pt: "Pedidos", en: "Orders" },
   analytics: { pt: "Análise", en: "Analytics" },

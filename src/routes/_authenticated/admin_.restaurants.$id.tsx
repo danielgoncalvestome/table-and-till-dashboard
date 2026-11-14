@@ -167,8 +167,8 @@ function AdminRestaurant() {
       </section>
 
       <section className={box}>
-        <h2 className="mb-4 font-sans text-sm font-semibold">Atividade</h2>
-        {logs?.length ? <ul className="divide-y text-sm">{logs.map((l) => <li key={l.id} className="flex justify-between py-2"><span>{l.action}</span><span className="text-muted-foreground">{formatDate(l.created_at, lang)}</span></li>)}</ul> : <p className="text-sm text-muted-foreground">Sem atividade.</p>}
+        <button onClick={() => setOpenLog((v) => !v)} className="flex items-center gap-2 font-sans text-sm font-semibold"><History className="h-4 w-4 text-muted-foreground" />Atividade<ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${openLog ? "rotate-180" : ""}`} /></button>
+        {openLog && (logs?.length ? <ul className="mt-4 divide-y text-sm">{logs.map((l) => <li key={l.id} className="flex justify-between py-2"><span>{l.action}</span><span className="text-muted-foreground">{formatDate(l.created_at, lang)}</span></li>)}</ul> : <p className="mt-4 text-sm text-muted-foreground">Sem atividade.</p>)}
       </section>
     </div>
   );

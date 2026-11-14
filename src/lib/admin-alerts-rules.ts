@@ -1,4 +1,6 @@
 /** Pure rules for platform/restaurant alerts (testable). */
+import { deviceWarningItems } from "@/lib/orders";
+
 export const TRIAL_WARN_DAYS = 3;
 const DAY = 864e5;
 

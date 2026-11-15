@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, Plus, DoorOpen, ListOrdered, RefreshCw, LayoutGrid, PencilRuler, Eye, Clock, AlertTriangle, Hourglass, CalendarClock, Users, Settings2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -57,7 +58,7 @@ export function RoomControl({ onClose, onBook, onWaitlist }: { onClose: () => vo
     ["Atrasadas", stats.c.late, "var(--destructive)"], ["Pessoas", `${stats.covers}/${stats.capacity}`, "var(--primary)"], ["Reservas", stats.total, "var(--muted-foreground)"], ["Espera", wait.data?.length ?? 0, "var(--accent-foreground)"],
   ] as const;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex flex-col bg-background animate-in fade-in duration-200" role="region" aria-label="Controlo da sala">
       {/* top bar */}
       <header className="flex items-center gap-2 border-b bg-card px-3 py-2 sm:px-4">
@@ -128,7 +129,8 @@ export function RoomControl({ onClose, onBook, onWaitlist }: { onClose: () => vo
           </div>
         ))}
       </footer>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

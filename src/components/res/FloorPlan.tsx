@@ -15,7 +15,27 @@ const DECOR = [["wall", "Parede", 200, 12], ["door", "Porta", 70, 12], ["window"
 const STATE_BG = { free: "var(--st-free)", reserved: "var(--st-reserved)", seated: "var(--st-seated)", late: "var(--st-reserved)" } as const;
 const STATE_LABEL = { free: "Livre", reserved: "Reservada", seated: "Ocupada", late: "Atrasada" } as const;
 
-export function FloorPlan({ date, live: operational, onBook }: { date: string; live: boolean; onBook: (tableId: string) => void }) {
+function Chairs({ it, bg }: { it: Item; bg: string }) {
+  const n = Math.min(it.seats, 16); const out: React.CSSProperties[] = [];
+  if (it.type === "round") {
+    const rx = it.w / 2 + 6, ry = it.h / 2 + 6;
+    for (let i = 0; i < n; i++) { const a = (2 * Math.PI * i) / n - Math.PI / 2; out.push({ left: it.w / 2 + rx * Math.cos(a) - 7, top: it.h / 2 + ry * Math.sin(a) - 4, width: 14, height: 8, transform: `rotate(${(a * 180) / Math.PI + 90}deg)` }); }
+  } else {
+    const horiz = it.w >= it.h; const a = Math.ceil(n / 2), b = n - a; const len = horiz ? it.w : it.h;
+    const place = (k: number, cnt: number, side: 0 | 1) => { const pos = (len * (k + 1)) / (cnt + 1); return horiz ? { left: pos - 8, top: side ? it.h + 3 : -9, width: 16, height: 6 } : { top: pos - 8, left: side ? it.w + 3 : -9, width: 6, height: 16 }; };
+    for (let k = 0; k < a; k++) out.push(place(k, a, 0)); for (let k = 0; k < b; k++) out.push(place(k, b, 1));
+  }
+  return <>{out.map((st, i) => <span key={i} className="pointer-events-none absolute rounded-full" style={{ ...st, background: bg, opacity: 0.55 }} />)}</>;
+}
+
+function chip(st: ReturnType<typeof tableState> | null, now: number) {
+  if (!st) return null;
+  if (st.seated) { const m = Math.round((Date.parse(st.seated.ends_at) - now) / 60000); return m >= 0 ? `${m}m` : `+${-m}m`; }
+  if (st.next) return hhmm(st.next.starts_at);
+  return null;
+}
+
+export function FloorPlan({ date, live: operational, onBook, fullscreen = false }: { date: string; live: boolean; onBook: (tableId: string) => void; fullscreen?: boolean }) {
   const { restaurant } = useRestaurant();
   const canEditRoom = canAccess(restaurant.role, restaurant.permissions, "room_edit");
   const live = operational || !canEditRoom;
@@ -29,7 +49,9 @@ export function FloorPlan({ date, live: operational, onBook }: { date: string; l
   const [sel, setSel] = useState<string[]>([]);
   const [zoom, setZoom] = useState(0.8);
   const [snap, setSnap] = useState(true);
-  const [statusColors, setStatusColors] = useState(false);
+  const [statusColors, setStatusColors] = useState(fullscreen);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 30000); return () => clearInterval(t); }, []);
   const [deleted, setDeleted] = useState<string[]>([]);
   const [dirty, setDirty] = useState(false);
   const drag = useRef<{ mode: "move" | "resize"; sx: number; sy: number; orig: Item[] } | null>(null);
@@ -126,9 +148,9 @@ export function FloorPlan({ date, live: operational, onBook }: { date: string; l
   }
 
   return (
-    <div className="space-y-3">
+    <div className={fullscreen ? "flex h-full min-h-0 flex-col gap-3" : "space-y-3"}>
       <div className="flex flex-wrap items-center gap-2">
-        {zones.map((z) => <button key={z.id} onClick={() => { if (dirty && !confirm("Descartar alterações não guardadas?")) return; setDirty(false); setSel([]); setZoneId(z.id); }} className={`rounded-full border px-3 py-1 text-xs ${zone?.id === z.id ? "bg-foreground text-background" : ""}`}>{z.name}</button>)}
+        {zones.map((z) => <button key={z.id} onClick={() => { if (dirty && !confirm("Descartar alterações não guardadas?")) return; setDirty(false); setSel([]); setZoneId(z.id); }} className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${zone?.id === z.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "bg-card hover:bg-muted"}`}>{z.name}</button>)}
         <div className="ml-auto flex items-center gap-1">
           {live && <Button size="sm" variant="outline" onClick={() => setStatusColors((v) => !v)}><span className="h-3 w-3 rounded-full" style={{ background: statusColors ? STATE_BG.free : "var(--secondary)", border: "1px solid var(--border)" }} />{statusColors ? "Disponibilidade" : "Cores da planta"}</Button>}
           <Button size="icon" variant="ghost" aria-label="Diminuir zoom" onClick={() => setZoom((z) => Math.max(0.3, z / 1.2))}><ZoomOut className="h-4 w-4" /></Button>
@@ -171,7 +193,7 @@ export function FloorPlan({ date, live: operational, onBook }: { date: string; l
         </>
       )}
 
-      <div ref={box} className="overflow-auto rounded-md border bg-card" onPointerDown={() => setSel([])}>
+      <div ref={box} className={`overflow-auto rounded-xl border bg-card ${fullscreen ? "min-h-0 flex-1" : ""}`} onPointerDown={() => setSel([])}>
         <div className="relative touch-none" style={{ width: size.w * zoom, height: size.h * zoom }} onPointerMove={move} onPointerUp={up}>
           <div className="absolute left-0 top-0 origin-top-left" style={{ width: size.w, height: size.h, transform: `scale(${zoom})`, backgroundImage: live ? "none" : "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
             {items.map((it) => {
@@ -183,7 +205,10 @@ export function FloorPlan({ date, live: operational, onBook }: { date: string; l
                 <div key={it.id} onPointerDown={(e) => down(e, it, "move")}
                   className={`absolute flex select-none flex-col items-center justify-center text-center ${live ? "cursor-pointer" : "cursor-move"} ${isSel ? "ring-2 ring-primary ring-offset-2" : ""} ${st?.state === "late" ? "animate-pulse" : ""} ${it.type === "round" || it.type === "plant" ? "rounded-full" : it.kind === "table" ? "rounded-md" : "rounded-sm"}`}
                   style={{ left: it.x, top: it.y, width: it.w, height: it.h, transform: `rotate(${it.rotation}deg)`, background: bg, color: full ? "var(--primary-foreground)" : "var(--foreground)", opacity: it.kind === "decor" ? 0.55 : 1, border: it.kind === "table" ? "1px solid var(--border)" : undefined }}>
-                  {it.kind === "table" && <><span className="text-sm font-bold leading-none">{it.label}</span><span className="text-[10px] opacity-80">{it.seats}p{st?.next && st.state !== "seated" ? ` · ${hhmm(st.next.starts_at)}` : st?.seated ? ` · ${hhmm(st.seated.ends_at)}` : ""}</span></>}
+                  {it.kind === "table" && <Chairs it={it} bg={bg} />}
+                  {it.kind === "table" && live && chip(st, now) && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-card px-1.5 py-px text-[9px] font-semibold tabular-nums text-foreground shadow-sm ring-1 ring-border" style={{ transform: `translateX(-50%) rotate(${-it.rotation}deg)` }}>{chip(st, now)}</span>}
+                  {it.kind === "table" && live && (st?.seated ?? st?.next) && <span className="pointer-events-none absolute left-1/2 top-full mt-3 max-w-[90px] -translate-x-1/2 truncate text-[10px] text-muted-foreground">{(st?.seated ?? st?.next)!.name}</span>}
+                  {it.kind === "table" && <><span className={`${fullscreen ? "text-lg" : "text-sm"} font-bold leading-none`}>{it.label}</span><span className="text-[10px] opacity-80">{it.seats}p{st?.next && st.state !== "seated" ? ` · ${hhmm(st.next.starts_at)}` : st?.seated ? ` · ${hhmm(st.seated.ends_at)}` : ""}</span></>}
                   {st && !full && <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full ring-1 ring-card" style={{ background: STATE_BG[st.state] }} />}
                   {!live && isSel && sel.length === 1 && <span onPointerDown={(e) => down(e, it, "resize")} className="absolute -bottom-1.5 -right-1.5 h-3 w-3 cursor-nwse-resize rounded-sm border bg-card" />}
                 </div>
@@ -212,7 +237,7 @@ export function FloorPlan({ date, live: operational, onBook }: { date: string; l
         </div>
       </div>
 
-      {live && (
+      {live && !fullscreen && (
         <div className="flex flex-wrap gap-3 text-xs">{(["free", "reserved", "seated"] as const).map((s) => <span key={s} className="flex items-center gap-1"><span className="h-3 w-3 rounded-full" style={{ background: STATE_BG[s] }} />{STATE_LABEL[s]}</span>)}</div>
       )}
     </div>

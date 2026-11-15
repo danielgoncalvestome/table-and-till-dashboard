@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRestaurant } from "@/lib/restaurant";
 import { canAccess } from "@/lib/team-rules";
 import { FloorPlan } from "@/components/res/FloorPlan";
+import { RoomControl } from "@/components/res/RoomControl";
+import { Maximize2 } from "lucide-react";
 import { Agenda, Customers, ResStats, Waitlist } from "@/components/res/Panels";
 import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError, todayStr, type ResStatus } from "@/lib/reservations";
 
@@ -33,6 +35,7 @@ function Reservations() {
   const { restaurant: r, refresh } = useRestaurant();
   const canEditRoom = canAccess(r.role, r.permissions, "room_edit");
   const [editPlan, setEditPlan] = useState(false);
+  const [full, setFull] = useState(false);
   const adv = r.res_mode === "advanced";
   async function submitPlan() {
     if (!canEditRoom) return;
@@ -54,7 +57,7 @@ function Reservations() {
           {[["simple", "Modo simples"], ["advanced", "Modo avançado"]].map(([k, l]) => <button key={k} onClick={() => setMode(k)} className={`rounded px-3 py-1 ${r.res_mode === k ? "bg-foreground text-background" : ""}`}>{l}</button>)}
         </div>}
       </div>
-      {tab === "today" && adv && <div className="space-y-3">{canEditRoom && <div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <Button variant={editPlan === k ? "secondary" : "ghost"} size="sm" key={String(k)} onClick={() => setEditPlan(k as boolean)}>{l as string}</Button>)}</div>}<FloorPlan date={date} live={!editPlan || !canEditRoom} onBook={(tableId) => setOpen({ tableId })} /></div>}
+      {tab === "today" && adv && <div className="space-y-3"><button onClick={() => setFull(true)} className="flex w-full items-center justify-between rounded-xl border bg-primary px-4 py-3 text-left text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span><span className="block font-display text-lg">Controlo da sala</span><span className="text-xs opacity-80">Ecrã inteiro com planta, ações rápidas e widgets</span></span><Maximize2 className="h-5 w-5" /></button>{canEditRoom && <div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <Button variant={editPlan === k ? "secondary" : "ghost"} size="sm" key={String(k)} onClick={() => setEditPlan(k as boolean)}>{l as string}</Button>)}</div>}<FloorPlan date={date} live={!editPlan || !canEditRoom} onBook={(tableId) => setOpen({ tableId })} /></div>}
       {tab === "today" && !adv && <Floor date={date} onBook={(tableId) => setOpen({ tableId })} />}
       {tab === "agenda" && <Agenda date={date} setDate={setDate} />}
       {tab === "wait" && <Waitlist />}
@@ -63,6 +66,7 @@ function Reservations() {
       {tab === "list" && <List date={date} />}
       {tab === "tables" && canEditRoom && <TablesConfig />}
       {tab === "settings" && <Rules />}
+      {full && <RoomControl onClose={() => setFull(false)} onBook={(tableId) => setOpen({ tableId })} onWaitlist={() => { setFull(false); setTab("wait"); }} />}
       {open && <NewReservation date={date} tableId={open.tableId} onClose={() => setOpen(null)} />}
     </div>
   );

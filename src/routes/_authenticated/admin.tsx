@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, CheckCircle2, ChevronRight, Clock, CreditCard, Globe, History, Inbox, LayoutDashboard, Megaphone, LayoutGrid, Mail, MailOpen, Minus, Plus, Reply, Search, Shield, SlidersHorizontal, Store, Timer, Trash2, TrendingUp, type LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronRight, Clock, CreditCard, Globe, History, Inbox, LayoutDashboard, Megaphone, LayoutGrid, Mail, MailOpen, Minus, Plus, Reply, Search, Shield, SlidersHorizontal, Store, Timer, Trash2, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
 import { ThemeToggle } from "@/lib/panel-theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { updatePlanPrice } from "@/utils/payments.functions";
 import { activeSub, daysLeft, platformAlerts, type DeviceInfo } from "@/lib/admin-alerts-rules";
 import { AlertDot } from "@/hooks/use-admin-alerts";
+import { AiMenuImport } from "@/components/admin/AiMenuImport";
 import { AnnouncementsAdmin } from "@/components/announce/AnnouncementsAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -25,13 +26,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
 });
 
-type Key = "overview" | "restaurants" | "messages" | "announce" | "platform" | "activity";
-const KEYS: Key[] = ["overview", "restaurants", "messages", "announce", "platform", "activity"];
+type Key = "overview" | "restaurants" | "messages" | "announce" | "aimenu" | "platform" | "activity";
+const KEYS: Key[] = ["overview", "restaurants", "messages", "announce", "aimenu", "platform", "activity"];
 const SECTIONS: { key: Key; icon: LucideIcon; title: string; desc: string }[] = [
   { key: "overview", icon: LayoutGrid, title: "Resumo", desc: "Números e alertas" },
   { key: "restaurants", icon: Store, title: "Restaurantes", desc: "Estado, planos e prazos" },
   { key: "messages", icon: Mail, title: "Mensagens", desc: "Formulário de contacto" },
   { key: "announce", icon: Megaphone, title: "Avisos", desc: "Mensagem aos restaurantes" },
+  { key: "aimenu", icon: Sparkles, title: "Menu com IA", desc: "Criar menu a partir de fotos" },
   { key: "platform", icon: SlidersHorizontal, title: "Plataforma", desc: "Período experimental e preços" },
   { key: "activity", icon: History, title: "Atividade", desc: "Últimas ações registadas" },
 ];
@@ -245,6 +247,7 @@ function Admin() {
 
             {active.key === "announce" && <AnnouncementsAdmin restaurants={(rs ?? []).map((r) => ({ id: r.id, name: r.name }))} />}
 
+            {active.key === "aimenu" && <AiMenuImport restaurants={(rs ?? []).map((r) => ({ id: r.id, name: r.name }))} />}
             {active.key === "platform" && <div className="grid gap-4 md:grid-cols-2">
               <div className={card}><TrialDaysCard /></div>
               <div className={card}><PlanPricesCard /></div>

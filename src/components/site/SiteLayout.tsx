@@ -44,8 +44,6 @@ export function SiteHeader() {
   const signedIn = useSignedIn();
   const [open, setOpen] = useState(false);
   const links = [
-    { to: "/features", label: t("nav.features") },
-    { to: "/gestao-de-mesas", label: t("nav.tables") },
     { to: "/pricing", label: t("nav.pricing") },
     { to: "/faq", label: t("nav.faq") },
     { to: "/contact", label: t("nav.contact") },
@@ -55,6 +53,14 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Logo />
         <nav className="hidden items-center gap-6 text-sm md:flex">
+          <Link
+            to="/"
+            search={{ p: undefined }}
+            className="text-muted-foreground hover:text-foreground"
+            activeProps={{ className: "text-foreground font-medium" }}
+          >
+            {t("nav.features")}
+          </Link>
           {links.map((l) => (
             <Link key={l.to} to={l.to} className="text-muted-foreground hover:text-foreground" activeProps={{ className: "text-foreground font-medium" }}>
               {l.label}
@@ -77,6 +83,7 @@ export function SiteHeader() {
       {open && (
         <div className="border-t px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
+            <Link to="/" search={{ p: undefined }} onClick={() => setOpen(false)}>{t("nav.features")}</Link>
             {links.map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>{l.label}</Link>)}
             <LangSwitch />
             <Button asChild><Link to={signedIn ? "/dashboard" : "/auth"}>{signedIn ? t("nav.dashboard") : t("nav.login")}</Link></Button>
@@ -97,7 +104,7 @@ export function SiteFooter() {
           <p className="mt-2 text-sm opacity-75">{t("hero.tagline")}</p>
         </div>
         <div className="flex flex-col gap-2 text-sm opacity-90">
-          <Link to="/features">{t("nav.features")}</Link>
+          <Link to="/" search={{ p: undefined }}>{t("nav.features")}</Link>
           <Link to="/pricing">{t("nav.pricing")}</Link>
           <Link to="/faq">{t("nav.faq")}</Link>
         </div>

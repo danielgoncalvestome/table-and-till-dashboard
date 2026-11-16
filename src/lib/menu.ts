@@ -60,6 +60,18 @@ export const TEMPLATES = [
   { id: "elegant", pt: "Elegante", en: "Elegant", primary: "#2B2320", bg: "#FBF8F2", accent: "#B08D57", font: "classic" },
   { id: "cafe", pt: "Café moderno", en: "Modern café", primary: "#3A2E26", bg: "#F3EEE6", accent: "#C46A3A", font: "modern" },
   { id: "premium", pt: "Restaurante premium", en: "Premium restaurant", primary: "#E9E2D3", bg: "#151A17", accent: "#B9A26C", font: "classic" },
+  { id: "mediterraneo", pt: "Mediterrâneo", en: "Mediterranean", primary: "#1F3A5F", bg: "#F4F7FA", accent: "#D98E3A", font: "lora" },
+  { id: "trattoria", pt: "Trattoria", en: "Trattoria", primary: "#5A1F1B", bg: "#FAF4EC", accent: "#B5452B", font: "playfair" },
+  { id: "oceano", pt: "Marisqueira", en: "Seafood", primary: "#0F3B47", bg: "#EEF6F6", accent: "#2A9D8F", font: "outfit" },
+  { id: "jardim", pt: "Jardim", en: "Garden", primary: "#2E4A2F", bg: "#F1F5EC", accent: "#7FA650", font: "bitter" },
+  { id: "terracota", pt: "Terracota", en: "Terracotta", primary: "#4A2C22", bg: "#F7EDE4", accent: "#C8693F", font: "dmserif" },
+  { id: "sushi", pt: "Sushi bar", en: "Sushi bar", primary: "#F2EEE8", bg: "#111111", accent: "#D7372F", font: "syne" },
+  { id: "bistro", pt: "Bistrô noturno", en: "Night bistro", primary: "#E8E3F2", bg: "#1E1A2B", accent: "#C9A0DC", font: "garamond" },
+  { id: "brunch", pt: "Brunch", en: "Brunch", primary: "#3D2B3A", bg: "#FFF5F3", accent: "#E8838F", font: "montserrat" },
+  { id: "tasca", pt: "Tasca", en: "Tavern", primary: "#2A2A2A", bg: "#F5F1E8", accent: "#A6702E", font: "baskerville" },
+  { id: "urbano", pt: "Urbano", en: "Urban", primary: "#151515", bg: "#FFFFFF", accent: "#F2B705", font: "archivo" },
+  { id: "cacau", pt: "Pastelaria", en: "Bakery", primary: "#3B2418", bg: "#FBF3E7", accent: "#B97A4A", font: "classic" },
+  { id: "neon", pt: "Street food", en: "Street food", primary: "#EAF7EF", bg: "#0E1A14", accent: "#3DDC84", font: "modern" },
 ] as const;
 
 export const WEEKDAYS = { pt: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] };

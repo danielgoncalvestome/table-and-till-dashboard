@@ -15,7 +15,7 @@ type WidgetId = (typeof WIDGETS)[number][0];
 const LS = "menutap.room.widgets";
 
 /** Full-screen room control: floor plan, quick actions, toggleable widgets and a live status bar. */
-export function RoomControl({ onClose, onBook, onWaitlist }: { onClose: () => void; onBook: (tableId?: string) => void; onWaitlist: () => void }) {
+export function RoomControl({ onClose, onBook, onWaitlist }: { onClose: () => void; onBook: (tableId?: string, walkin?: boolean) => void; onWaitlist: () => void }) {
   const [date, setDate] = useState(todayStr());
   const { r, tables, res } = useResData(date);
   const qc = useQueryClient();
@@ -95,7 +95,7 @@ export function RoomControl({ onClose, onBook, onWaitlist }: { onClose: () => vo
               <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Ações rápidas</p>
               <div className="grid grid-cols-2 gap-2">
                 <Quick icon={Plus} label="Nova reserva" onClick={() => onBook()} primary />
-                <Quick icon={DoorOpen} label="Cliente à porta" onClick={() => onBook()} />
+                <Quick icon={DoorOpen} label="Cliente à porta" onClick={() => onBook(undefined, true)} />
                 <Quick icon={ListOrdered} label="Lista de espera" onClick={onWaitlist} />
                 <Quick icon={RefreshCw} label="Atualizar" onClick={() => { qc.invalidateQueries({ queryKey: ["reservations", r.id] }); qc.invalidateQueries({ queryKey: ["tables", r.id] }); wait.refetch(); }} />
               </div>

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  LayoutDashboard, BookOpen, BarChart3, Palette, Users, CreditCard, Settings, LifeBuoy, CalendarDays, ExternalLink, LogOut, Shield, Menu as MenuIcon,
-  ClipboardList } from "lucide-react";
+  BookOpen, BarChart3, Brain, ChefHat, Palette, Users, CreditCard, Settings, LifeBuoy, CalendarDays, CalendarPlus, ExternalLink, LogOut, Shield, Menu as MenuIcon,
+  ClipboardList, UtensilsCrossed, LayoutGrid, ChevronsUpDown, PanelLeftClose, PanelLeftOpen, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AnnouncementPopup } from "@/components/announce/AnnouncementPopup";
 import { Logo } from "@/components/site/SiteLayout";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { RestaurantProvider, audit, useIsAdmin, useMyRestaurants } from "@/lib/restaurant";
@@ -30,6 +31,9 @@ function DashboardLayout() {
   const { data: isAdmin } = useIsAdmin();
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [mobileNav, setMobileNav] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => { setCollapsed(localStorage.getItem("mt-sidebar-mini") === "1"); }, []);
+  const toggleCollapsed = () => setCollapsed((v) => { localStorage.setItem("mt-sidebar-mini", v ? "0" : "1"); return !v; });
   const navigate = useNavigate();
   const path = useLocation({ select: (l) => l.pathname });
   const qc = useQueryClient();
@@ -58,62 +62,103 @@ function DashboardLayout() {
   }
 
   const allNav = [
-    { to: "/dashboard", icon: LayoutDashboard, label: t("dash.overview"), exact: true },
-    { to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus"), perm: "menus" },
-    { to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations"), perm: "reservations" },
-    { to: "/dashboard/orders", icon: ClipboardList, label: t("dash.orders"), perm: "orders" },
-    { to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics"), perm: "analytics" },
-    { to: "/dashboard/design", icon: Palette, label: t("dash.design"), perm: "design" },
-    { to: "/dashboard/team", icon: Users, label: t("dash.team"), perm: "team" },
-    { to: "/dashboard/subscription", icon: CreditCard, label: t("dash.sub"), perm: "subscription" },
-    { to: "/dashboard/settings", icon: Settings, label: t("dash.settings"), perm: "settings" },
-    { to: "/dashboard/help", icon: LifeBuoy, label: t("dash.help") },
+    { group: "Operação", to: "/dashboard/reservations", icon: CalendarDays, label: t("dash.reservations"), perm: "reservations" },
+    { group: "Operação", to: "/dashboard/room", icon: LayoutGrid, label: "Salas", perm: "reservations" },
+    { group: "Operação", to: "/dashboard/orders", icon: ChefHat, label: t("dash.orders"), perm: "orders" },
+    { group: "Menu", to: "/dashboard/menus", icon: BookOpen, label: t("dash.menus"), perm: "menus" },
+    { group: "Menu", to: "/dashboard/design", icon: Palette, label: t("dash.design"), perm: "design" },
+    { group: "Análise", to: "/dashboard/analytics", icon: BarChart3, label: t("dash.analytics"), perm: "analytics" },
+    { group: "Análise", to: "/dashboard/intelligence", icon: Brain, label: "Menu Intelligence", perm: "analytics" },
   ] as const;
   const perms = (current as { permissions?: Record<string, boolean> }).permissions;
   const allowed = (perm?: string) => !perm || canAccess(current.role, perms, perm as Permission | "team" | "subscription");
   const nav = allNav.filter((n) => allowed("perm" in n ? n.perm : undefined));
+  const groups = [...new Set(nav.map((n) => n.group))];
+  const topItem = { to: "/dashboard", icon: Gauge, label: t("dash.overview"), exact: true } as const;
   const blocked = allNav.find((n) => "perm" in n && !allowed(n.perm) && (path === n.to || path.startsWith(n.to + "/")));
+  const active = [...nav, topItem].reverse().find((n) => ("exact" in n ? path === n.to || path === n.to + "/" : path === n.to || path.startsWith(n.to + "/")));
+  const mini = collapsed;
 
-  const sidebar = (
-    <aside className="flex h-full flex-col gap-1 bg-sidebar p-4">
-      <div className="mb-4 flex justify-center px-2">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-20 w-auto max-w-full object-contain" /> : <Logo />}</div>
-      {list.length > 1 && (
-        <select className="mb-3 rounded border bg-card px-2 py-1.5 text-sm" value={current.id} onChange={(e) => { localStorage.setItem("mt-current-restaurant", e.target.value); setCurrentId(e.target.value); }}>
-          {list.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-        </select>
-      )}
-      {nav.map((n) => (
-        <Link key={n.to} to={n.to} onClick={() => setMobileNav(false)} activeOptions={{ exact: "exact" in n }} className="flex items-center gap-3 rounded px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent" activeProps={{ className: "bg-sidebar-accent font-semibold text-sidebar-accent-foreground" }}>
-          <n.icon className="h-4 w-4" />{n.label}
+  const sidebar = (isMobile: boolean) => {
+    const m = mini && !isMobile;
+    const railBtn = "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground";
+    const topBtn = "grid h-10 w-full shrink-0 place-items-center rounded-xl border bg-card text-muted-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground";
+    return (
+    <aside className="flex h-full flex-col bg-sidebar">
+      <div className={`flex items-center gap-2 border-b border-sidebar-border p-3 ${m ? "flex-col gap-2 py-3" : ""}`}>
+        <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-full w-full object-contain" /> : <UtensilsCrossed className="h-4 w-4 text-primary" />}</span>
+        {!m && (list.length > 1 ? (
+          <div className="relative min-w-0 flex-1">
+            <select aria-label="Restaurante" className="w-full cursor-pointer appearance-none truncate rounded-lg bg-transparent py-1.5 pl-1 pr-6 text-sm font-semibold hover:bg-sidebar-accent" value={current.id} onChange={(e) => { localStorage.setItem("mt-current-restaurant", e.target.value); setCurrentId(e.target.value); }}>
+              {list.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+            </select>
+            <ChevronsUpDown className="pointer-events-none absolute right-1 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          </div>
+        ) : <span className="min-w-0 flex-1 truncate text-sm font-semibold">{current.name}</span>)}
+        {!isMobile && (
+          <button onClick={toggleCollapsed} title={m ? "Expandir menu" : "Recolher menu"} aria-label={m ? "Expandir menu" : "Recolher menu"} aria-expanded={!m} className={railBtn}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</button>
+        )}
+      </div>
+      <nav className="flex-1 overflow-y-auto px-2 py-3">
+        <div className={`mb-2 gap-2 ${m ? "flex flex-col items-center" : "grid grid-cols-4 px-1"}`}>
+          <Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }} aria-label={t("dash.settings")} title={t("dash.settings")} className={topBtn}><Settings className="h-5 w-5" /></Link>
+          <ThemeToggle className="!h-10 !w-full !rounded-xl text-muted-foreground [&_svg]:!h-5 [&_svg]:!w-5" />
+          <a href={`https://menutap.pt/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")} className={topBtn}><BookOpen className="h-5 w-5" /></a>
+          <a href={`https://menutap.pt/r/${current.slug}/reservar`} target="_blank" rel="noreferrer" aria-label="Página de reservas" title="Página de reservas" className={topBtn}><CalendarPlus className="h-5 w-5" /></a>
+        </div>
+        <Link to={topItem.to} title={topItem.label} onClick={() => setMobileNav(false)} activeOptions={{ exact: true }} className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`} activeProps={{ className: "bg-card font-semibold text-foreground shadow-[var(--shadow-card)] ring-1 ring-border" }}>
+          <topItem.icon className="h-4 w-4 shrink-0" />{!m && <span className="truncate">{topItem.label}</span>}
         </Link>
-      ))}
-      {isAdmin && (
-        <Link to="/admin" className="mt-2 flex items-center gap-3 rounded px-3 py-2 text-sm hover:bg-sidebar-accent"><Shield className="h-4 w-4" />{t("dash.admin")}<AdminBadge /></Link>
-      )}
-      <div className="mt-auto space-y-3 border-t pt-4">
-        <LangSwitch className="px-3" />
-        <button onClick={signOut} className="flex items-center gap-3 px-3 text-sm text-muted-foreground hover:text-foreground"><LogOut className="h-4 w-4" />{t("common.signout")}</button>
+        <div className={`my-2 h-px bg-sidebar-border ${m ? "mx-auto w-6" : "mx-3"}`} />
+        {groups.map((g, gi) => (
+          <div key={g} className="mb-3">
+            {m ? gi > 0 && <div className="mx-auto mb-2 h-px w-6 bg-sidebar-border" /> : <p className="px-3 pb-1 pt-1 text-[11px] font-semibold text-muted-foreground">{g}</p>}
+            {nav.filter((n) => n.group === g).map((n) => (
+              <Link key={n.to} to={n.to} title={n.label} onClick={() => setMobileNav(false)} activeOptions={{ exact: "exact" in n }} className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`} activeProps={{ className: "bg-card font-semibold text-foreground shadow-[var(--shadow-card)] ring-1 ring-border" }}>
+                <n.icon className="h-4 w-4 shrink-0" />{!m && <span className="truncate">{n.label}</span>}
+              </Link>
+            ))}
+          </div>
+        ))}
+        {isAdmin && (
+          <div className="mb-3">
+            {m ? <div className="mx-auto mb-2 h-px w-6 bg-sidebar-border" /> : <p className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground">Plataforma</p>}
+            <Link to="/admin" title={t("dash.admin")} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 hover:bg-sidebar-accent ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><Shield className="h-4 w-4 shrink-0" />{!m && <>{t("dash.admin")}<AdminBadge /></>}</Link>
+          </div>
+        )}
+      </nav>
+      <div className="space-y-2 border-t border-sidebar-border p-3">
+        {!m && <LangSwitch className="px-2" />}
+        <button onClick={signOut} title={t("common.signout")} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><LogOut className="h-4 w-4 shrink-0" />{!m && t("common.signout")}</button>
+        {!isMobile && <button onClick={toggleCollapsed} title={m ? "Expandir" : "Recolher"} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <><PanelLeftClose className="h-4 w-4" />Recolher</>}</button>}
       </div>
     </aside>
   );
+  };
 
+  const iconBtn = "grid h-9 w-9 shrink-0 place-items-center rounded-xl border bg-card text-foreground/80 shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground";
   return (
     <RestaurantProvider restaurant={current}>
-      <div className="flex min-h-screen">
-        <div className="sticky top-0 hidden h-screen w-60 shrink-0 border-r md:block">{sidebar}</div>
-        {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-64 border-r">{sidebar}</div><button className="flex-1 bg-foreground/30" aria-label="Close" onClick={() => setMobileNav(false)} /></div>}
+      <div className="flex min-h-screen bg-background">
+        <div className={`sticky top-0 hidden h-screen shrink-0 border-r border-sidebar-border transition-[width] duration-200 md:block ${mini ? "w-[68px]" : "w-60"}`}>{sidebar(false)}</div>
+        {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-64 border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><button className="flex-1 bg-foreground/30 backdrop-blur-sm" aria-label="Close" onClick={() => setMobileNav(false)} /></div>}
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b bg-card/95 px-3 backdrop-blur sm:px-5">
+          <header className="sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b bg-background/85 px-3 backdrop-blur-md sm:px-6">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-              <button className="shrink-0 md:hidden" onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-5 w-5" /></button>
-              <span className="min-w-0 truncate font-display text-lg">{current.name}</span>
-              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${current.published ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>{current.published ? t("dash.published") : t("dash.unpublished")}</span>
+              <button className={`${iconBtn} md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></button>
+              {active && <span className="hidden h-8 w-8 shrink-0 place-items-center rounded-lg border bg-card sm:grid"><active.icon className="h-4 w-4" /></span>}
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-bold leading-tight">{active?.label ?? current.name}</p>
+                <p className="truncate text-xs text-muted-foreground">{current.name}</p>
+              </div>
+              <span className={`ml-1 hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold sm:inline-flex ${current.published ? "border-st-free/30 bg-st-free/10 text-st-free" : "bg-muted text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "animate-pulse bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">{allowed("settings") && <Link to="/dashboard/settings" aria-label={t("dash.settings")} title={t("dash.settings")} className="grid h-9 w-9 place-items-center rounded-full border bg-card hover:bg-muted"><Settings className="h-4 w-4" /></Link>}<ThemeToggle /><a href={`https://menutap.pt/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><BookOpen className="h-4 w-4" /></a><a href={`https://menutap.pt/r/${current.slug}/reservar`} target="_blank" rel="noreferrer" aria-label="Página de reservas" title="Página de reservas" className="grid h-9 w-9 shrink-0 place-items-center rounded-full border bg-card hover:bg-muted"><CalendarDays className="h-4 w-4" /></a></div>
+
           </header>
-          <main className="mx-auto max-w-6xl p-5 md:p-8">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+          <main className="mx-auto max-w-7xl p-4 sm:p-6 md:p-8">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
         </div>
       </div>
+      <AnnouncementPopup />
     </RestaurantProvider>
   );
 }

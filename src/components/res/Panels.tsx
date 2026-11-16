@@ -1,3 +1,4 @@
+import { CalendarCheck, UsersRound, Armchair, UserX } from "lucide-react";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -162,10 +163,10 @@ export function ResStats() {
     <div className="space-y-4">
       <select className="rounded-md border bg-card px-2 py-1.5 text-sm" value={days} onChange={(e) => setDays(Number(e.target.value))}>{[7, 30, 90, 365].map((d) => <option key={d} value={d}>Últimos {d} dias</option>)}</select>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Reservas" value={valid.length} />
-        <Stat label="Pessoas servidas" value={covers} />
-        <Stat label="Média por mesa" value={valid.length ? (valid.reduce((a, x) => a + x.party, 0) / valid.length).toFixed(1) : "—"} />
-        <Stat label="Taxa de no-show" value={decided ? `${Math.round((noShow / decided) * 100)}%` : "—"} />
+        <Stat highlight icon={CalendarCheck} label="Reservas" value={valid.length} />
+        <Stat icon={UsersRound} label="Pessoas servidas" value={covers} />
+        <Stat icon={Armchair} label="Média por mesa" value={valid.length ? (valid.reduce((a, x) => a + x.party, 0) / valid.length).toFixed(1) : "—"} />
+        <Stat icon={UserX} label="Taxa de no-show" value={decided ? `${Math.round((noShow / decided) * 100)}%` : "—"} />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Panel title="Reservas por dia da semana"><Columns values={byDow} labels={["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]} /></Panel>

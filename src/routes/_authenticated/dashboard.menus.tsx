@@ -1,3 +1,4 @@
+import { BookOpen as BookOpenIcon } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -80,7 +81,7 @@ function Menus() {
 
   return (
     <div>
-      <PageTitle title={t("dash.menus")} action={<Button onClick={newMenu}><Plus />{t("menu.new")}</Button>} />
+      <PageTitle icon={BookOpenIcon} title={t("dash.menus")} action={<Button onClick={newMenu}><Plus />{t("menu.new")}</Button>} />
       {data.menus.length === 0 ? <p className="text-muted-foreground">{t("menu.noMenus")}</p> : (
         <>
           <div className="mb-6 flex flex-wrap gap-2">

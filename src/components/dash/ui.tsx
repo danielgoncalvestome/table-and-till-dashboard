@@ -1,44 +1,73 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { ChevronDown, TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
 
-export function PageTitle({ title, sub, action }: { title: string; sub?: string; action?: ReactNode }) {
+export function PageTitle({ title, sub, action, icon: Icon }: { title: string; sub?: string; action?: ReactNode; icon?: LucideIcon }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="text-3xl md:text-4xl">{title}</h1>
-        {sub && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{sub}</p>}
+    <div className="mb-6 grid grid-cols-1 items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        {Icon && <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-tile)]"><Icon className="h-5 w-5" /></span>}
+        <div className="min-w-0">
+          <h1 className="truncate font-sans text-2xl font-bold tracking-tight md:text-[1.7rem]">{title}</h1>
+          {sub && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{sub}</p>}
+        </div>
       </div>
-      {action}
+      {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}
     </div>
   );
 }
 
-export function Panel({ title, children, className = "" }: { title?: string; children: ReactNode; className?: string }) {
+/** Card section. With a title it gets a header that collapses the body; state is remembered per title. */
+export function Panel({ title, children, className = "", icon: Icon, action, collapsible = true, defaultOpen = true }: { title?: string; children: ReactNode; className?: string; icon?: LucideIcon; action?: ReactNode; collapsible?: boolean; defaultOpen?: boolean }) {
+  const key = title ? `mt-panel-${title}` : null;
+  const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => { if (key) { const v = localStorage.getItem(key); if (v) setOpen(v === "1"); } }, [key]);
+  const toggle = () => { const v = !open; setOpen(v); if (key) localStorage.setItem(key, v ? "1" : "0"); };
   return (
-    <section className={`rounded-md border bg-card p-5 ${className}`}>
-      {title && <h2 className="mb-4 font-sans text-sm font-semibold">{title}</h2>}
-      {children}
+    <section className={`dash-card p-5 ${className}`}>
+      {title && (
+        <header className={`flex items-center justify-between gap-2 ${open ? "mb-4" : ""}`}>
+          <button type="button" onClick={collapsible ? toggle : undefined} className="group flex min-w-0 items-center gap-2.5 text-left" aria-expanded={open}>
+            {Icon && <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80"><Icon className="h-4 w-4" /></span>}
+            <h2 className="truncate font-sans text-sm font-semibold">{title}</h2>
+            {collapsible && <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:text-foreground ${open ? "" : "-rotate-90"}`} />}
+          </button>
+          {action}
+        </header>
+      )}
+      {open && <div className="animate-in fade-in-0 slide-in-from-top-1 duration-200">{children}</div>}
     </section>
   );
 }
 
-export function Stat({ label, value }: { label: string; value: ReactNode }) {
+export function Delta({ value }: { value: number }) {
+  const up = value >= 0;
+  const Icon = up ? TrendingUp : TrendingDown;
+  return <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${up ? "border-st-free/30 bg-st-free/10 text-st-free" : "border-destructive/30 bg-destructive/10 text-destructive"}`}><Icon className="h-3 w-3" />{Math.abs(value)}%</span>;
+}
+
+export function Stat({ label, value, icon: Icon, delta, hint, highlight }: { label: string; value: ReactNode; icon?: LucideIcon; delta?: number; hint?: string; highlight?: boolean }) {
   return (
-    <div className="rounded-md border bg-card p-5">
-      <p className="eyebrow">{label}</p>
-      <p className="mt-2 font-display text-4xl text-primary">{value}</p>
+    <div className={`dash-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] ${highlight ? "bg-muted/50" : ""}`}>
+      {Icon && <span className={`mb-4 grid h-10 w-10 place-items-center rounded-xl ${highlight ? "bg-primary text-primary-foreground shadow-[var(--shadow-tile)]" : "border bg-muted/60 text-foreground/80"}`}><Icon className="h-4 w-4" /></span>}
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <p className="font-sans text-3xl font-bold tracking-tight">{value}</p>
+        {delta !== undefined && <Delta value={delta} />}
+      </div>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
 
 export function BarList({ items, empty }: { items: [string, number][]; empty: string }) {
   if (!items.length) return <p className="text-sm text-muted-foreground">{empty}</p>;
-  const max = items[0][1];
+  const max = items[0][1] || 1;
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-3">
       {items.map(([k, v]) => (
-        <li key={k} className="text-sm">
-          <div className="flex justify-between"><span className="truncate">{k}</span><span className="text-muted-foreground">{v}</span></div>
-          <div className="mt-1 h-1.5 rounded bg-muted"><div className="h-full rounded bg-primary" style={{ width: `${(v / max) * 100}%` }} /></div>
+        <li key={k} className="group text-sm">
+          <div className="flex justify-between gap-2"><span className="truncate">{k}</span><span className="font-semibold tabular-nums">{v}</span></div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-700 group-hover:opacity-80" style={{ width: `${(v / max) * 100}%` }} /></div>
         </li>
       ))}
     </ul>
@@ -48,10 +77,11 @@ export function BarList({ items, empty }: { items: [string, number][]; empty: st
 export function Columns({ values, labels }: { values: number[]; labels: string[] }) {
   const max = Math.max(1, ...values);
   return (
-    <div className="flex h-32 items-end gap-1">
+    <div className="flex h-36 items-end gap-1.5">
       {values.map((v, i) => (
-        <div key={i} className="flex flex-1 flex-col items-center gap-1" title={`${labels[i]}: ${v}`}>
-          <div className="w-full rounded-t bg-primary/80" style={{ height: `${(v / max) * 100}%`, minHeight: v ? 2 : 0 }} />
+        <div key={i} className="group flex h-full flex-1 flex-col items-center justify-end gap-1" title={`${labels[i]}: ${v}`}>
+          <span className="text-[10px] font-semibold opacity-0 transition-opacity group-hover:opacity-100">{v}</span>
+          <div className="w-full rounded-md bg-primary/70 transition-all group-hover:bg-primary" style={{ height: `${(v / max) * 100}%`, minHeight: v ? 3 : 0 }} />
           <span className="text-[9px] text-muted-foreground">{labels[i]}</span>
         </div>
       ))}

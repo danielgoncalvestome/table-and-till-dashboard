@@ -1,3 +1,4 @@
+import { CalendarDays as CalendarDaysIcon } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,30 +14,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRestaurant } from "@/lib/restaurant";
 import { canAccess } from "@/lib/team-rules";
 import { FloorPlan } from "@/components/res/FloorPlan";
-import { RoomControl } from "@/components/res/RoomControl";
-import { Maximize2 } from "lucide-react";
+import { useData, NewReservation } from "@/components/res/RoomShared";
+import { Maximize2, ListChecks, CalendarRange, Hourglass, Contact, BarChart3, Armchair, SlidersHorizontal, Send, ChevronLeft, ChevronRight, CalendarCheck, Gauge, Search, LayoutGrid, Rows3, Check, CheckCheck, Phone, Mail, Globe } from "lucide-react";
 import { Agenda, Customers, ResStats, Waitlist } from "@/components/res/Panels";
 import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError, todayStr, type ResStatus } from "@/lib/reservations";
 
 export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
   head: () => ({ meta: [{ title: "Reservas e mesas — MenuTap" }, { name: "description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:title", content: "Reservas e mesas — MenuTap" }, { property: "og:description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
-  validateSearch: (s: Record<string, unknown>): { nova?: 1 } => (s.nova ? { nova: 1 } : {}),
+  validateSearch: (s: Record<string, unknown>): { nova?: 1; tab?: "wait" } => ({ ...(s.nova ? { nova: 1 as const } : {}), ...(s.tab === "wait" ? { tab: "wait" as const } : {}) }),
   component: Reservations,
 });
 
-const TABS = [["today", "Sala"], ["list", "Reservas"], ["agenda", "Agenda"], ["wait", "Espera"], ["clients", "Clientes"], ["stats", "Estatísticas"], ["tables", "Mesas e zonas"], ["settings", "Regras"]] as const;
+const TABS = [["list", "Reservas", ListChecks], ["agenda", "Agenda", CalendarRange], ["wait", "Espera", Hourglass], ["clients", "Clientes", Contact], ["stats", "Estatísticas", BarChart3], ["tables", "Mesas e zonas", Armchair], ["settings", "Regras", SlidersHorizontal]] as const;
 const STATUS_CLS: Record<string, string> = { free: "border-st-free/50 bg-st-free/10", reserved: "border-st-reserved/70 bg-st-reserved/15", seated: "border-st-seated/60 bg-st-seated/10", late: "border-st-reserved bg-st-reserved/30 animate-pulse" };
+const CHIP: Record<string, string> = { pending: "bg-st-reserved/15 text-foreground border-st-reserved/40", confirmed: "bg-primary/10 text-primary border-primary/30", seated: "bg-st-seated/10 text-st-seated border-st-seated/30", completed: "bg-muted text-muted-foreground border-border", cancelled: "bg-destructive/10 text-destructive border-destructive/30", no_show: "bg-destructive/10 text-destructive border-destructive/30" };
+const DOT: Record<string, string> = { pending: "bg-st-reserved", confirmed: "bg-primary", seated: "bg-st-seated", completed: "bg-muted-foreground", cancelled: "bg-destructive", no_show: "bg-destructive" };
+
+function shiftDate(d: string, n: number) { const x = new Date(d + "T12:00:00"); x.setDate(x.getDate() + n); return todayStr(x); }
+function prettyDate(d: string) { return new Date(d + "T12:00:00").toLocaleDateString("pt-PT", { weekday: "long", day: "numeric", month: "long" }); }
 
 function Reservations() {
-  const [tab, setTab] = useState<(typeof TABS)[number][0]>("today");
-  const [date, setDate] = useState(todayStr());
   const search = Route.useSearch();
+  const [tab, setTab] = useState<(typeof TABS)[number][0]>(search.tab ?? "list");
+  const [navCollapsed, setNavCollapsed] = useState(() => { try { return localStorage.getItem("res-nav-collapsed") === "1"; } catch { return false; } });
+  const toggleNav = () => setNavCollapsed((c) => { try { localStorage.setItem("res-nav-collapsed", c ? "0" : "1"); } catch { /* ignore */ } return !c; });
+  const [date, setDate] = useState(todayStr());
   const [open, setOpen] = useState<{ tableId?: string } | null>(search.nova ? {} : null);
   const { restaurant: r, refresh } = useRestaurant();
   const canEditRoom = canAccess(r.role, r.permissions, "room_edit");
-  const [editPlan, setEditPlan] = useState(false);
-  const [full, setFull] = useState(false);
-  const adv = r.res_mode === "advanced";
   async function submitPlan() {
     if (!canEditRoom) return;
     if (!confirm("Enviar a planta atual à MenuTap para contabilizar os dispositivos (1 por mesa ativa)?")) return;
@@ -45,186 +50,199 @@ function Reservations() {
     toast.success(`Planta submetida: ${data} mesas`);
   }
   async function setMode(m: string) { if (!canEditRoom) return; const { error } = await supabase.rpc("set_room_mode", { _restaurant_id: r.id, _mode: m }); if (error) return toast.error(error.message); refresh(); }
+  const dated = tab === "list" || tab === "agenda";
+  const isToday = date === todayStr();
   return (
     <div>
-      <PageTitle title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm"><a href={`https://menutap.pt/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" onClick={submitPlan}>Submeter planta</Button>}<Button size="sm" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova</Button></div>} />
-      <div className="mb-5 flex gap-1 overflow-x-auto rounded-lg border bg-card p-1">
-        {TABS.filter(([k]) => k !== "tables" || canEditRoom).map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{l}</button>)}
-      </div>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {(tab === "today" || tab === "list" || tab === "agenda") && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto" />}
-        {canEditRoom && <div className="ml-auto inline-flex rounded-md border bg-card p-0.5 text-xs" role="group" aria-label="Modo">
-          {[["simple", "Modo simples"], ["advanced", "Modo avançado"]].map(([k, l]) => <button key={k} onClick={() => setMode(k)} className={`rounded px-3 py-1 ${r.res_mode === k ? "bg-foreground text-background" : ""}`}>{l}</button>)}
+      <PageTitle icon={CalendarDaysIcon} title="Reservas" sub="Mesas, reservas do dia e reservas online." action={<div className="flex flex-wrap gap-2">{r.booking_enabled && <Button asChild variant="outline" size="sm" className="rounded-xl"><a href={`https://menutap.pt/r/${r.slug}/reservar`} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />Página pública</a></Button>}{canEditRoom && <Button size="sm" variant="outline" className="rounded-xl" onClick={submitPlan}><Send className="h-4 w-4" />Submeter planta</Button>}<Button size="sm" className="rounded-xl shadow-[var(--shadow-tile)]" onClick={() => setOpen({})}><Plus className="h-4 w-4" />Nova reserva</Button></div>} />
+
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <nav className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-xl border bg-card p-1 shadow-sm" aria-label="Secções">
+          <button onClick={toggleNav} aria-label={navCollapsed ? "Expandir menu" : "Recolher menu"} title={navCollapsed ? "Expandir menu" : "Recolher menu"} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-muted-foreground transition-all hover:bg-muted hover:text-foreground">
+            {navCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
+          {TABS.filter(([k]) => k !== "tables" || canEditRoom).map(([k, l, Icon]) => (
+            <button key={k} onClick={() => setTab(k)} title={navCollapsed ? l : undefined} aria-label={navCollapsed ? l : undefined} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg text-sm font-medium transition-all ${navCollapsed ? "px-2 py-1.5" : "px-3 py-1.5"} ${tab === k ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}><Icon className="h-4 w-4" />{!navCollapsed && l}</button>
+          ))}
+        </nav>
+        {canEditRoom && (tab === "tables" || tab === "settings") && <div className="inline-flex shrink-0 rounded-xl border bg-card p-1 text-xs shadow-sm" role="group" aria-label="Modo">
+          {[["simple", "Simples"], ["advanced", "Avançado"]].map(([k, l]) => <button key={k} onClick={() => setMode(k)} className={`rounded-lg px-3 py-1.5 font-medium transition-all ${r.res_mode === k ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{l}</button>)}
         </div>}
       </div>
-      {tab === "today" && adv && <div className="space-y-3"><button onClick={() => setFull(true)} className="flex w-full items-center justify-between rounded-xl border bg-primary px-4 py-3 text-left text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span><span className="block font-display text-lg">Controlo da sala</span><span className="text-xs opacity-80">Ecrã inteiro com planta, ações rápidas e widgets</span></span><Maximize2 className="h-5 w-5" /></button>{canEditRoom && <div className="inline-flex rounded-md border bg-card p-0.5 text-xs">{[[false, "Operacional"], [true, "Editar planta"]].map(([k, l]) => <Button variant={editPlan === k ? "secondary" : "ghost"} size="sm" key={String(k)} onClick={() => setEditPlan(k as boolean)}>{l as string}</Button>)}</div>}<FloorPlan date={date} live={!editPlan || !canEditRoom} onBook={(tableId) => setOpen({ tableId })} /></div>}
-      {tab === "today" && !adv && <Floor date={date} onBook={(tableId) => setOpen({ tableId })} />}
+
+      {dated && (
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <div className="dash-card inline-flex items-center gap-1 p-1">
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" aria-label="Dia anterior" onClick={() => setDate(shiftDate(date, -1))}><ChevronLeft className="h-4 w-4" /></Button>
+            <label className="relative cursor-pointer px-2 text-sm font-semibold capitalize">
+              {prettyDate(date)}
+              <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" aria-label="Escolher data" />
+            </label>
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" aria-label="Dia seguinte" onClick={() => setDate(shiftDate(date, 1))}><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+          {!isToday && <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setDate(todayStr())}>Hoje</Button>}
+          {isToday && <span className="inline-flex items-center gap-1.5 rounded-full border border-st-free/30 bg-st-free/10 px-2.5 py-1 text-xs font-semibold text-st-free"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-st-free" />Hoje</span>}
+        </div>
+      )}
+
       {tab === "agenda" && <Agenda date={date} setDate={setDate} />}
       {tab === "wait" && <Waitlist />}
       {tab === "clients" && <Customers />}
       {tab === "stats" && <ResStats />}
-      {tab === "list" && <List date={date} />}
+      {tab === "list" && <List date={date} onNew={() => setOpen({})} />}
       {tab === "tables" && canEditRoom && <TablesConfig />}
       {tab === "settings" && <Rules />}
-      {full && <RoomControl onClose={() => setFull(false)} onBook={(tableId) => setOpen({ tableId })} onWaitlist={() => { setFull(false); setTab("wait"); }} />}
       {open && <NewReservation date={date} tableId={open.tableId} onClose={() => setOpen(null)} />}
     </div>
   );
 }
 
-function useData(date: string) {
-  const { restaurant: r } = useRestaurant();
-  const [s, e] = dayRange(date);
-  const zones = useQuery({ queryKey: ["zones", r.id], queryFn: async () => (await supabase.from("zones").select("*").eq("restaurant_id", r.id).order("position")).data ?? [] });
-  const tables = useQuery({ queryKey: ["tables", r.id], queryFn: async () => (await supabase.from("dining_tables").select("*").eq("restaurant_id", r.id).order("position").order("label")).data ?? [] });
-  const res = useQuery({ queryKey: ["reservations", r.id, date], refetchInterval: 30000, queryFn: async () => (await supabase.from("reservations").select("*").eq("restaurant_id", r.id).gte("starts_at", s).lt("starts_at", e).order("starts_at")).data ?? [] });
-  return { r, zones: zones.data ?? [], tables: tables.data ?? [], res: res.data ?? [] };
-}
-
-function Floor({ date, onBook }: { date: string; onBook: (id: string) => void }) {
-  const { r, zones, tables, res } = useData(date);
-  const [zone, setZone] = useState<string>("all");
-  const qc = useQueryClient();
-  if (!tables.length) return <Panel><p className="text-sm text-muted-foreground">Ainda não tem mesas. Crie-as no separador «Mesas e zonas».</p></Panel>;
-  const shown = tables.filter((t) => t.active && (zone === "all" || t.zone_id === zone));
-  const now = Date.now();
-  async function setStatus(id: string, status: ResStatus) {
-    await supabase.from("reservations").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
-    qc.invalidateQueries({ queryKey: ["reservations", r.id] });
-  }
-  const counts = { free: 0, reserved: 0, seated: 0 };
-  const cards = shown.map((t) => {
-    const mine = res.filter((x) => x.table_id === t.id && BLOCKING.includes(x.status as ResStatus));
-    const seated = mine.find((x) => x.status === "seated");
-    const next = mine.find((x) => x.status !== "seated" && Date.parse(x.ends_at) > now);
-    const late = next && isLate(next.status, next.starts_at, r.late_tolerance_minutes, now);
-    const st = seated ? "seated" : late ? "late" : next ? "reserved" : "free";
-    counts[st === "late" ? "reserved" : st]++;
-    return { t, seated, next, st };
-  });
+function Widget({ icon: Icon, label, value, hint, tone = "", children }: { icon: typeof Users; label: string; value: React.ReactNode; hint?: string; tone?: string; children?: React.ReactNode }) {
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-free">{counts.free}</p>Livres</div>
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-reserved">{counts.reserved}</p>Reservadas</div>
-        <div className="rounded-md border bg-card p-3"><p className="font-display text-2xl text-st-seated">{counts.seated}</p>Ocupadas</div>
+    <div className="dash-card group p-4 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <span className={`grid h-8 w-8 place-items-center rounded-lg border bg-muted/60 ${tone}`}><Icon className="h-4 w-4" /></span>
       </div>
-      {zones.length > 0 && <div className="flex gap-2 overflow-x-auto">{[{ id: "all", name: "Todas" }, ...zones].map((z) => <button key={z.id} onClick={() => setZone(z.id)} className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs ${zone === z.id ? "bg-foreground text-background" : ""}`}>{z.name}</button>)}</div>}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {cards.map(({ t, seated, next, st }) => (
-          <div key={t.id} className={`rounded-lg border-2 p-3 ${STATUS_CLS[st]}`}>
-            <div className="flex items-center justify-between"><span className="font-display text-2xl">{t.label}</span><span className="flex items-center gap-1 text-xs text-muted-foreground"><Users className="h-3 w-3" />{t.seats}</span></div>
-            {seated && <p className="mt-1 text-xs">{seated.name} · liberta {hhmm(seated.ends_at)}</p>}
-            {next && <p className="mt-1 flex items-center gap-1 text-xs">{st === "late" && <AlertTriangle className="h-3 w-3 text-st-reserved" />}<Clock className="h-3 w-3" />{hhmm(next.starts_at)} · {next.name} ({next.party})</p>}
-            {!seated && !next && <p className="mt-1 text-xs text-muted-foreground">Livre</p>}
-            <div className="mt-2 flex flex-wrap gap-1">
-              {seated ? <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setStatus(seated.id, "completed")}>Libertar</Button>
-                : next ? <><Button size="sm" className="h-7 text-xs" onClick={() => setStatus(next.id, "seated")}>Sentar</Button>{st === "late" && <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setStatus(next.id, "no_show")}>No-show</Button>}</>
-                : <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onBook(t.id)}>Reservar / sentar</Button>}
-            </div>
-          </div>
-        ))}
-      </div>
+      <p className="mt-2 text-2xl font-bold tracking-tight">{value}</p>
+      {hint && <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>}
+      {children}
     </div>
   );
 }
 
-function List({ date }: { date: string }) {
+function List({ date, onNew }: { date: string; onNew: () => void }) {
   const { r, tables, res } = useData(date);
   const qc = useQueryClient();
-  if (!res.length) return <Panel><p className="text-sm text-muted-foreground">Sem reservas neste dia.</p></Panel>;
-  return (
-    <Panel>
-      <ul className="divide-y">
-        {res.map((x) => (
-          <li key={x.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
-            <span className="w-12 font-semibold">{hhmm(x.starts_at)}</span>
-            <div className="min-w-0 flex-1"><p className="truncate font-medium">{x.name} · {x.party} pax{!x.table_id && <span className="text-destructive"> · sem mesa</span>}</p><p className="truncate text-xs text-muted-foreground">{[x.phone, x.email, x.source === "online" ? "Online" : null, x.notes].filter(Boolean).join(" · ")}</p></div>
-            <select aria-label="Mesa" className="rounded border bg-card px-2 py-1 text-xs" value={x.table_id ?? ""} onChange={async (e) => { const { error } = await supabase.rpc("move_reservation", { _id: x.id, _table_id: e.target.value }); if (error) toast.error(resError(error.message)); qc.invalidateQueries({ queryKey: ["reservations", r.id] }); }}>
-              <option value="" disabled>Mesa…</option>{tables.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-            </select>
-            <select className="rounded border bg-card px-2 py-1 text-xs" value={x.status} onChange={async (e) => { await supabase.from("reservations").update({ status: e.target.value, updated_at: new Date().toISOString() }).eq("id", x.id); qc.invalidateQueries({ queryKey: ["reservations", r.id] }); }}>
-              {RES_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-            </select>
-          </li>
-        ))}
-      </ul>
-    </Panel>
-  );
-}
+  const [filter, setFilter] = useState<string>("active");
+  const [q, setQ] = useState("");
+  const [view, setView] = useState<"cards" | "rows">("cards");
+  const now = Date.now();
+  const live = res.filter((x) => BLOCKING.includes(x.status as ResStatus));
+  const covers = live.reduce((a, x) => a + x.party, 0);
+  const seats = tables.filter((t) => t.active).reduce((a, t) => a + t.seats, 0);
+  const occ = seats ? Math.min(100, Math.round((covers / seats) * 100)) : 0;
+  const pending = res.filter((x) => x.status === "pending").length;
+  const seated = res.filter((x) => x.status === "seated").length;
+  const unassigned = live.filter((x) => !x.table_id).length;
+  const next = live.filter((x) => x.status !== "seated" && Date.parse(x.starts_at) >= now - 15 * 60000)[0];
+  const tableLabel = (id: string | null) => tables.find((t) => t.id === id)?.label;
+  const inv = () => qc.invalidateQueries({ queryKey: ["reservations", r.id] });
+  async function setStatus(id: string, status: string) { await supabase.from("reservations").update({ status, updated_at: new Date().toISOString() }).eq("id", id); inv(); toast.success(STATUS_LABEL[status as ResStatus]); }
+  async function move(id: string, table: string) { const { error } = await supabase.rpc("move_reservation", { _id: id, _table_id: table }); if (error) toast.error(resError(error.message)); inv(); }
 
-function NewReservation({ date, tableId, onClose }: { date: string; tableId?: string; onClose: () => void }) {
-  const { r, tables } = useData(date);
-  const qc = useQueryClient();
-  const nowT = new Date(); const def = `${String(nowT.getHours()).padStart(2, "0")}:${nowT.getMinutes() < 30 ? "30" : "00"}`;
-  const [f, setF] = useState({ date, time: def, party: 2, name: "", phone: "", email: "", notes: "", table: tableId ?? "", walkin: false });
-  const [showContact, setShowContact] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
-  const [busy, setBusy] = useState(false);
-  async function submit(e: React.FormEvent) {
-    e.preventDefault(); setBusy(true);
-    const start = f.walkin ? new Date() : new Date(`${f.date}T${f.time}:00`);
-    const { data, error } = await supabase.rpc("staff_book", { _restaurant_id: r.id, _start: start.toISOString(), _party: f.party, _name: f.name || "Cliente", _phone: f.phone, _email: f.email, _notes: f.notes, _table_id: f.table || undefined, _source: f.walkin ? "walk_in" : "staff" });
-    if (!error && f.walkin && data) await supabase.from("reservations").update({ status: "seated" }).eq("id", data);
-    setBusy(false);
-    if (error) return toast.error(resError(error.message));
-    toast.success(f.walkin ? "Cliente sentado" : "Reserva criada");
-    qc.invalidateQueries({ queryKey: ["reservations", r.id] }); onClose();
-  }
+  const filters: [string, string, number][] = [["active", "Ativas", live.length], ["all", "Todas", res.length], ...RES_STATUSES.map((s) => [s, STATUS_LABEL[s], res.filter((x) => x.status === s).length] as [string, string, number])];
+  const shown = res.filter((x) => (filter === "all" || (filter === "active" ? BLOCKING.includes(x.status as ResStatus) : x.status === filter)) && (!q || [x.name, x.phone, x.email].some((v) => v?.toLowerCase().includes(q.toLowerCase()))));
+  const groups = shown.reduce<Record<string, typeof shown>>((g, x) => { const h = hhmm(x.starts_at).slice(0, 2) + ":00"; (g[h] ||= []).push(x); return g; }, {});
+
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Nova reserva</DialogTitle></DialogHeader>
-        <form onSubmit={submit} className="space-y-3">
-          <button type="button" role="switch" aria-checked={f.walkin} onClick={() => { const w = !f.walkin; setF({ ...f, walkin: w }); if (!w) setShowContact(true); }} className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border px-4 py-3 text-center transition-colors ${f.walkin ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-muted"}`}>
-            <DoorOpen className={`h-5 w-5 ${f.walkin ? "text-primary-foreground" : "text-muted-foreground"}`} />
-            <span className="text-sm font-semibold">Cliente à porta (sentar agora)</span>
-          </button>
-          {!f.walkin && <div className="grid grid-cols-2 gap-2"><div><Label>Data</Label><Input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></div><div><Label>Hora</Label><Input type="time" step={900} value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></div></div>}
-          <div>
-            <Label>Pessoas</Label>
-            <div className="mt-1 flex items-center justify-between rounded-xl border bg-card px-2 py-1.5">
-              <button type="button" aria-label="Menos pessoas" disabled={f.party <= 1} onClick={() => setF({ ...f, party: Math.max(1, f.party - 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Minus className="h-4 w-4" /></button>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="min-w-8 text-center text-xl font-bold tabular-nums">{f.party}</span>
-              </div>
-              <button type="button" aria-label="Mais pessoas" disabled={f.party >= 50} onClick={() => setF({ ...f, party: Math.min(50, f.party + 1) })} className="flex h-9 w-9 items-center justify-center rounded-full border bg-background transition-colors hover:bg-muted disabled:opacity-40"><Plus className="h-4 w-4" /></button>
-            </div>
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <Widget icon={CalendarCheck} label="Reservas" value={live.length} hint={`${res.length} no total`} />
+        <Widget icon={Users} label="Pessoas" value={covers} hint={`${seats} lugares disponíveis`} />
+        <Widget icon={Gauge} label="Ocupação" value={`${occ}%`}>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${occ}%` }} /></div>
+        </Widget>
+        <Widget icon={Armchair} label="Sentados" value={seated} hint="à mesa agora" tone="text-st-seated" />
+        <Widget icon={AlertTriangle} label="Por tratar" value={pending + unassigned} hint={`${pending} pendentes · ${unassigned} sem mesa`} tone={pending + unassigned ? "text-st-reserved" : ""} />
+      </div>
+
+      {next && (
+        <div className="dash-card flex flex-wrap items-center gap-4 border-l-4 border-l-primary p-4">
+          <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-tile)]"><Clock className="h-5 w-5" /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Próxima chegada</p>
+            <p className="truncate font-semibold">{hhmm(next.starts_at)} · {next.name} · {next.party} pax {tableLabel(next.table_id) ? `· Mesa ${tableLabel(next.table_id)}` : ""}</p>
           </div>
-          <div>
-            <Label>Mesa</Label>
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              <button type="button" onClick={() => setF({ ...f, table: "" })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === "" ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>Automática</button>
-              {tables.filter((t) => t.active).map((t) => (
-                <button type="button" key={t.id} onClick={() => setF({ ...f, table: f.table === t.id ? "" : t.id })} className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${f.table === t.id ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{t.label} <span className={`text-xs ${f.table === t.id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>({t.seats})</span></button>
-              ))}
-            </div>
+          <Button size="sm" className="rounded-xl" onClick={() => setStatus(next.id, "seated")}><Armchair className="h-4 w-4" />Sentar</Button>
+        </div>
+      )}
+
+      <div className="dash-card p-4">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[180px] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Procurar nome, telefone, email…" value={q} onChange={(e) => setQ(e.target.value)} className="rounded-xl pl-9" />
           </div>
-          <div className="flex gap-2">
-            <button type="button" aria-expanded={showContact} onClick={() => setShowContact(!showContact)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showContact || f.name || f.phone || f.email ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
-              <UserRound className="h-4 w-4" />Cliente{(f.name || f.phone || f.email) && !showContact ? " •" : ""}
+          <div className="inline-flex rounded-lg border bg-muted/50 p-0.5" role="group" aria-label="Vista">
+            <button aria-label="Cartões" onClick={() => setView("cards")} className={`rounded-md p-1.5 ${view === "cards" ? "bg-card shadow-sm" : "text-muted-foreground"}`}><LayoutGrid className="h-4 w-4" /></button>
+            <button aria-label="Lista" onClick={() => setView("rows")} className={`rounded-md p-1.5 ${view === "rows" ? "bg-card shadow-sm" : "text-muted-foreground"}`}><Rows3 className="h-4 w-4" /></button>
+          </div>
+        </div>
+        <div className="mb-4 flex gap-1.5 overflow-x-auto pb-1">
+          {filters.map(([k, l, n]) => (
+            <button key={k} onClick={() => setFilter(k)} className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${filter === k ? "border-foreground bg-foreground text-background" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+              {DOT[k] && <span className={`h-1.5 w-1.5 rounded-full ${DOT[k]}`} />}{l}<span className="opacity-60">{n}</span>
             </button>
-            <button type="button" aria-expanded={showNotes} onClick={() => setShowNotes(!showNotes)} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-sm transition-colors ${showNotes || f.notes ? "border-primary bg-primary/10 text-primary" : "bg-card text-muted-foreground hover:bg-muted"}`}>
-              <StickyNote className="h-4 w-4" />Notas{f.notes && !showNotes ? " •" : ""}
-            </button>
+          ))}
+        </div>
+
+        {!shown.length ? (
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <span className="grid h-14 w-14 place-items-center rounded-2xl border bg-muted/60"><CalendarDaysIcon className="h-6 w-6 text-muted-foreground" /></span>
+            <p className="font-medium">{res.length ? "Nenhuma reserva com este filtro" : "Sem reservas neste dia"}</p>
+            <Button size="sm" variant="outline" className="rounded-xl" onClick={onNew}><Plus className="h-4 w-4" />Criar reserva</Button>
           </div>
-          {showContact && (
-            <div className="space-y-2 rounded-xl border bg-muted/40 p-3">
-              <Input placeholder="Nome" value={f.name} required={!f.walkin} onChange={(e) => setF({ ...f, name: e.target.value })} />
-              <Input type="tel" placeholder="Telefone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-              <Input type="email" placeholder="Email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
-            </div>
-          )}
-          {showNotes && (
-            <div className="rounded-xl border bg-muted/40 p-3">
-              <Textarea placeholder="Observações" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
-            </div>
-          )}
-          <Button className="w-full" disabled={busy}>Guardar</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        ) : (
+          <div className="space-y-5">
+            {Object.entries(groups).map(([h, items]) => (
+              <section key={h}>
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Clock className="h-3.5 w-3.5" />{h}<span className="h-px flex-1 bg-border" /><span>{items.reduce((a, x) => a + x.party, 0)} pax</span></div>
+                <div className={view === "cards" ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3" : "divide-y rounded-xl border"}>
+                  {items.map((x) => {
+                    const late = isLate(x.status, x.starts_at, r.late_tolerance_minutes, now);
+                    const actions = (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {x.status === "pending" && <Button size="sm" variant="outline" className="h-7 rounded-lg px-2 text-xs" onClick={() => setStatus(x.id, "confirmed")}><Check className="h-3.5 w-3.5" />Confirmar</Button>}
+                        {(x.status === "pending" || x.status === "confirmed") && <Button size="sm" className="h-7 rounded-lg px-2 text-xs" onClick={() => setStatus(x.id, "seated")}><Armchair className="h-3.5 w-3.5" />Sentar</Button>}
+                        {x.status === "seated" && <Button size="sm" variant="outline" className="h-7 rounded-lg px-2 text-xs" onClick={() => setStatus(x.id, "completed")}><CheckCheck className="h-3.5 w-3.5" />Concluir</Button>}
+                        <select aria-label="Mesa" className="h-7 rounded-lg border bg-card px-2 text-xs" value={x.table_id ?? ""} onChange={(e) => move(x.id, e.target.value)}>
+                          <option value="" disabled>Mesa…</option>{tables.map((t) => <option key={t.id} value={t.id}>Mesa {t.label}</option>)}
+                        </select>
+                        <select aria-label="Estado" className="h-7 rounded-lg border bg-card px-2 text-xs" value={x.status} onChange={(e) => setStatus(x.id, e.target.value)}>
+                          {RES_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
+                        </select>
+                      </div>
+                    );
+                    const chip = <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${late ? "border-st-reserved bg-st-reserved/20 text-foreground" : CHIP[x.status]}`}><span className={`h-1.5 w-1.5 rounded-full ${late ? "animate-pulse bg-st-reserved" : DOT[x.status]}`} />{late ? "Atrasada" : STATUS_LABEL[x.status as ResStatus]}</span>;
+                    const meta = <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                      {x.phone && <a href={`tel:${x.phone}`} className="inline-flex items-center gap-1 hover:text-foreground"><Phone className="h-3 w-3" />{x.phone}</a>}
+                      {x.email && <a href={`mailto:${x.email}`} className="inline-flex min-w-0 items-center gap-1 truncate hover:text-foreground"><Mail className="h-3 w-3" />{x.email}</a>}
+                      {x.source === "online" && <span className="inline-flex items-center gap-1"><Globe className="h-3 w-3" />Online</span>}
+                    </div>;
+                    if (view === "rows") return (
+                      <div key={x.id} className="flex flex-wrap items-center gap-3 p-3 text-sm hover:bg-muted/40">
+                        <span className="w-12 font-semibold tabular-nums">{hhmm(x.starts_at)}</span>
+                        <div className="min-w-0 flex-1"><p className="truncate font-medium">{x.name} <span className="text-muted-foreground">· {x.party} pax</span></p>{meta}</div>
+                        {chip}{actions}
+                      </div>
+                    );
+                    return (
+                      <article key={x.id} className={`group rounded-xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] ${late ? "border-st-reserved" : ""}`}>
+                        <div className="mb-3 flex items-start justify-between gap-2">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-muted text-sm font-bold">{x.name.slice(0, 1).toUpperCase()}</span>
+                            <div className="min-w-0"><p className="truncate font-semibold">{x.name}</p><p className="text-xs tabular-nums text-muted-foreground">{hhmm(x.starts_at)} – {hhmm(x.ends_at)}</p></div>
+                          </div>
+                          {chip}
+                        </div>
+                        <div className="mb-3 grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1.5"><Users className="h-3.5 w-3.5 text-muted-foreground" /><b>{x.party}</b> pessoas</div>
+                          <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 ${x.table_id ? "bg-muted/50" : "bg-destructive/10 text-destructive"}`}><Armchair className="h-3.5 w-3.5" />{x.table_id ? <>Mesa <b>{tableLabel(x.table_id)}</b></> : "Sem mesa"}</div>
+                        </div>
+                        {meta}
+                        {x.notes && <p className="mt-2 flex items-start gap-1.5 rounded-lg border border-dashed px-2 py-1.5 text-xs text-muted-foreground"><StickyNote className="mt-0.5 h-3 w-3 shrink-0" />{x.notes}</p>}
+                        <div className="mt-3 border-t pt-3">{actions}</div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

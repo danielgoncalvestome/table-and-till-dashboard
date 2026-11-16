@@ -162,6 +162,13 @@
       "when": 1794690147231,
       "tag": "0022_room_edit_permission",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794819603271,
+      "tag": "0023_collaborator_announcements_orders",
+      "breakpoints": true
     }
   ]
 }

@@ -112,6 +112,65 @@ export type Database = {
           },
         ]
       }
+      announcement_reads: {
+        Row: {
+          announcement_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      announcements: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          restaurant_ids: string[]
+          subtitle: string | null
+          target_all: boolean
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          restaurant_ids?: string[]
+          subtitle?: string | null
+          target_all?: boolean
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          restaurant_ids?: string[]
+          subtitle?: string | null
+          target_all?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -573,6 +632,7 @@ export type Database = {
           grace_days: number
           id: number
           monthly_price_cents: number
+          overview_layout: Json | null
           trial_days: number
           updated_at: string
         }
@@ -582,6 +642,7 @@ export type Database = {
           grace_days?: number
           id?: number
           monthly_price_cents?: number
+          overview_layout?: Json | null
           trial_days?: number
           updated_at?: string
         }
@@ -591,6 +652,7 @@ export type Database = {
           grace_days?: number
           id?: number
           monthly_price_cents?: number
+          overview_layout?: Json | null
           trial_days?: number
           updated_at?: string
         }
@@ -1317,6 +1379,7 @@ export type Database = {
         Returns: undefined
       }
       can_edit_room: { Args: { _restaurant_id: string }; Returns: boolean }
+      default_overview_layout: { Args: never; Returns: Json }
       dish_rating_summary: {
         Args: { _restaurant_id: string }
         Returns: {
@@ -1439,6 +1502,10 @@ export type Database = {
           _start: string
           _table_id?: string
         }
+        Returns: string
+      }
+      staff_place_order: {
+        Args: { _items: Json; _table_id: string }
         Returns: string
       }
       submit_floor_plan: { Args: { _restaurant_id: string }; Returns: number }

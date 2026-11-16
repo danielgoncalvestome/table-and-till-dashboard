@@ -14,7 +14,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
-import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as GestaoDeMesasRouteImport } from './routes/gestao-de-mesas'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -29,9 +28,12 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardAnalyticsRouteImport } from './routes/_authenticated/dashboard.analytics'
 import { Route as AuthenticatedDashboardDesignRouteImport } from './routes/_authenticated/dashboard.design'
 import { Route as AuthenticatedDashboardHelpRouteImport } from './routes/_authenticated/dashboard.help'
+import { Route as AuthenticatedDashboardIntelligenceRouteImport } from './routes/_authenticated/dashboard.intelligence'
+import { Route as AuthenticatedDashboardManageRouteImport } from './routes/_authenticated/dashboard.manage'
 import { Route as AuthenticatedDashboardMenusRouteImport } from './routes/_authenticated/dashboard.menus'
 import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard.orders'
 import { Route as AuthenticatedDashboardReservationsRouteImport } from './routes/_authenticated/dashboard.reservations'
+import { Route as AuthenticatedDashboardRoomRouteImport } from './routes/_authenticated/dashboard.room'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
 import { Route as AuthenticatedDashboardTeamRouteImport } from './routes/_authenticated/dashboard.team'
@@ -61,11 +63,6 @@ const ContactRoute = ContactRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeaturesRoute = FeaturesRouteImport.update({
-  id: '/features',
-  path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GestaoDeMesasRoute = GestaoDeMesasRouteImport.update({
@@ -143,6 +140,18 @@ const AuthenticatedDashboardHelpRoute =
     path: '/help',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardIntelligenceRoute =
+  AuthenticatedDashboardIntelligenceRouteImport.update({
+    id: '/intelligence',
+    path: '/intelligence',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardManageRoute =
+  AuthenticatedDashboardManageRouteImport.update({
+    id: '/manage',
+    path: '/manage',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardMenusRoute =
   AuthenticatedDashboardMenusRouteImport.update({
     id: '/menus',
@@ -159,6 +168,12 @@ const AuthenticatedDashboardReservationsRoute =
   AuthenticatedDashboardReservationsRouteImport.update({
     id: '/reservations',
     path: '/reservations',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardRoomRoute =
+  AuthenticatedDashboardRoomRouteImport.update({
+    id: '/room',
+    path: '/room',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardSettingsRoute =
@@ -202,7 +217,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/features': typeof FeaturesRoute
   '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -216,9 +230,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
+  '/dashboard/intelligence': typeof AuthenticatedDashboardIntelligenceRoute
+  '/dashboard/manage': typeof AuthenticatedDashboardManageRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
+  '/dashboard/room': typeof AuthenticatedDashboardRoomRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -232,7 +249,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/features': typeof FeaturesRoute
   '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -245,9 +261,12 @@ export interface FileRoutesByTo {
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/dashboard/help': typeof AuthenticatedDashboardHelpRoute
+  '/dashboard/intelligence': typeof AuthenticatedDashboardIntelligenceRoute
+  '/dashboard/manage': typeof AuthenticatedDashboardManageRoute
   '/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
+  '/dashboard/room': typeof AuthenticatedDashboardRoomRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -263,7 +282,6 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/features': typeof FeaturesRoute
   '/gestao-de-mesas': typeof GestaoDeMesasRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -277,9 +295,12 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/_authenticated/dashboard/design': typeof AuthenticatedDashboardDesignRoute
   '/_authenticated/dashboard/help': typeof AuthenticatedDashboardHelpRoute
+  '/_authenticated/dashboard/intelligence': typeof AuthenticatedDashboardIntelligenceRoute
+  '/_authenticated/dashboard/manage': typeof AuthenticatedDashboardManageRoute
   '/_authenticated/dashboard/menus': typeof AuthenticatedDashboardMenusRoute
   '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/_authenticated/dashboard/reservations': typeof AuthenticatedDashboardReservationsRoute
+  '/_authenticated/dashboard/room': typeof AuthenticatedDashboardRoomRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/team': typeof AuthenticatedDashboardTeamRoute
@@ -295,7 +316,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
-    | '/features'
     | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
@@ -309,9 +329,12 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/design'
     | '/dashboard/help'
+    | '/dashboard/intelligence'
+    | '/dashboard/manage'
     | '/dashboard/menus'
     | '/dashboard/orders'
     | '/dashboard/reservations'
+    | '/dashboard/room'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
@@ -325,7 +348,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
-    | '/features'
     | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
@@ -338,9 +360,12 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/design'
     | '/dashboard/help'
+    | '/dashboard/intelligence'
+    | '/dashboard/manage'
     | '/dashboard/menus'
     | '/dashboard/orders'
     | '/dashboard/reservations'
+    | '/dashboard/room'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/team'
@@ -355,7 +380,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/faq'
-    | '/features'
     | '/gestao-de-mesas'
     | '/pricing'
     | '/privacy'
@@ -369,9 +393,12 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/analytics'
     | '/_authenticated/dashboard/design'
     | '/_authenticated/dashboard/help'
+    | '/_authenticated/dashboard/intelligence'
+    | '/_authenticated/dashboard/manage'
     | '/_authenticated/dashboard/menus'
     | '/_authenticated/dashboard/orders'
     | '/_authenticated/dashboard/reservations'
+    | '/_authenticated/dashboard/room'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/team'
@@ -387,7 +414,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
-  FeaturesRoute: typeof FeaturesRoute
   GestaoDeMesasRoute: typeof GestaoDeMesasRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -434,13 +460,6 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/features': {
-      id: '/features'
-      path: '/features'
-      fullPath: '/features'
-      preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gestao-de-mesas': {
@@ -541,6 +560,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardHelpRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/intelligence': {
+      id: '/_authenticated/dashboard/intelligence'
+      path: '/intelligence'
+      fullPath: '/dashboard/intelligence'
+      preLoaderRoute: typeof AuthenticatedDashboardIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/manage': {
+      id: '/_authenticated/dashboard/manage'
+      path: '/manage'
+      fullPath: '/dashboard/manage'
+      preLoaderRoute: typeof AuthenticatedDashboardManageRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/menus': {
       id: '/_authenticated/dashboard/menus'
       path: '/menus'
@@ -560,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/reservations'
       fullPath: '/dashboard/reservations'
       preLoaderRoute: typeof AuthenticatedDashboardReservationsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/room': {
+      id: '/_authenticated/dashboard/room'
+      path: '/room'
+      fullPath: '/dashboard/room'
+      preLoaderRoute: typeof AuthenticatedDashboardRoomRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/settings': {
@@ -611,9 +651,12 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardAnalyticsRoute: typeof AuthenticatedDashboardAnalyticsRoute
   AuthenticatedDashboardDesignRoute: typeof AuthenticatedDashboardDesignRoute
   AuthenticatedDashboardHelpRoute: typeof AuthenticatedDashboardHelpRoute
+  AuthenticatedDashboardIntelligenceRoute: typeof AuthenticatedDashboardIntelligenceRoute
+  AuthenticatedDashboardManageRoute: typeof AuthenticatedDashboardManageRoute
   AuthenticatedDashboardMenusRoute: typeof AuthenticatedDashboardMenusRoute
   AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
   AuthenticatedDashboardReservationsRoute: typeof AuthenticatedDashboardReservationsRoute
+  AuthenticatedDashboardRoomRoute: typeof AuthenticatedDashboardRoomRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardTeamRoute: typeof AuthenticatedDashboardTeamRoute
@@ -625,10 +668,14 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardAnalyticsRoute: AuthenticatedDashboardAnalyticsRoute,
     AuthenticatedDashboardDesignRoute: AuthenticatedDashboardDesignRoute,
     AuthenticatedDashboardHelpRoute: AuthenticatedDashboardHelpRoute,
+    AuthenticatedDashboardIntelligenceRoute:
+      AuthenticatedDashboardIntelligenceRoute,
+    AuthenticatedDashboardManageRoute: AuthenticatedDashboardManageRoute,
     AuthenticatedDashboardMenusRoute: AuthenticatedDashboardMenusRoute,
     AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
     AuthenticatedDashboardReservationsRoute:
       AuthenticatedDashboardReservationsRoute,
+    AuthenticatedDashboardRoomRoute: AuthenticatedDashboardRoomRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
     AuthenticatedDashboardSubscriptionRoute:
       AuthenticatedDashboardSubscriptionRoute,
@@ -664,7 +711,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
-  FeaturesRoute: FeaturesRoute,
   GestaoDeMesasRoute: GestaoDeMesasRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

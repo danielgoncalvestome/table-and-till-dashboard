@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode, type PointerEvent as RPointerEvent } from "react";
 import { toast } from "sonner";
 import {
-  AlertTriangle, ArrowDown, ArrowUp, ArrowUpRight, BarChart3, BookOpen, CalendarPlus, CalendarDays, Check, CheckCircle2, ChefHat, Eye, EyeOff,
-  Globe, LayoutGrid, Maximize2, Minimize2, Palette, Pencil, Plus, RotateCcw, Sparkles, Star, Users, Utensils, type LucideIcon,
+  AlertTriangle, ChevronDown, ArrowUpRight, BarChart3, Brain, BookOpen, CalendarPlus, CalendarDays, Check, CheckCircle2, ChefHat, Eye, EyeOff,
+  Globe, GripVertical, LayoutGrid, MoveDiagonal2, Palette, Pencil, Plus, RotateCcw, Sparkles, Star, Users, Utensils, type LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useRestaurant } from "@/lib/restaurant";
+import { useIsAdmin, useRestaurant } from "@/lib/restaurant";
 import { fetchEvents, summarize } from "@/lib/analytics";
 import { useCatalog } from "@/lib/use-catalog";
 import { Columns } from "@/components/dash/ui";
@@ -22,21 +22,29 @@ import { formatPrice } from "@/lib/menu";
 import { fetchReservations, fillRows, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
 import { DEFAULT_LAYOUT, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
 
-export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Visão geral — MenuTap" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Visão geral — MenuTap" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
+export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Dashboard — MenuTap" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Dashboard — MenuTap" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
 const TITLES: Record<SectionId, string> = { actions: "Ações rápidas", status: "Estado do serviço", alerts: "Alertas", today: "Reservas de hoje", floor: "Ocupação da sala", orders: "Pedidos ao vivo", views: "Visualizações", kpis: "Indicadores", dishes: "Menu Intelligence", ratings: "Avaliações" };
 const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Globe, alerts: AlertTriangle, today: CalendarDays, floor: Users, orders: ChefHat, views: BarChart3, kpis: Eye, dishes: Sparkles, ratings: Star };
 
-function Box({ id, children, action, className = "" }: { id: SectionId; children: ReactNode; action?: ReactNode; className?: string }) {
+function Box({ id, children, action, className = "", tight = false }: { id: SectionId; children: ReactNode; action?: ReactNode; className?: string; tight?: boolean }) {
   const Icon = ICONS[id];
+  const k = `mt-box-${id}`;
+  const [open, setOpen] = useState(true);
+  useEffect(() => { setOpen(localStorage.getItem(k) !== "0"); }, [k]);
+  const toggle = () => { const v = !open; setOpen(v); localStorage.setItem(k, v ? "1" : "0"); };
   return (
-    <section className={`flex h-full min-w-0 flex-col rounded-2xl border bg-card p-4 sm:p-5 ${className}`}>
-      <header className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="flex min-w-0 items-center gap-2 font-sans text-sm font-semibold"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><Icon className="h-3.5 w-3.5" /></span><span className="truncate">{TITLES[id]}</span></h2>
-        {action}
+    <section className={`dash-card flex h-full min-w-0 flex-col ${tight ? "p-3" : "p-4"} transition-shadow hover:shadow-[var(--shadow-card-hover)] sm:p-5 ${className}`}>
+      <header className={`flex items-center justify-between gap-2 ${open ? (tight ? "mb-2 sm:mb-4" : "mb-4") : ""}`}>
+        <button type="button" onClick={toggle} aria-expanded={open} className="group flex min-w-0 items-center gap-2.5 text-left">
+          <span className={`grid ${tight ? "h-7 w-7" : "h-8 w-8"} shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80 transition group-hover:bg-primary group-hover:text-primary-foreground sm:h-8 sm:w-8`}><Icon className="h-4 w-4" /></span>
+          <span className="truncate font-sans text-sm font-semibold">{TITLES[id]}</span>
+          <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "" : "-rotate-90"}`} />
+        </button>
+        {open && action}
       </header>
-      <div className="min-w-0 max-h-[26rem] flex-1 overflow-y-auto">{children}</div>
+      {open && <div className="min-w-0 max-h-[26rem] flex-1 overflow-y-auto animate-in fade-in-0 duration-200">{children}</div>}
     </section>
   );
 }
@@ -74,9 +82,39 @@ function Overview() {
   const storeKey = `mt-overview-layout-${r.id}`;
   const [layout, setLayout] = useState<LayoutItem[]>(DEFAULT_LAYOUT);
   const [editing, setEditing] = useState(false);
-  useEffect(() => { try { setLayout(normalizeLayout(JSON.parse(localStorage.getItem(storeKey) ?? "null"))); } catch { setLayout(DEFAULT_LAYOUT); } }, [storeKey]);
+  const { data: isAdmin } = useIsAdmin();
+  const { data: platformDefault, refetch: refetchDefault } = useQuery({ queryKey: ["default-overview-layout"], queryFn: async () => (await supabase.rpc("default_overview_layout")).data ?? null });
+  const baseLayout = platformDefault ? normalizeLayout(platformDefault) : DEFAULT_LAYOUT;
+  useEffect(() => {
+    if (platformDefault === undefined) return;
+    const raw = localStorage.getItem(storeKey);
+    try { setLayout(raw ? normalizeLayout(JSON.parse(raw)) : baseLayout); } catch { setLayout(baseLayout); }
+    // First admin visit with no platform default: capture this admin's current layout as the default.
+    if (isAdmin && platformDefault === null && raw) void setAsDefault(normalizeLayout(JSON.parse(raw)), true);
+  }, [storeKey, platformDefault, isAdmin]);
+  async function setAsDefault(l: LayoutItem[], silent = false) {
+    const { error } = await supabase.from("platform_settings").update({ overview_layout: l as never, updated_at: new Date().toISOString() }).eq("id", 1);
+    if (error) return toast.error(error.message);
+    if (!silent) toast.success("Disposição definida como predefinida para todos os restaurantes");
+    refetchDefault();
+  }
   const saveLayout = (l: LayoutItem[]) => { setLayout(l); localStorage.setItem(storeKey, JSON.stringify(l)); };
-  const move = (i: number, d: number) => { const j = i + d; if (j < 0 || j >= layout.length) return; const l = [...layout]; [l[i], l[j]] = [l[j], l[i]]; saveLayout(l); };
+  const [dragId, setDragId] = useState<SectionId | null>(null);
+  const [overId, setOverId] = useState<SectionId | null>(null);
+  const moveTo = (from: SectionId, to: SectionId) => { if (from === to) return; const l = [...layout]; const a = l.findIndex((x) => x.id === from); const [it] = l.splice(a, 1); const b = l.findIndex((x) => x.id === to); l.splice(a <= b ? b + 1 : b, 0, it); saveLayout(l); };
+  const startResize = (e: RPointerEvent, i: number) => {
+    e.preventDefault(); e.stopPropagation();
+    const box = (e.currentTarget as HTMLElement).parentElement!; const grid = box.parentElement!;
+    const r0 = box.getBoundingClientRect(); const gw = grid.getBoundingClientRect().width; const x0 = e.clientX, y0 = e.clientY;
+    let cur = layout[i];
+    const onMove = (ev: PointerEvent) => {
+      const w = r0.width + ev.clientX - x0; const h = Math.max(120, Math.round(r0.height + ev.clientY - y0));
+      cur = { ...cur, wide: window.innerWidth >= 1024 ? w > gw * 0.7 : cur.wide, h };
+      setLayout((l) => l.map((x, k) => (k === i ? cur : x)));
+    };
+    const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); setLayout((l) => { localStorage.setItem(storeKey, JSON.stringify(l)); return l; }); };
+    window.addEventListener("pointermove", onMove); window.addEventListener("pointerup", onUp);
+  };
   const patch = (i: number, p: Partial<LayoutItem>) => saveLayout(layout.map((x, k) => (k === i ? { ...x, ...p } : x)));
 
   const { data: ev } = useQuery({ queryKey: ["events", r.id], queryFn: () => fetchEvents(r.id) });
@@ -118,8 +156,8 @@ function Overview() {
 
   const alerts: { text: string; to?: "/dashboard/menus" | "/dashboard/design" | "/dashboard/subscription" | "/dashboard/reservations" | "/dashboard/orders"; level: "high" | "low" }[] = [];
   const tw = paid === undefined || r.is_demo ? null : trialWarning(r.trial_ends_at, paid);
-  if (tw?.kind === "ending") alerts.push({ level: "high", text: `O período experimental termina ${tw.days === 0 ? "hoje" : `em ${tw.days} dia(s)`}. Subscreva para manter o menu online.`, to: "/dashboard/subscription" });
-  if (tw?.kind === "expired") alerts.push({ level: "high", text: "O período experimental terminou e o menu não está visível.", to: "/dashboard/subscription" });
+  if (tw?.kind === "ending") alerts.push({ level: "high", text: `O período experimental termina ${tw.days === 0 ? "hoje" : `em ${tw.days} dia(s)`}. Subscreva para manter o menu online.`, to: "/dashboard/subscription" as const });
+  if (tw?.kind === "expired") alerts.push({ level: "high", text: "O período experimental terminou e o menu não está visível.", to: "/dashboard/subscription" as const });
   if (!r.published) alerts.push({ level: "high", text: "O menu ainda não está publicado." });
   const late = res.filter((x) => tableState(x.table_id ?? "", res, r.late_tolerance_minutes ?? 15, now).state === "late" && x.table_id).length;
   if (late) alerts.push({ level: "high", text: `${late} reserva(s) atrasada(s) — possível não comparência.`, to: "/dashboard/reservations" });
@@ -153,22 +191,23 @@ function Overview() {
   }
 
   const shortcuts = [
-    { to: "/dashboard/reservations", search: { nova: 1 as const }, icon: CalendarPlus, label: "Nova reserva", cls: "bg-primary text-primary-foreground" },
-    { to: "/dashboard/reservations", icon: LayoutGrid, label: "Sala", cls: "bg-secondary text-primary" },
-    { to: "/dashboard/orders", icon: ChefHat, label: "Pedidos", cls: "bg-secondary text-primary", badge: newOrders },
-    { to: "/dashboard/menus", icon: BookOpen, label: "Menus", cls: "bg-secondary text-primary" },
-    { to: "/dashboard/design", icon: Palette, label: "Design", cls: "bg-secondary text-primary" },
-    { to: "/dashboard/analytics", icon: BarChart3, label: "Análise", cls: "bg-secondary text-primary" },
+    { to: "/dashboard/reservations", search: { nova: 1 as const }, icon: CalendarPlus, label: "Nova reserva", short: "Reserva", cls: "bg-primary text-primary-foreground" },
+    { to: "/dashboard/room", search: { full: 1 as const }, icon: LayoutGrid, label: "Sala", short: "Sala", cls: "bg-secondary text-primary" },
+    { to: "/dashboard/orders", search: { full: 1 as const }, icon: ChefHat, label: "Pedidos", short: "Pedidos", cls: "bg-secondary text-primary", badge: newOrders },
+    { to: "/dashboard/menus", icon: BookOpen, label: "Menus", short: "Menus", cls: "bg-secondary text-primary" },
+    { to: "/dashboard/design", icon: Palette, label: "Design", short: "Design", cls: "bg-secondary text-primary" },
+    { to: "/dashboard/intelligence", icon: Brain, label: "Menu Intelligence", short: "MI", cls: "bg-secondary text-primary" },
   ] as const;
 
   const sections: Record<SectionId, ReactNode> = {
     actions: (
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-6 gap-1 sm:gap-2">
         {shortcuts.map((x) => (
-          <Link key={x.label} to={x.to} search={"search" in x ? x.search : {}} className="group relative flex min-w-0 flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-sm">
-            <span className={`grid h-10 w-10 place-items-center rounded-xl transition-transform group-hover:scale-110 ${x.cls}`}><x.icon className="h-5 w-5" /></span>
-            <span className="w-full truncate text-xs font-medium">{x.label}</span>
-            {"badge" in x && x.badge > 0 && <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{x.badge}</span>}
+          <Link key={x.label} to={x.to} search={"search" in x ? x.search : {}} className="group relative flex min-w-0 flex-col items-center gap-1 rounded-lg border p-1.5 text-center transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-sm sm:gap-2 sm:rounded-xl sm:p-3">
+            <span className={`grid h-7 w-7 place-items-center rounded-lg transition-transform group-hover:scale-110 sm:h-10 sm:w-10 sm:rounded-xl ${x.cls}`}><x.icon className="h-3.5 w-3.5 sm:h-5 sm:w-5" /></span>
+            <span className="w-full truncate text-[9px] font-medium leading-tight sm:hidden">{x.short}</span>
+            <span className="hidden w-full truncate text-xs font-medium sm:block">{x.label}</span>
+            {"badge" in x && x.badge > 0 && <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[9px] text-destructive-foreground sm:right-2 sm:top-2 sm:h-5 sm:min-w-5 sm:text-[10px]">{x.badge}</span>}
           </Link>
         ))}
       </div>
@@ -281,28 +320,36 @@ function Overview() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <p className="eyebrow capitalize">{dateLabel}</p>
-          <h1 className="mt-1 text-2xl md:text-4xl">Visão geral</h1>
+          <h1 className="mt-1 text-2xl md:text-4xl">Dashboard</h1>
         </div>
         <div className="flex gap-2">
-          {editing && <Button size="sm" variant="ghost" onClick={() => saveLayout(DEFAULT_LAYOUT)}><RotateCcw className="h-4 w-4" />Repor</Button>}
+          {editing && <Button size="sm" variant="ghost" onClick={() => saveLayout(baseLayout)}><RotateCcw className="h-4 w-4" />Repor</Button>}
+          {editing && isAdmin && <Button size="sm" variant="ghost" onClick={() => setAsDefault(layout)}>Definir como predefinição</Button>}
           <Button size="sm" variant={editing ? "default" : "outline"} onClick={() => setEditing(!editing)} aria-label="Editar disposição">{editing ? <><Check className="h-4 w-4" />Concluir</> : <><Pencil className="h-4 w-4" />Editar</>}</Button>
         </div>
       </div>
-      {editing && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground">Use as setas para mudar a ordem, o olho para mostrar/esconder e o ícone de tamanho para alternar entre meia largura e largura total.</p>}
+      {editing && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground">Arraste um cartão para o mudar de lugar. Puxe o canto inferior direito para ajustar a largura e a altura. O olho mostra/esconde e a seta circular repõe a altura automática.</p>}
       <div className="grid gap-4 lg:grid-cols-2">
         {shown.map((item, si) => {
           const i = layout.findIndex((x) => x.id === item.id);
           return (
-            <div key={item.id} className={`relative min-w-0 ${full[si] ? "lg:col-span-2" : ""} ${editing ? "rounded-2xl ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""} ${item.hidden ? "opacity-40" : ""}`}>
+            <div key={item.id} draggable={editing}
+              onDragStart={(e) => { setDragId(item.id); e.dataTransfer.effectAllowed = "move"; }}
+              onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverId(item.id); } }}
+              onDragLeave={() => setOverId((o) => (o === item.id ? null : o))}
+              onDrop={(e) => { e.preventDefault(); if (dragId) moveTo(dragId, item.id); setDragId(null); setOverId(null); }}
+              onDragEnd={() => { setDragId(null); setOverId(null); }}
+              style={item.h ? ({ "--dash-h": `${item.h}px` } as CSSProperties) : undefined}
+              className={`relative min-w-0 ${item.h ? "dash-h" : ""} ${full[si] ? "lg:col-span-2" : ""} ${editing ? "cursor-grab rounded-2xl ring-2 ring-primary/30 ring-offset-2 ring-offset-background active:cursor-grabbing" : ""} ${overId === item.id && dragId !== item.id ? "ring-4 ring-primary" : ""} ${dragId === item.id ? "opacity-50" : ""} ${item.hidden ? "opacity-40" : ""}`}>
               {editing && (
                 <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-lg border bg-background p-1 shadow-sm">
-                  <EditBtn label="Subir" onClick={() => move(i, -1)} icon={ArrowUp} />
-                  <EditBtn label="Descer" onClick={() => move(i, 1)} icon={ArrowDown} />
-                  <EditBtn label={item.wide ? "Meia largura" : "Largura total"} onClick={() => patch(i, { wide: !item.wide })} icon={item.wide ? Minimize2 : Maximize2} />
+                  <span className="grid h-7 w-7 place-items-center text-muted-foreground" title="Arrastar"><GripVertical className="h-3.5 w-3.5" /></span>
+                  {item.h && <EditBtn label="Altura automática" onClick={() => patch(i, { h: undefined })} icon={RotateCcw} />}
                   <EditBtn label={item.hidden ? "Mostrar" : "Esconder"} onClick={() => patch(i, { hidden: !item.hidden })} icon={item.hidden ? EyeOff : Eye} />
                 </div>
               )}
-              <div className={`h-full ${editing ? "pointer-events-none select-none" : ""}`}><Box id={item.id}>{sections[item.id]}</Box></div>
+              <div className={`h-full ${item.h ? "overflow-auto" : ""} ${editing ? "pointer-events-none select-none" : ""}`}><Box id={item.id} tight={item.id === "actions"}>{sections[item.id]}</Box></div>
+              {editing && <div role="separator" aria-label="Redimensionar" title="Puxe para redimensionar" onPointerDown={(e) => startResize(e, i)} className="absolute -bottom-1 -right-1 z-10 grid h-6 w-6 cursor-nwse-resize touch-none place-items-center rounded-md border bg-background text-muted-foreground shadow-sm hover:bg-primary hover:text-primary-foreground"><MoveDiagonal2 className="h-3.5 w-3.5" /></div>}
             </div>
           );
         })}
@@ -341,7 +388,7 @@ function FloorTimeline({ tables, res, now, tol }: { tables: { id: string; label:
   );
   return (
     <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
-      <Block title="FICAMLIVRES EM BREVE" dot="bg-st-free" empty={!seated.length}>
+      <Block title="LIVRES EM BREVE" dot="bg-st-free" empty={!seated.length}>
         {seated.slice(0, 5).map((x) => { const d = Date.parse(x.ends_at) - now; return <Row key={x.id} k={x.id} time={hhmm(x.ends_at)} main={`Mesa ${lbl(x.table_id)}`} extra={d > 0 ? `em ${mins(d)} · ${x.name}` : `${x.name}`} warn={d <= 0 ? `excedido ${mins(-d)}` : undefined} />; })}
       </Block>
       <Block title="OCUPADAS EM BREVE" dot="bg-st-reserved" empty={!arriving.length}>

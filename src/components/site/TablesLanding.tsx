@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { CalendarCheck, Clock, Hand, LayoutGrid, Map as MapIcon, RefreshCw, Smartphone, Sparkles, Users, Zap } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPE } from "react";
+import { ArrowRight, Brain, CalendarCheck, Check, ChefHat, Clock, DoorOpen, Expand, Gauge, Globe, Hand, LayoutGrid, Map as MapIcon, Minus, Move, Plus, QrCode, RefreshCw, Send, Shield, Smartphone, Sparkles, Star, TrendingUp, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type S = "free" | "reserved" | "seated";
@@ -103,6 +103,277 @@ function FlowDemo() {
   );
 }
 
+/* ---------- Floor plan editor ---------- */
+type FT = { id: number; x: number; y: number; round: boolean; seats: number };
+function FloorEditorDemo() {
+  const [edit, setEdit] = useState(true);
+  const [tables, setTables] = useState<FT[]>([
+    { id: 1, x: 10, y: 15, round: true, seats: 2 }, { id: 2, x: 36, y: 15, round: true, seats: 2 },
+    { id: 3, x: 62, y: 15, round: false, seats: 4 }, { id: 4, x: 10, y: 58, round: false, seats: 6 }, { id: 5, x: 50, y: 58, round: false, seats: 4 },
+  ]);
+  const box = useRef<HTMLDivElement>(null); const drag = useRef<number | null>(null);
+  const move = (e: RPE) => {
+    if (drag.current === null || !box.current) return;
+    const r = box.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(82, ((e.clientX - r.left) / r.width) * 100 - 9));
+    const y = Math.max(0, Math.min(74, ((e.clientY - r.top) / r.height) * 100 - 12));
+    setTables((t) => t.map((p) => (p.id === drag.current ? { ...p, x, y } : p)));
+  };
+  return (
+    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+        <span className="flex items-center gap-1.5 font-semibold"><MapIcon className="h-3.5 w-3.5 text-primary" />Planta · Sala principal</span>
+        <div className="flex gap-1.5">
+          <button onClick={() => setTables((t) => [...t, { id: t.length + 1, x: 40, y: 38, round: t.length % 2 === 0, seats: 4 }].slice(0, 9))} className="flex items-center gap-1 rounded-full border px-2.5 py-1 hover:bg-muted"><Plus className="h-3 w-3" />Mesa</button>
+          <button onClick={() => setEdit(!edit)} className={`rounded-full px-2.5 py-1 transition-colors ${edit ? "bg-primary text-primary-foreground" : "border hover:bg-muted"}`}>{edit ? "A editar" : "Editar planta"}</button>
+        </div>
+      </div>
+      <div ref={box} onPointerMove={move} onPointerUp={() => (drag.current = null)} onPointerLeave={() => (drag.current = null)} className="relative aspect-[16/10] touch-none rounded-xl border" style={{ backgroundImage: edit ? "radial-gradient(var(--border) 1px, transparent 1px)" : undefined, backgroundSize: "14px 14px" }}>
+        {tables.map((t) => (
+          <div key={t.id} onPointerDown={(e) => { if (!edit) return; drag.current = t.id; (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }}
+            className={`tl-in absolute grid w-[18%] place-items-center border-2 text-xs font-bold transition-shadow ${t.round ? "aspect-square rounded-full" : "aspect-[4/3] rounded-lg"} ${edit ? "cursor-grab border-dashed border-primary bg-primary/10 shadow-md active:cursor-grabbing" : "border-transparent"}`}
+            style={{ left: `${t.x}%`, top: `${t.y}%`, background: edit ? undefined : "color-mix(in oklch, var(--st-free) 45%, transparent)" }}>
+            <span>{t.id}<span className="block text-[9px] font-normal text-muted-foreground">{t.seats} lug.</span></span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 flex items-center gap-1 text-[11px] text-muted-foreground"><Move className="h-3 w-3" />Arraste as mesas para desenhar a sua sala (exemplo)</p>
+    </div>
+  );
+}
+
+/* ---------- Orders cards ---------- */
+type OS = "new" | "prep" | "ready" | "done";
+const OS_L: Record<OS, string> = { new: "Novo", prep: "Em preparação", ready: "Pronto", done: "Entregue" };
+const OS_NEXT: Record<OS, [OS, string] | null> = { new: ["prep", "Começar"], prep: ["ready", "Pronto"], ready: ["done", "Entregar"], done: null };
+const OS_C: Record<OS, string> = { new: "var(--st-seated)", prep: "var(--st-reserved)", ready: "var(--st-free)", done: "var(--muted-foreground)" };
+function OrdersDemo() {
+  const reduced = useReduced();
+  const seed = [
+    { id: 1, t: 4, items: ["2× Bacalhau à Brás", "1× Vinho verde"], note: "sem azeitonas", s: "new" as OS, min: 1 },
+    { id: 2, t: 7, items: ["4× Pastel de nata", "2× Café"], note: "", s: "prep" as OS, min: 6 },
+    { id: 3, t: 2, items: ["1× Polvo à lagareiro"], note: "", s: "ready" as OS, min: 12 },
+  ];
+  const [orders, setOrders] = useState(seed);
+  useEffect(() => {
+    if (reduced) return;
+    const id = setInterval(() => setOrders((o) => {
+      const n = o.map((x) => ({ ...x, min: x.min + 1 }));
+      const i = n.findIndex((x) => x.s !== "done");
+      if (i >= 0 && Math.random() > 0.4) n[i] = { ...n[i], s: OS_NEXT[n[i].s]![0] };
+      const open = n.filter((x) => x.s !== "done");
+      return open.length < 2 ? [...open, { ...seed[Math.floor(Math.random() * 3)], id: Date.now(), s: "new", min: 0, t: 1 + Math.floor(Math.random() * 9) }] : open;
+    }), 2600);
+    return () => clearInterval(id);
+  }, [reduced]);
+  return (
+    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1.5 font-semibold"><ChefHat className="h-3.5 w-3.5 text-primary" />Pedidos</span>
+        <div className="flex rounded-full border p-0.5 text-[10px]">{["Em aberto", "Entregues", "Todos"].map((l, i) => <span key={l} className={`rounded-full px-2 py-0.5 ${i === 0 ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</span>)}</div>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {orders.slice(0, 3).map((o) => (
+          <div key={o.id} className="tl-in rounded-xl border p-3 transition-all duration-500" style={{ borderColor: o.s === "new" ? OS_C.new : undefined }}>
+            <div className="flex items-center justify-between">
+              <span className="font-display text-lg leading-none">Mesa {o.t}</span>
+              <span className="rounded-full px-2 py-0.5 text-[9px] font-semibold transition-colors duration-500" style={{ background: `color-mix(in oklch, ${OS_C[o.s]} 35%, transparent)` }}>{OS_L[o.s]}</span>
+            </div>
+            <p className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground"><Clock className="h-3 w-3" />há {o.min} min</p>
+            <ul className="mt-2 space-y-0.5 text-[11px]">{o.items.map((x) => <li key={x}>{x}</li>)}</ul>
+            {o.note && <p className="mt-1 text-[10px] italic text-muted-foreground">“{o.note}”</p>}
+            {OS_NEXT[o.s] && <button onClick={() => setOrders((all) => all.map((x) => (x.id === o.id ? { ...x, s: OS_NEXT[x.s]![0] } : x)))} className="mt-2 w-full rounded-lg bg-primary py-1 text-[11px] font-medium text-primary-foreground transition-transform hover:scale-[1.02] active:scale-95">{OS_NEXT[o.s]![1]}</button>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Order from table ---------- */
+const DISHES = [["Entradas", "Pão & azeitonas", 2.5], ["Entradas", "Queijo da Serra", 8], ["Pratos", "Bacalhau à Brás", 14.5], ["Pratos", "Polvo à lagareiro", 18], ["Sobremesas", "Pastel de nata", 1.6]] as const;
+function TableOrderDemo() {
+  const [q, setQ] = useState<number[]>([1, 0, 2, 0, 2]);
+  const [sent, setSent] = useState(false);
+  const total = q.reduce((a, n, i) => a + n * DISHES[i][2], 0);
+  let last = "";
+  return (
+    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+      <div className="mb-2 flex items-center justify-between text-xs"><span className="font-semibold">Mesa 5 · Fazer pedido</span><span className="rounded-full px-2 py-0.5 text-[10px]" style={{ background: "color-mix(in oklch, var(--st-seated) 40%, transparent)" }}>Ocupada</span></div>
+      <div className="space-y-1">
+        {DISHES.map(([c, n, p], i) => {
+          const head = c !== last; last = c;
+          return (
+            <div key={n}>
+              {head && <p className="mt-2 text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">{c}</p>}
+              <div className="flex items-center justify-between rounded-lg px-2 py-1 text-xs hover:bg-muted/60">
+                <span>{n} <span className="text-muted-foreground">· {p.toFixed(2).replace(".", ",")} €</span></span>
+                <span className="flex items-center gap-1.5">
+                  <button aria-label={`Menos ${n}`} onClick={() => setQ(q.map((x, j) => (j === i ? Math.max(0, x - 1) : x)))} className="grid h-5 w-5 place-items-center rounded-full border"><Minus className="h-3 w-3" /></button>
+                  <span className="w-3 text-center tabular-nums">{q[i]}</span>
+                  <button aria-label={`Mais ${n}`} onClick={() => setQ(q.map((x, j) => (j === i ? x + 1 : x)))} className="grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground"><Plus className="h-3 w-3" /></button>
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <button onClick={() => { setSent(true); setTimeout(() => setSent(false), 1800); }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2 text-xs font-medium text-primary-foreground transition-all active:scale-95">
+        {sent ? <><Check className="h-3.5 w-3.5" />Enviado para os pedidos</> : <><Send className="h-3.5 w-3.5" />Enviar pedido · {total.toFixed(2).replace(".", ",")} €</>}
+      </button>
+    </div>
+  );
+}
+
+/* ---------- Menu intelligence ---------- */
+const MI = [["Polvo", 80, 82], ["Bacalhau", 72, 40], ["Bitoque", 30, 70], ["Salada", 25, 25], ["Nata", 85, 20], ["Risotto", 45, 85]] as const;
+function IntelligenceDemo() {
+  const [range, setRange] = useState(30);
+  const [sel, setSel] = useState(0);
+  const k = range === 7 ? 0.8 : range === 90 ? 1.1 : 1;
+  const pts = MI.map(([n, x, y], i) => ({ n, x: Math.min(92, Math.max(8, x * k + (i % 2 ? 4 : -4) * (k - 1) * 10)), y: Math.min(92, Math.max(8, y / k)) }));
+  const quad = (p: { x: number; y: number }) => (p.x >= 50 ? (p.y >= 50 ? "Estrela" : "Cavalo de batalha") : p.y >= 50 ? "Enigma" : "Cão");
+  const s = pts[sel];
+  return (
+    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1.5 font-semibold"><Brain className="h-3.5 w-3.5 text-primary" />Menu Intelligence</span>
+        <div className="flex rounded-full border p-0.5 text-[10px]">{[7, 30, 90].map((r) => <button key={r} onClick={() => setRange(r)} className={`rounded-full px-2 py-0.5 transition-colors ${range === r ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{r}d</button>)}</div>
+      </div>
+      <div className="relative aspect-[16/10] rounded-xl border">
+        <div className="absolute inset-x-0 top-1/2 border-t border-dashed" /><div className="absolute inset-y-0 left-1/2 border-l border-dashed" />
+        {[["Enigma", "left-2 top-1"], ["Estrela", "right-2 top-1"], ["Cão", "left-2 bottom-1"], ["Cavalo de batalha", "right-2 bottom-1"]].map(([l, c]) => <span key={l} className={`absolute ${c} text-[9px] uppercase tracking-wider text-muted-foreground`}>{l}</span>)}
+        {pts.map((p, i) => (
+          <button key={p.n} onClick={() => setSel(i)} className="motion-safe-anim absolute -translate-x-1/2 translate-y-1/2 transition-all duration-700 ease-out" style={{ left: `${p.x}%`, bottom: `${p.y}%` }} aria-label={p.n}>
+            {sel === i && <span className="tl-ping absolute inset-0 rounded-full bg-primary" />}
+            <span className={`relative block h-3 w-3 rounded-full ${sel === i ? "bg-primary" : "bg-primary/50"}`} />
+            <span className="absolute left-4 top-[-3px] whitespace-nowrap text-[10px]">{p.n}</span>
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between rounded-xl bg-muted/60 px-3 py-2 text-xs">
+        <span><b>{s.n}</b> · {quad(s)}</span>
+        <span className="flex items-center gap-1 text-primary"><TrendingUp className="h-3 w-3" />{quad(s) === "Estrela" ? "Manter em destaque" : quad(s) === "Enigma" ? "Promover no menu" : quad(s) === "Cão" ? "Rever ou retirar" : "Ajustar o preço"}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Dashboard KPIs ---------- */
+function Count({ to, suffix = "" }: { to: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null); const [v, setV] = useState(0);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const o = new IntersectionObserver(([e]) => { if (!e.isIntersecting) return; o.disconnect(); const t0 = performance.now(); const f = (t: number) => { const p = Math.min(1, (t - t0) / 1200); setV(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); });
+    o.observe(el); return () => o.disconnect();
+  }, [to]);
+  return <span ref={ref} className="tabular-nums">{v}{suffix}</span>;
+}
+function DashboardDemo() {
+  const kpis = [[CalendarCheck, "Reservas hoje", 24, ""], [Users, "Pessoas", 86, ""], [LayoutGrid, "Ocupação", 72, "%"], [ChefHat, "Pedidos abertos", 9, ""]] as const;
+  const bars = [40, 65, 52, 80, 95, 70, 88];
+  return (
+    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold"><Gauge className="h-3.5 w-3.5 text-primary" />Dashboard</p>
+      <div className="grid grid-cols-2 gap-2">
+        {kpis.map(([I, l, n, s]) => (
+          <div key={l} className="rounded-xl border p-3 transition-transform hover:-translate-y-0.5">
+            <I className="h-4 w-4 text-primary" /><p className="mt-2 font-display text-2xl leading-none"><Count to={n} suffix={s} /></p><p className="mt-1 text-[10px] text-muted-foreground">{l}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex h-20 items-end gap-1.5 rounded-xl border p-2">
+        {bars.map((b, i) => <Reveal key={i} className="flex h-full flex-1 items-end"><div className="w-full rounded-t-md bg-primary/70" style={{ height: `${b}%` }} /></Reveal>)}
+      </div>
+    </div>
+  );
+}
+
+const FEATURES: [typeof Clock, string, string][] = [
+  [MapIcon, "Editor de planta", "Desenhe salas e esplanadas a arrastar mesas, redondas ou retangulares."],
+  [Expand, "Ecrã inteiro", "Controlo da sala e pedidos em ecrã inteiro para tablets e monitores."],
+  [DoorOpen, "Cliente à porta", "Sente quem chega sem reserva em dois toques."],
+  [ChefHat, "Pedidos com cartões", "Novo, em preparação, pronto, entregue — com notas e tempos."],
+  [Send, "Pedido pelo menu digital ou mesa", "A equipa faz o pedido a partir da mesa ocupada ou o cliente pede pelo Menu."],
+  [Brain, "Menu Intelligence", "Descubra estrelas, enigmas e pratos a rever."],
+  [Gauge, "Dashboard personalizável", "Arraste e redimensione os cartões à sua medida."],
+  [Users, "Equipa e permissões", "Convide colaboradores e decida quem edita a sala."],
+  [QrCode, "Menu digital incluído", "Menu por QR code e NFC, sempre atualizado."],
+  [Globe, "Português e inglês", "Painel e menus bilingues para os seus clientes."],
+  [Star, "Avaliações", "Receba opiniões e reforce a reputação no Google."],
+  [Shield, "Sem reservas duplicadas", "O sistema bloqueia conflitos de mesa automaticamente."],
+];
+
+function Showcase({ eyebrow, icon: I, title, text, points, demo, flip }: { eyebrow: string; icon: typeof Clock; title: string; text: string; points: string[]; demo: ReactNode; flip?: boolean }) {
+  return (
+    <div className="grid items-center gap-10 md:grid-cols-2">
+      <Reveal className={flip ? "md:order-2" : ""}>
+        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary"><I className="h-4 w-4" />{eyebrow}</p>
+        <h3 className="mt-2 text-2xl md:text-4xl">{title}</h3>
+        <p className="mt-3 text-muted-foreground">{text}</p>
+        <ul className="mt-5 space-y-2">{points.map((p) => <li key={p} className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-primary" />{p}</li>)}</ul>
+      </Reveal>
+      <Reveal className={flip ? "md:order-1" : ""}>{demo}</Reveal>
+    </div>
+  );
+}
+
+function PlatformSections() {
+  return (
+    <>
+      <section className="mx-auto max-w-6xl space-y-24 px-5 py-24">
+        <Reveal className="mx-auto max-w-2xl text-center"><p className="eyebrow text-primary">A plataforma completa</p><h2 className="mt-3 text-3xl md:text-5xl">Da porta à cozinha. Da mesa aos números.</h2><p className="mt-4 text-muted-foreground">Experimente os exemplos abaixo — são interativos.</p></Reveal>
+        <Showcase eyebrow="Editor de planta" icon={MapIcon} title="Desenhe a sua sala em minutos." text="Arraste mesas, escolha a forma e os lugares, e organize várias salas e esplanadas. A planta fica igual ao seu espaço real." points={["Mesas redondas e retangulares", "Várias salas e zonas", "Permissão própria para editar a sala"]} demo={<FloorEditorDemo />} />
+        <Showcase flip eyebrow="Pedidos" icon={ChefHat} title="Cada pedido, um cartão claro." text="Os pedidos chegam em cartões com o estado, os pratos, as notas e há quanto tempo entraram. Um toque avança para o passo seguinte." points={["Novo → Em preparação → Pronto → Entregue", "Filtro por estado no topo", "Modo ecrã inteiro para a cozinha"]} demo={<OrdersDemo />} />
+        <Showcase eyebrow="Pedido pela mesa" icon={Send} title="Toque na mesa. Faça o pedido." text="Com a mesa ocupada, a equipa abre um menu simples por categorias, junta os pratos e envia diretamente para os pedidos." points={["Pratos e preços sempre do menu", "Ver os pedidos de cada mesa", "Total da mesa em tempo real"]} demo={<TableOrderDemo />} />
+        <Showcase flip eyebrow="Menu Intelligence" icon={Brain} title="Saiba o que cada prato vale." text="Cruzamos popularidade e rentabilidade para mostrar onde está cada prato e o que fazer a seguir." points={["Matriz de engenharia de menu", "Períodos de 7, 30 e 90 dias", "Oportunidades sugeridas"]} demo={<IntelligenceDemo />} />
+        <Showcase eyebrow="Dashboard" icon={Gauge} title="O seu dia, num relance." text="Reservas, pessoas, ocupação e pedidos em cartões que pode arrastar e redimensionar à sua medida." points={["Ações rápidas", "Mesas que ficam livres em breve", "Disposição guardada por restaurante"]} demo={<DashboardDemo />} />
+      </section>
+
+      <section className="border-y bg-card/50 py-24">
+        <div className="mx-auto max-w-6xl px-5">
+          <Reveal className="max-w-2xl"><p className="eyebrow text-primary">Tudo incluído</p><h2 className="mt-3 text-3xl md:text-5xl">Tudo o que precisa. Nada a mais.</h2></Reveal>
+          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map(([I, t, d], i) => (
+              <Reveal key={t}><div className="group h-full rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style={{ transitionDelay: `${(i % 4) * 40}ms` }}>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110"><I className="h-5 w-5" /></span>
+                <h3 className="mt-4 font-sans text-sm font-semibold">{t}</h3><p className="mt-1 text-xs text-muted-foreground">{d}</p>
+              </div></Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function TablesPricing() {
+  const inc = ["Reservas online e manuais", "Editor de planta e várias salas", "Pedidos com cartões e pedido pela mesa", "Menu Intelligence e dashboard", "Menu digital por QR e NFC incluído", "Equipa com permissões por pessoa"];
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-24">
+      <Reveal className="mx-auto max-w-3xl text-center">
+        <p className="eyebrow text-primary">Preço</p>
+        <h2 className="mt-3 text-4xl">Um plano. Tudo incluído.</h2>
+        <div className="relative mt-10 overflow-hidden rounded-3xl border bg-card p-8 text-left shadow-xl md:p-10">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary/10 blur-3xl" aria-hidden />
+          <div className="relative grid gap-8 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="text-sm font-semibold">Gestão e Reservas</p>
+              <p className="mt-3 text-5xl">19,90 € <span className="text-lg text-muted-foreground">/ mês</span></p>
+              <p className="mt-3 text-sm text-muted-foreground">10 dias grátis, sem cartão. Cancele quando quiser.</p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <Button asChild size="lg"><Link to="/auth" search={{ mode: "signup" }}>Começar agora <ArrowRight /></Link></Button>
+                <Button asChild size="lg" variant="outline"><Link to="/pricing">Ver preços</Link></Button>
+              </div>
+            </div>
+            <ul className="space-y-2.5">{inc.map((x) => <li key={x} className="flex items-center gap-2 text-sm"><span className="grid h-5 w-5 place-items-center rounded-full bg-primary/10 text-primary"><Check className="h-3 w-3" /></span>{x}</li>)}</ul>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 const Benefit = ({ children }: { children: ReactNode }) => <li className="flex items-center gap-2 text-sm"><span className="h-1.5 w-1.5 rounded-full bg-primary" />{children}</li>;
 
 export function TablesLanding() {
@@ -118,7 +389,7 @@ export function TablesLanding() {
               <Button size="lg" variant="outline" onClick={() => document.getElementById("modos")?.scrollIntoView({ behavior: "smooth" })}>Explorar funcionalidades</Button>
             </div>
           </div>
-          <HeroDemo />
+          <div className="tl-float motion-safe-anim"><HeroDemo /></div>
         </section>
 
         <section id="modos" className="scroll-mt-20 border-y bg-card/50 py-20">
@@ -157,6 +428,9 @@ export function TablesLanding() {
             {[[RefreshCw, "Tudo sincronizado", "Reservas e ocupação atualizadas num único sistema."], [Zap, "Menos trabalho manual", "Atribuição automática de mesas e organização das reservas."], [Hand, "Mais flexibilidade", "A equipa mantém sempre a possibilidade de intervir e alterar a organização."]].map(([I, h, p]) => { const Ic = I as typeof Clock; return <Reveal key={h as string}><Ic className="h-6 w-6 text-primary" /><h3 className="mt-3 font-sans text-base font-semibold">{h as string}</h3><p className="mt-1 text-sm text-muted-foreground">{p as string}</p></Reveal>; })}
           </div>
         </section>
+
+        <PlatformSections />
+        <TablesPricing />
 
         <section className="mx-auto max-w-6xl px-5 py-20">
           <div className="rounded-2xl bg-primary px-6 py-14 text-center text-primary-foreground md:px-16">

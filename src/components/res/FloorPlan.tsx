@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRestaurant } from "@/lib/restaurant";
 import { canAccess } from "@/lib/team-rules";
 import { useResData } from "./data";
+import { TableOrderDialog, TableOrdersList } from "./TableOrderDialog";
+import { ChefHat } from "lucide-react";
 import { hhmm, tableState, type ResStatus } from "@/lib/reservations";
 
 type Item = { id: string; kind: "table" | "decor"; type: string; label: string; seats: number; x: number; y: number; w: number; h: number; rotation: number; color: string | null };
@@ -137,6 +139,7 @@ export function FloorPlan({ date, live: operational, onBook, fullscreen = false 
     if (d.orig !== items) { setHist((h) => ({ past: [...h.past.slice(-50), d.orig], future: [] })); setDirty(true); }
   }
 
+  const [orderT, setOrderT] = useState<{ id: string; label: string } | null>(null);
   const info = live && selected[0]?.kind === "table" ? selected[0] : null;
   const infoState = info ? tableState(info.id, res, r.late_tolerance_minutes) : null;
   const POP_W = 250;
@@ -227,8 +230,9 @@ export function FloorPlan({ date, live: operational, onBook, fullscreen = false 
               <p className="mt-1 text-muted-foreground">{STATE_LABEL[infoState.state]}</p>
               {infoState.seated && <p className="mt-1">{infoState.seated.name} ({infoState.seated.party}) · liberta {hhmm(infoState.seated.ends_at)}</p>}
               {infoState.next && <p className="mt-1 flex items-center gap-1"><Clock className="h-3 w-3" />{hhmm(infoState.next.starts_at)} · {infoState.next.name} ({infoState.next.party})</p>}
+              <TableOrdersList restaurantId={restaurant.id} tableId={info.id} />
               <div className="mt-3 flex gap-2">
-                {infoState.seated ? <Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Libertar</Button>
+                {infoState.seated ? <><Button size="sm" onClick={() => { setOrderT({ id: info.id, label: info.label }); setSel([]); }}><ChefHat className="mr-1 h-4 w-4" />Fazer pedido</Button><Button size="sm" variant="outline" onClick={() => setStatus(infoState.seated!.id, "completed")}>Limpar</Button></>
                   : infoState.next ? <><Button size="sm" onClick={() => setStatus(infoState.next!.id, "seated")}>Sentar</Button>{infoState.state === "late" && <Button size="sm" variant="outline" onClick={() => setStatus(infoState.next!.id, "no_show")}>No-show</Button>}</>
                   : <Button size="sm" variant="outline" onClick={() => onBook(info.id)}>Reservar / sentar</Button>}
               </div>
@@ -236,6 +240,7 @@ export function FloorPlan({ date, live: operational, onBook, fullscreen = false 
           )}
         </div>
       </div>
+      <TableOrderDialog restaurantId={restaurant.id} table={orderT} onClose={() => setOrderT(null)} />
 
       {live && !fullscreen && (
         <div className="flex flex-wrap gap-3 text-xs">{(["free", "reserved", "seated"] as const).map((s) => <span key={s} className="flex items-center gap-1"><span className="h-3 w-3 rounded-full" style={{ background: STATE_BG[s] }} />{STATE_LABEL[s]}</span>)}</div>

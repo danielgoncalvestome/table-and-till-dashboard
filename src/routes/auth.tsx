@@ -1,10 +1,11 @@
+import { homeRoute } from "@/lib/home-route";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Eye, EyeOff, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/site/SiteLayout";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -47,11 +48,12 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const usernameLogin = useServerFn(signInWithUsername);
   const [busy, setBusy] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => setMode(search.mode ?? "login"), [search.mode]);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/dashboard" }); });
+    supabase.auth.getUser().then(async ({ data }) => { if (data.user) navigate({ to: await homeRoute() }); });
   }, [navigate]);
 
   async function submit(e: React.FormEvent) {
@@ -71,7 +73,7 @@ function AuthPage() {
           const { error } = await supabase.auth.setSession(result.session);
           if (error) throw error;
         }
-        navigate({ to: "/dashboard" });
+        navigate({ to: await homeRoute() });
       } else if (mode === "signup") {
         const parsed = usernameSchema.safeParse(username);
         if (!parsed.success) throw new Error(t("auth.usernameInvalid"));
@@ -83,7 +85,7 @@ function AuthPage() {
           const { data: stillAvailable } = await supabase.rpc("username_available", { _username: parsed.data });
           throw new Error(stillAvailable === false || error.code === "user_already_exists" ? t("auth.usernameTaken") : error.message);
         }
-        if (data.session) navigate({ to: "/dashboard" });
+        if (data.session) navigate({ to: await homeRoute() });
         else setInfo(t("auth.checkEmail"));
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
@@ -102,51 +104,62 @@ function AuthPage() {
     if (r.error) toast.error(t("common.error"));
     else {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) navigate({ to: "/dashboard" });
+      if (user) navigate({ to: await homeRoute() });
     }
   }
 
+  const title = mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.forgot") : "Login";
   return (
-    <div className="grid min-h-screen md:grid-cols-2">
-      <div className="hidden bg-primary md:block">
-        <img src="/images/demo/cover.jpg" alt="" className="h-full w-full object-cover opacity-80" />
-      </div>
-      <div className="flex flex-col px-6 py-8">
-        <div className="flex items-center justify-between"><Logo /><LangSwitch /></div>
-        <div className="mx-auto my-auto w-full max-w-sm py-12">
-          <h1 className="text-4xl">{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.forgot") : t("auth.login")}</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-secondary px-4 py-10">
+      <div className="mb-4 flex w-full max-w-sm justify-end"><LangSwitch /></div>
+      <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-2xl">
+        <div className="h-1 bg-gradient-to-r from-primary to-primary/60" />
+        <div className="px-7 pb-6 pt-6">
+          <Link to="/" aria-label="MenuTap" className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
+            <UtensilsCrossed className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          <h1 className="mt-4 text-center text-2xl font-bold">{title}</h1>
           {info ? (
-            <p className="mt-6 rounded bg-accent p-4 text-sm text-accent-foreground">{info}</p>
+            <p className="mt-6 rounded-md bg-accent p-4 text-sm text-accent-foreground">{info}</p>
           ) : (
-            <>
+            <form onSubmit={submit} className="mt-6 space-y-4">
+              {mode === "signup" ? <>
+                <div><Label htmlFor="n" className="sr-only">{t("auth.username")}</Label><Input id="n" placeholder={t("auth.username")} className="h-11 bg-muted/50" autoComplete="username" minLength={3} maxLength={30} pattern="[A-Za-z0-9_]{3,30}" value={username} onChange={(e) => setUsername(e.target.value)} required /><p className="mt-2 text-xs text-muted-foreground">{t("auth.usernameHint")}</p></div>
+                <p className="text-xs text-muted-foreground">{t("auth.noEmailWarning")}</p>
+              </> : <div><Label htmlFor="e" className="sr-only">{mode === "forgot" ? t("auth.email") : t("auth.identifier")}</Label><Input id="e" placeholder={mode === "forgot" ? t("auth.email") : t("auth.identifier")} className="h-11 bg-muted/50" type={mode === "forgot" ? "email" : "text"} autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>}
               {mode !== "forgot" && (
-                <>
-                  <button type="button" onClick={google} className="mt-8 flex h-10 w-full items-center justify-center gap-[10px] rounded-md border border-[#747775] bg-[#FFFFFF] px-3 text-sm font-medium text-[#1F1F1F]">
-                    <GoogleIcon /> {t("auth.google")}
+                <div className="relative">
+                  <Label htmlFor="p" className="sr-only">{t("auth.password")}</Label>
+                  <Input id="p" placeholder={t("auth.password")} className="h-11 bg-muted/50 pr-10" type={showPw ? "text" : "password"} minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <button type="button" onClick={() => setShowPw((v) => !v)} aria-label={t("auth.password")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
-                  <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />{t("auth.or")}<span className="h-px flex-1 bg-border" /></div>
-                </>
+                </div>
               )}
-              <form onSubmit={submit} className="space-y-4">
-                {mode === "signup" ? <>
-                  <div><Label htmlFor="n">{t("auth.username")}</Label><Input id="n" autoComplete="username" minLength={3} maxLength={30} pattern="[A-Za-z0-9_]{3,30}" value={username} onChange={(e) => setUsername(e.target.value)} required /><p className="mt-2 text-xs text-muted-foreground">{t("auth.usernameHint")}</p></div>
-                  <p className="text-sm text-muted-foreground">{t("auth.noEmailWarning")}</p>
-                </> : <div><Label htmlFor="e">{mode === "forgot" ? t("auth.email") : t("auth.identifier")}</Label><Input id="e" type={mode === "forgot" ? "email" : "text"} autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>}
-                {mode !== "forgot" && <div><Label htmlFor="p">{t("auth.password")}</Label><Input id="p" type="password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required /></div>}
-                <Button type="submit" className="w-full" disabled={busy}>{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.sendReset") : t("auth.login")}</Button>
-              </form>
+              {mode === "login" && (
+                <div className="flex justify-end"><button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={() => setMode("forgot")}>{t("auth.forgot")}</button></div>
+              )}
+              <Button type="submit" className="h-11 w-full bg-gradient-to-r from-primary to-primary/80 font-semibold uppercase tracking-wide shadow-lg" disabled={busy}>{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.sendReset") : t("auth.login")}</Button>
+            </form>
+          )}
+          {!info && mode !== "forgot" && (
+            <>
+              <div className="my-6 flex items-center gap-3 text-xs uppercase text-muted-foreground"><span className="h-px flex-1 bg-border" />{t("auth.or")}<span className="h-px flex-1 bg-border" /></div>
+              <button type="button" onClick={google} className="flex h-11 w-full items-center justify-center gap-[10px] rounded-md border border-[#747775] bg-[#FFFFFF] px-3 text-sm font-medium text-[#1F1F1F]">
+                <GoogleIcon /> {t("auth.google")}
+              </button>
             </>
           )}
-          <div className="mt-6 space-y-2 text-sm">
-            {mode === "login" && (
-              <>
-                <button className="text-muted-foreground underline" onClick={() => setMode("forgot")}>{t("auth.forgot")}</button>
-                <p>{t("auth.noAccount")} <button className="font-semibold text-primary" onClick={() => { setInfo(null); setMode("signup"); }}>{t("auth.signup")}</button></p>
-              </>
-            )}
-            {mode !== "login" && <button className="font-semibold text-primary" onClick={() => { setInfo(null); setMode("login"); }}>{t("auth.back")}</button>}
+          <div className="mt-5 text-center text-sm">
+            {mode === "login"
+              ? <p className="text-muted-foreground">{t("auth.noAccount")} <button className="font-semibold text-primary" onClick={() => { setInfo(null); setMode("signup"); }}>{t("auth.signup")}</button></p>
+              : <button className="font-semibold text-primary" onClick={() => { setInfo(null); setMode("login"); }}>{t("auth.back")}</button>}
           </div>
-          <p className="mt-10 text-xs text-muted-foreground"><Link to="/terms">{t("footer.terms")}</Link> · <Link to="/privacy">{t("footer.privacy")}</Link></p>
+          <div className="mt-5 flex justify-center gap-3 border-t border-border pt-4 text-xs text-muted-foreground">
+            <Link to="/privacy" className="hover:text-foreground">{t("footer.privacy")}</Link><span>•</span>
+            <Link to="/terms" className="hover:text-foreground">{t("footer.terms")}</Link><span>•</span>
+            <Link to="/contact" className="hover:text-foreground">{t("nav.contact")}</Link>
+          </div>
         </div>
       </div>
     </div>

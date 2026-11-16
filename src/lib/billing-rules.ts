@@ -2,7 +2,7 @@ export type Plan = { priceId: string; productId: string; cents: number; name: st
 /** Current monthly digital licences. Default cents are overridden by admin-edited plan_prices rows. */
 export const PLANS: Plan[] = [
   { priceId: 'menutap_monthly', productId: 'menutap_base', cents: 990, name: 'Menu Digital', devices: 4, reservations: false },
-  { priceId: 'menutap_reservas_monthly', productId: 'menutap_reservas', cents: 1990, name: 'Gestão e Reservas', devices: 'per_table', reservations: true },
+  { priceId: 'menutap_reservas_monthly', productId: 'menutap_reservas', cents: 1990, name: 'Gestão de Reservas e Pedidos', devices: 'per_table', reservations: true },
 ];
 /** Retired tiers kept only so existing subscriptions still show a plan name. */
 const LEGACY_PLANS: Plan[] = [

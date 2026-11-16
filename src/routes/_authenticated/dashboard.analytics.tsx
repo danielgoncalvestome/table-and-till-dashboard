@@ -171,7 +171,7 @@ function Analytics() {
           <Card title={t("ov.topCats")}><BarList items={s.topCats.slice(0, 8).map(([k, v]) => [cn(k), v])} empty={t("ov.noData")} /></Card>
           <Card title={`${t("an.recs")}`}><div className="grid grid-cols-2 gap-3 text-center"><Mini label={t("an.impr")} value={totalImpr} /><Mini label={t("an.clicks")} value={totalClicks} /><Mini label="CTR" value={totalImpr ? pct(totalClicks / totalImpr) : "—"} /><Mini label={pt ? "Pesquisas" : "Searches"} value={s.searches.reduce((a, [, v]) => a + v, 0)} /></div></Card>
           <Card title={t("an.searches")}><BarList items={s.searches.slice(0, 8)} empty={t("ov.noData")} /></Card>
-          <Card title={t("an.ratings")}><BarList items={(ratings ?? []).map((x) => [`${dn(x.dish_id)} · ★ ${Number(x.avg_stars).toFixed(1)}`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]).slice(0, 8)} empty={t("ov.noData")} /></Card>
+          <Card title={t("an.ratings")} className="md:col-span-2"><BarList items={(ratings ?? []).map((x) => [`${dn(x.dish_id)} · ★ ${Number(x.avg_stars).toFixed(1)}`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]).slice(0, 8)} empty={t("ov.noData")} /></Card>
         </div>
       )}
       {tab === "res" && (
@@ -246,9 +246,9 @@ function Kpi({ icon: I, label, value, sub }: { icon: LucideIcon; label: string; 
     </div>
   );
 }
-function Card({ title, icon: I, children }: { title: string; icon?: LucideIcon; children: ReactNode }) {
+function Card({ title, icon: I, children, className = "" }: { title: string; icon?: LucideIcon; children: ReactNode; className?: string }) {
   return (
-    <section className="min-w-0 rounded-2xl border bg-card p-4 sm:p-5">
+    <section className={`min-w-0 rounded-2xl border bg-card p-4 sm:p-5 ${className}`}>
       <h2 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">{I && <span className="grid h-7 w-7 place-items-center rounded-lg bg-secondary text-primary"><I className="h-3.5 w-3.5" /></span>}{title}</h2>
       {children}
     </section>

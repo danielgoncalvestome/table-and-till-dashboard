@@ -11,9 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Redefinir palavra-passe — MenuTap" },
-      { name: "description", content: "Defina uma nova palavra-passe para a sua conta MenuTap." },
-      { property: "og:title", content: "Redefinir palavra-passe — MenuTap" },
+      { title: "Redefinir palavra-passe — Crumb" },
+      { name: "description", content: "Defina uma nova palavra-passe para a sua conta Crumb." },
+      { property: "og:title", content: "Redefinir palavra-passe — Crumb" },
       { property: "og:description", content: "Defina uma nova palavra-passe." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -21,7 +21,7 @@ import { AiMenuImport } from "@/components/admin/AiMenuImport";
 import { AnnouncementsAdmin } from "@/components/announce/AnnouncementsAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Administração — MenuTap" }, { name: "description", content: "Administração da plataforma MenuTap." }, { property: "og:title", content: "Administração — MenuTap" }, { property: "og:description", content: "Administração da plataforma MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Administração — Crumb" }, { name: "description", content: "Administração da plataforma Crumb." }, { property: "og:title", content: "Administração — Crumb" }, { property: "og:description", content: "Administração da plataforma Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   validateSearch: (s: Record<string, unknown>): { s?: Key } => (KEYS.includes(s.s as Key) ? { s: s.s as Key } : {}),
   component: Admin,
 });
@@ -112,7 +112,7 @@ function Admin() {
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--shadow-tile)]"><Shield className="h-5 w-5" /></span>
             <div className="min-w-0">
               <h1 className="truncate text-xl font-bold tracking-tight sm:text-2xl">{t("admin.title")}</h1>
-              <p className="truncate text-xs text-muted-foreground sm:text-sm">Gestão da plataforma MenuTap</p>
+              <p className="truncate text-xs text-muted-foreground sm:text-sm">Gestão da plataforma Crumb</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">

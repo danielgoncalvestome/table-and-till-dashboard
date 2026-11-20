@@ -9,17 +9,17 @@ import type { Lang } from "@/lib/i18n";
 import { ALLERGENS, DIETARY, FONTS, formatPrice, getRaterId, isMenuActive, labelOf, track, tr } from "@/lib/menu";
 import { TableOrdering } from "@/components/orders/TableOrdering";
 import { textStyle } from "@/lib/text-styles";
-import logoDark from "@/assets/menutap-logo.png.asset.json";
-import logoLight from "@/assets/menutap-logo-light.png.asset.json";
+import logoDark from "@/assets/crumb-logo.png.asset.json";
+import logoLight from "@/assets/crumb-logo-light.png.asset.json";
 
 const HERO_H = 140;
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `Menu — ${params.slug} · MenuTap` },
-      { name: "description", content: "Menu digital no MenuTap." },
-      { property: "og:title", content: `Menu digital · MenuTap` },
+      { title: `Menu — ${params.slug} · Crumb` },
+      { name: "description", content: "Menu digital no Crumb." },
+      { property: "og:title", content: `Menu digital · Crumb` },
       { property: "og:description", content: "Veja o menu, preços, alergénios e recomendações." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -269,7 +269,7 @@ function PublicMenu() {
             {r.email && <p className="mt-1">{r.email}</p>}
             <img
               src={isDarkColor(r.background_color) ? logoLight.url : logoDark.url}
-              alt="MenuTap"
+              alt="Crumb"
               className="mt-6 h-4 w-auto opacity-60"
             />
           </footer>

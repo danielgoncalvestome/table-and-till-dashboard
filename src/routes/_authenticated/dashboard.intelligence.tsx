@@ -13,7 +13,7 @@ import { PageTitle, Panel, Stat } from "@/components/dash/ui";
 
 const META = "Matriz de engenharia de menu: popularidade, preço, avaliações e oportunidades por prato.";
 export const Route = createFileRoute("/_authenticated/dashboard/intelligence")({
-  head: () => ({ meta: [{ title: "Menu Intelligence — MenuTap" }, { name: "description", content: META }, { property: "og:title", content: "Menu Intelligence — MenuTap" }, { property: "og:description", content: META }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Menu Intelligence — Crumb" }, { name: "description", content: META }, { property: "og:title", content: "Menu Intelligence — Crumb" }, { property: "og:description", content: META }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Intelligence,
 });
 

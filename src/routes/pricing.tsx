@@ -10,9 +10,9 @@ import { formatPrice } from "@/lib/menu";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Preço — MenuTap" },
+      { title: "Preço — Crumb" },
       { name: "description", content: "Um plano simples com tudo incluído. 10 dias grátis, sem cartão, cancele quando quiser." },
-      { property: "og:title", content: "Preço — MenuTap" },
+      { property: "og:title", content: "Preço — Crumb" },
       { property: "og:description", content: "Um plano. Tudo incluído. 10 dias grátis." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

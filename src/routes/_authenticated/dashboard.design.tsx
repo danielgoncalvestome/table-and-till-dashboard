@@ -10,7 +10,7 @@ import { useRestaurant } from "@/lib/restaurant";
 import { FONTS, TEMPLATES, uploadImage } from "@/lib/menu";
 import { BOOKING_SECTIONS, MENU_SECTIONS, TEXT_SECTIONS, textStyle, type TextStyles, type TextStyle } from "@/lib/text-styles";
 
-export const Route = createFileRoute("/_authenticated/dashboard/design")({ head: () => ({ meta: [{ title: "Aparência — MenuTap" }, { name: "description", content: "Personalize a aparência do seu menu digital." }, { property: "og:title", content: "Aparência — MenuTap" }, { property: "og:description", content: "Personalize a aparência do seu menu digital." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Design });
+export const Route = createFileRoute("/_authenticated/dashboard/design")({ head: () => ({ meta: [{ title: "Aparência — Crumb" }, { name: "description", content: "Personalize a aparência do seu menu digital." }, { property: "og:title", content: "Aparência — Crumb" }, { property: "og:description", content: "Personalize a aparência do seu menu digital." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Design });
 
 type Sec = "style" | "colors" | "type" | "images" | "text";
 

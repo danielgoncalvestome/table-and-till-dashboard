@@ -12,7 +12,7 @@ type Key = "restaurant" | "team" | "subscription" | "help";
 const KEYS: Key[] = ["restaurant", "team", "subscription", "help"];
 
 export const Route = createFileRoute("/_authenticated/dashboard/manage")({
-  head: () => ({ meta: [{ title: "Definições — MenuTap" }, { name: "description", content: "Restaurante, equipa, subscrição e ajuda num só lugar." }, { property: "og:title", content: "Definições — MenuTap" }, { property: "og:description", content: "Restaurante, equipa, subscrição e ajuda num só lugar." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Definições — Crumb" }, { name: "description", content: "Restaurante, equipa, subscrição e ajuda num só lugar." }, { property: "og:title", content: "Definições — Crumb" }, { property: "og:description", content: "Restaurante, equipa, subscrição e ajuda num só lugar." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   validateSearch: (s: Record<string, unknown>) => ({ s: KEYS.includes(s.s as Key) ? (s.s as Key) : undefined, checkout: s.checkout === "success" ? ("success" as const) : undefined }),
   component: Manage,
 });

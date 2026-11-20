@@ -23,7 +23,7 @@ import { adminAssignPlan } from "@/utils/payments.functions";
 import { PLANS } from "@/lib/billing-rules";
 
 export const Route = createFileRoute("/_authenticated/admin_/restaurants/$id")({
-  head: () => ({ meta: [{ title: "Restaurante — Administração MenuTap" }, { name: "description", content: "Ficha completa do restaurante." }, { property: "og:title", content: "Restaurante — Administração MenuTap" }, { property: "og:description", content: "Ficha completa do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Restaurante — Administração Crumb" }, { name: "description", content: "Ficha completa do restaurante." }, { property: "og:title", content: "Restaurante — Administração Crumb" }, { property: "og:description", content: "Ficha completa do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: AdminRestaurant,
 });
 

@@ -15,10 +15,10 @@ import { submitContact } from "@/utils/contact.functions";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contacto — MenuTap" },
-      { name: "description", content: "Fale com a equipa MenuTap. Apoio por email em dias úteis." },
-      { property: "og:title", content: "Contacto — MenuTap" },
-      { property: "og:description", content: "Fale com a equipa MenuTap." },
+      { title: "Contacto — Crumb" },
+      { name: "description", content: "Fale com a equipa Crumb. Apoio por email em dias úteis." },
+      { property: "og:title", content: "Contacto — Crumb" },
+      { property: "og:description", content: "Fale com a equipa Crumb." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

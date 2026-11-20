@@ -5,10 +5,10 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Termos e condições — MenuTap" },
-      { name: "description", content: "Termos de utilização da plataforma MenuTap." },
-      { property: "og:title", content: "Termos e condições — MenuTap" },
-      { property: "og:description", content: "Termos de utilização do MenuTap." },
+      { title: "Termos e condições — Crumb" },
+      { name: "description", content: "Termos de utilização da plataforma Crumb." },
+      { property: "og:title", content: "Termos e condições — Crumb" },
+      { property: "og:description", content: "Termos de utilização do Crumb." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,7 +20,7 @@ function Terms() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [TERMS_PT]
-    : ["MenuTap provides a purely digital menu platform (software as a service) through a monthly subscription, with a free trial period. No subscription includes, supplies or ships any physical goods, devices, cards or tags; each plan only sets the maximum number of compatible customer-owned devices that can be linked to the menu.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You are contracting with Daniel Gonçalves Tomé, trading as MenuTap. By using the service you accept these terms. You must not misuse it (unlawful use, fraud, spam, IP infringement, malware, probing or scraping). MenuTap retains all IP in the service, which is provided without guarantee of uninterrupted or error-free operation.", "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. Payment, billing, tax, cancellation and refunds are also governed by the Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms).", "You can cancel anytime; refunds follow our 14-day Refund Policy. We may suspend or terminate access for material breach, non-payment, security or fraud risk, or repeated policy violations."];
+    : ["Crumb provides a purely digital menu platform (software as a service) through a monthly subscription, with a free trial period. No subscription includes, supplies or ships any physical goods, devices, cards or tags; each plan only sets the maximum number of compatible customer-owned devices that can be linked to the menu.", "The restaurant is responsible for the accuracy of published prices, ingredients and allergens.", "You are contracting with Daniel Gonçalves Tomé, trading as Crumb. By using the service you accept these terms. You must not misuse it (unlawful use, fraud, spam, IP infringement, malware, probing or scraping). Crumb retains all IP in the service, which is provided without guarantee of uninterrupted or error-free operation.", "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. Payment, billing, tax, cancellation and refunds are also governed by the Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms).", "You can cancel anytime; refunds follow our 14-day Refund Policy. We may suspend or terminate access for material breach, non-payment, security or fraud risk, or repeated policy violations."];
   return (
     <SitePage>
       <PageIntro title={t("footer.terms")} />
@@ -29,23 +29,23 @@ function Terms() {
   );
 }
 
-const TERMS_PT = `Termos e Condições de Utilização — MenuTap
+const TERMS_PT = `Termos e Condições de Utilização — Crumb
 
 Última atualização: 10/11/2026
 
 1. Identificação
 
-O presente website e a plataforma MenuTap são operados por:
+O presente website e a plataforma Crumb são operados por:
 
-Titular: Daniel Gonçalves Tomé, sob a designação comercial MenuTap
-ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração. 
+Titular: Daniel Gonçalves Tomé, sob a designação comercial Crumb
+ATENÇÃO: O website e a plataforma Crumb são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração. 
 Website: https://menutap.pt
 
-Neste documento, a expressão «MenuTap» refere-se ao titular e operador da plataforma e a expressão «Cliente» refere-se ao restaurante ou entidade que cria uma conta e utiliza os serviços disponibilizados.
+Neste documento, a expressão «Crumb» refere-se ao titular e operador da plataforma e a expressão «Cliente» refere-se ao restaurante ou entidade que cria uma conta e utiliza os serviços disponibilizados.
 
 2. Objeto e âmbito
 
-O MenuTap é uma plataforma digital destinada a estabelecimentos de restauração e bebidas, permitindo a criação, publicação e gestão de menus digitais acessíveis através de QR Code ou tecnologia NFC.
+O Crumb é uma plataforma digital destinada a estabelecimentos de restauração e bebidas, permitindo a criação, publicação e gestão de menus digitais acessíveis através de QR Code ou tecnologia NFC.
 
 A plataforma poderá disponibilizar funcionalidades como:
 
@@ -81,11 +81,11 @@ Manter atualizados os dados associados à conta;
 
 Comunicar qualquer utilização não autorizada de que tenha conhecimento.
 
-O MenuTap reserva-se o direito de suspender ou limitar contas em caso de incumprimento grave destes termos, falta de pagamento, risco de segurança ou fraude, ou violações repetidas ou graves das regras de utilização.
+O Crumb reserva-se o direito de suspender ou limitar contas em caso de incumprimento grave destes termos, falta de pagamento, risco de segurança ou fraude, ou violações repetidas ou graves das regras de utilização.
 
 4. Utilização da plataforma
 
-O Cliente compromete-se a utilizar o MenuTap de forma legal e responsável.
+O Cliente compromete-se a utilizar o Crumb de forma legal e responsável.
 
 É da exclusiva responsabilidade do Cliente:
 
@@ -99,7 +99,7 @@ Cumprir a legislação aplicável à atividade de restauração;
 
 Não utilizar a plataforma para fins ilícitos, fraudulentos ou que prejudiquem terceiros.
 
-O MenuTap disponibiliza ferramentas de publicação e gestão de informação, não sendo responsável pela exatidão, legalidade ou atualização dos conteúdos introduzidos pelo Cliente.
+O Crumb disponibiliza ferramentas de publicação e gestão de informação, não sendo responsável pela exatidão, legalidade ou atualização dos conteúdos introduzidos pelo Cliente.
 
 5. Menus digitais, QR Code e NFC
 
@@ -111,15 +111,15 @@ O funcionamento do menu depende da disponibilidade da plataforma e de uma ligaç
 
 As etiquetas NFC e os códigos QR funcionam como meios de acesso ao endereço do menu;
 
-O MenuTap não garante a compatibilidade com todos os dispositivos móveis existentes;
+O Crumb não garante a compatibilidade com todos os dispositivos móveis existentes;
 
 A alteração dos conteúdos do menu não exige necessariamente a substituição do código QR ou etiqueta NFC, desde que seja mantido o mesmo endereço eletrónico.
 
-O MenuTap é um serviço exclusivamente digital (Software as a Service). Nenhuma subscrição inclui, fornece ou envia qualquer bem físico, dispositivo, cartão ou etiqueta. O Cliente gera os links e códigos QR na plataforma e utiliza, por sua conta, os seus próprios suportes compatíveis. Cada plano define apenas o número máximo de dispositivos compatíveis que o Cliente pode associar ao seu menu.
+O Crumb é um serviço exclusivamente digital (Software as a Service). Nenhuma subscrição inclui, fornece ou envia qualquer bem físico, dispositivo, cartão ou etiqueta. O Cliente gera os links e códigos QR na plataforma e utiliza, por sua conta, os seus próprios suportes compatíveis. Cada plano define apenas o número máximo de dispositivos compatíveis que o Cliente pode associar ao seu menu.
 
 6. Planos, preços e pagamentos
 
-O acesso às funcionalidades do MenuTap poderá estar sujeito a uma subscrição paga, de acordo com os planos e preços apresentados no website.
+O acesso às funcionalidades do Crumb poderá estar sujeito a uma subscrição paga, de acordo com os planos e preços apresentados no website.
 
 Salvo indicação em contrário:
 
@@ -133,23 +133,23 @@ O nosso processo de encomenda é conduzido pelo nosso revendedor online Paddle.c
 
 As condições específicas de cada plano são apresentadas antes da confirmação da subscrição.
 
-O MenuTap poderá alterar os preços ou funcionalidades dos planos, comunicando previamente as alterações aos Clientes com subscrições ativas.
+O Crumb poderá alterar os preços ou funcionalidades dos planos, comunicando previamente as alterações aos Clientes com subscrições ativas.
 
 As alterações de preço não produzem efeitos retroativos sobre períodos já pagos.
 
 7. Períodos de experimentação
 
-O MenuTap poderá disponibilizar períodos de experimentação gratuitos, sujeitos às condições apresentadas no momento da adesão.
+O Crumb poderá disponibilizar períodos de experimentação gratuitos, sujeitos às condições apresentadas no momento da adesão.
 
 Durante esse período, o Cliente poderá experimentar as funcionalidades incluídas na oferta.
 
 A passagem para uma subscrição paga não será efetuada sem a respetiva aceitação ou contratação pelo Cliente.
 
-O MenuTap poderá limitar a duração, disponibilidade ou condições das ofertas de experimentação.
+O Crumb poderá limitar a duração, disponibilidade ou condições das ofertas de experimentação.
 
 8. Cancelamento da subscrição
 
-O Cliente poderá cancelar a sua subscrição através dos meios disponibilizados na plataforma ou mediante contacto com o MenuTap.
+O Cliente poderá cancelar a sua subscrição através dos meios disponibilizados na plataforma ou mediante contacto com o Crumb.
 
 Salvo indicação em contrário:
 
@@ -159,11 +159,11 @@ O acesso às funcionalidades pagas mantém-se até ao final do período já pago
 
 Os reembolsos regem-se pela nossa Política de Reembolso (https://menutap.pt/refund), que prevê uma garantia de reembolso de 14 dias.
 
-Após o cancelamento, o MenuTap poderá eliminar ou anonimizar os dados associados à conta, respeitando os prazos de conservação legalmente aplicáveis e as condições da Política de Privacidade.
+Após o cancelamento, o Crumb poderá eliminar ou anonimizar os dados associados à conta, respeitando os prazos de conservação legalmente aplicáveis e as condições da Política de Privacidade.
 
 9. Disponibilidade e manutenção
 
-O MenuTap procurará assegurar o funcionamento regular e seguro da plataforma.
+O Crumb procurará assegurar o funcionamento regular e seguro da plataforma.
 
 Contudo, não garante disponibilidade ininterrupta ou ausência de erros, podendo ocorrer interrupções decorrentes de:
 
@@ -175,7 +175,7 @@ Problemas de conectividade ou infraestrutura;
 
 Situações técnicas ou de força maior.
 
-Sempre que possível, o MenuTap procurará minimizar o impacto destas interrupções.
+Sempre que possível, o Crumb procurará minimizar o impacto destas interrupções.
 
 10. Estatísticas e informações de utilização
 
@@ -183,19 +183,19 @@ A plataforma poderá disponibilizar indicadores estatísticos relativos à utili
 
 Estes indicadores têm natureza meramente informativa e destinam-se a apoiar a análise do desempenho dos menus.
 
-O MenuTap não garante que os indicadores correspondam a vendas, compras efetivas ou decisões de consumo, nem que representem integralmente o comportamento dos visitantes.
+O Crumb não garante que os indicadores correspondam a vendas, compras efetivas ou decisões de consumo, nem que representem integralmente o comportamento dos visitantes.
 
 11. Propriedade intelectual
 
-A plataforma MenuTap, incluindo o seu software, estrutura, design, elementos gráficos, marca e conteúdos próprios, encontra-se protegida pela legislação aplicável em matéria de propriedade intelectual.
+A plataforma Crumb, incluindo o seu software, estrutura, design, elementos gráficos, marca e conteúdos próprios, encontra-se protegida pela legislação aplicável em matéria de propriedade intelectual.
 
 A utilização do serviço não confere ao Cliente qualquer direito de propriedade sobre a plataforma ou os seus componentes.
 
-O Cliente mantém os direitos sobre os conteúdos que introduz na plataforma, concedendo ao MenuTap apenas a licença necessária para alojar, processar, reproduzir e apresentar esses conteúdos no âmbito da prestação do serviço.
+O Cliente mantém os direitos sobre os conteúdos que introduz na plataforma, concedendo ao Crumb apenas a licença necessária para alojar, processar, reproduzir e apresentar esses conteúdos no âmbito da prestação do serviço.
 
 12. Responsabilidade
 
-O MenuTap não será responsável por:
+O Crumb não será responsável por:
 
 Erros ou omissões nos conteúdos publicados pelo Cliente;
 
@@ -211,13 +211,13 @@ Nada nos presentes termos exclui ou limita responsabilidades que não possam ser
 
 13. Proteção de dados pessoais
 
-O tratamento de dados pessoais no âmbito da utilização do MenuTap é realizado de acordo com a respetiva Política de Privacidade e com a legislação aplicável, nomeadamente o Regulamento Geral sobre a Proteção de Dados (RGPD).
+O tratamento de dados pessoais no âmbito da utilização do Crumb é realizado de acordo com a respetiva Política de Privacidade e com a legislação aplicável, nomeadamente o Regulamento Geral sobre a Proteção de Dados (RGPD).
 
-Quando o MenuTap trate dados por conta do Cliente, poderão aplicar-se condições específicas de subcontratação de dados pessoais.
+Quando o Crumb trate dados por conta do Cliente, poderão aplicar-se condições específicas de subcontratação de dados pessoais.
 
 14. Alterações aos Termos e Condições
 
-O MenuTap poderá atualizar os presentes Termos e Condições sempre que necessário.
+O Crumb poderá atualizar os presentes Termos e Condições sempre que necessário.
 
 As alterações serão publicadas nesta página, com indicação da respetiva data de atualização.
 

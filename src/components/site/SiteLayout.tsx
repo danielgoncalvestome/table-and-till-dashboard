@@ -6,25 +6,31 @@ import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
-import logoDark from "@/assets/menutap-logo.png.asset.json";
-import logoLight from "@/assets/menutap-logo-light.png.asset.json";
+import { CrumbMorph } from "@/components/brand/CrumbMorph";
 
 export function Logo({
   className = "",
   variant = "dark",
   height = "h-12",
+  collapsed,
 }: {
   className?: string;
   variant?: "dark" | "light";
   height?: string;
+  collapsed?: boolean;
 }) {
+  const [hover, setHover] = useState(false);
+  const px = (Number(height.replace(/\D/g, "")) || 12) * 4 * 0.62;
   return (
-    <Link to="/" search={{ p: undefined }} aria-label="MenuTap" className={`inline-flex items-center ${className}`}>
-      <img
-        src={variant === "light" ? logoLight.url : logoDark.url}
-        alt="MenuTap"
-        className={`${height} w-auto max-w-none`}
-      />
+    <Link
+      to="/"
+      search={{ p: undefined }}
+      aria-label="Crumb"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`inline-flex items-center ${className}`}
+    >
+      <CrumbMorph variant={variant} heightPx={px} collapsed={collapsed ?? hover} />
     </Link>
   );
 }
@@ -116,7 +122,7 @@ export function SiteFooter() {
           <a href="mailto:danielgoncalvestome+menutap@gmail.com">{"\n"}</a>
         </div>
       </div>
-      <div className="mx-auto max-w-6xl px-5 pb-8 text-xs opacity-60">© {new Date().getFullYear()} MenuTap. {t("footer.rights")}</div>
+      <div className="mx-auto max-w-6xl px-5 pb-8 text-xs opacity-60">© {new Date().getFullYear()} Crumb. {t("footer.rights")}</div>
     </footer>
   );
 }

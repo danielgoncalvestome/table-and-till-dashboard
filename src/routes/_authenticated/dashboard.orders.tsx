@@ -13,7 +13,7 @@ import { formatPrice } from "@/lib/menu";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL, orderOptions, type CartLine } from "@/lib/orders";
 
 export const Route = createFileRoute("/_authenticated/dashboard/orders")({
-  head: () => ({ meta: [{ title: "Pedidos — MenuTap" }, { name: "description", content: "Pedidos ao vivo das mesas." }, { property: "og:title", content: "Pedidos — MenuTap" }, { property: "og:description", content: "Pedidos ao vivo das mesas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Pedidos — Crumb" }, { name: "description", content: "Pedidos ao vivo das mesas." }, { property: "og:title", content: "Pedidos — Crumb" }, { property: "og:description", content: "Pedidos ao vivo das mesas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   validateSearch: (s: Record<string, unknown>): { full?: 1 } => (s.full ? { full: 1 } : {}),
   component: Orders,
 });

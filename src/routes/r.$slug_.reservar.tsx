@@ -11,7 +11,7 @@ import { textStyle } from "@/lib/text-styles";
 import { resError, todayStr } from "@/lib/reservations";
 
 export const Route = createFileRoute("/r/$slug_/reservar")({
-  head: () => ({ meta: [{ title: "Reservar mesa — MenuTap" }, { name: "description", content: "Reserve a sua mesa online em poucos passos." }, { property: "og:title", content: "Reservar mesa — MenuTap" }, { property: "og:description", content: "Reserve a sua mesa online em poucos passos." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Reservar mesa — Crumb" }, { name: "description", content: "Reserve a sua mesa online em poucos passos." }, { property: "og:title", content: "Reservar mesa — Crumb" }, { property: "og:description", content: "Reserve a sua mesa online em poucos passos." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Book,
 });
 

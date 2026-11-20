@@ -10,10 +10,10 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "Perguntas frequentes — MenuTap" },
+      { title: "Perguntas frequentes — Crumb" },
       { name: "description", content: "Menu digital, QR e NFC, reservas, planta da sala, pedidos, Menu Intelligence, planos e cancelamento." },
-      { property: "og:title", content: "Perguntas frequentes — MenuTap" },
-      { property: "og:description", content: "Todas as respostas sobre o menu digital, reservas, pedidos e Menu Intelligence do MenuTap." },
+      { property: "og:title", content: "Perguntas frequentes — Crumb" },
+      { property: "og:description", content: "Todas as respostas sobre o menu digital, reservas, pedidos e Menu Intelligence do Crumb." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -30,13 +30,13 @@ const CATS: Cat[] = [
       ["Quanto tempo demora a configurar?", "A maioria dos restaurantes publica o primeiro menu em menos de 30 minutos: crie a conta, adicione categorias e pratos e publique."],
       ["Posso entrar com a conta Google?", "Sim. Pode entrar com Google, com email ou com nome de utilizador e palavra-passe."],
       ["Posso gerir vários restaurantes?", "Sim. Cada restaurante tem o seu menu, equipa e subscrição, e troca entre eles no menu lateral do painel."],
-      ["Funciona no telemóvel?", "Sim. O painel, o controlo da sala e os pedidos estão otimizados para telemóvel e tablet, e pode adicionar o MenuTap ao ecrã principal do iPhone."],
+      ["Funciona no telemóvel?", "Sim. O painel, o controlo da sala e os pedidos estão otimizados para telemóvel e tablet, e pode adicionar o Crumb ao ecrã principal do iPhone."],
     ],
     en: [
       ["How long does setup take?", "Most restaurants publish their first menu in under 30 minutes: create an account, add categories and dishes and publish."],
       ["Can I sign in with Google?", "Yes. Sign in with Google, email, or username and password."],
       ["Can I manage several restaurants?", "Yes. Each restaurant has its own menu, team and subscription; switch between them in the dashboard sidebar."],
-      ["Does it work on mobile?", "Yes. The dashboard, room control and orders are optimised for phones and tablets, and you can add MenuTap to your iPhone home screen."],
+      ["Does it work on mobile?", "Yes. The dashboard, room control and orders are optimised for phones and tablets, and you can add Crumb to your iPhone home screen."],
     ] } },
   { id: "menu", icon: QrCode, pt: "Menu digital", en: "Digital menu", qa: {
     pt: [

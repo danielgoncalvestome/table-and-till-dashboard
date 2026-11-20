@@ -21,9 +21,9 @@ export const Route = createFileRoute("/auth")({
   }),
   head: () => ({
     meta: [
-      { title: "Entrar — MenuTap" },
-      { name: "description", content: "Entre ou crie a sua conta MenuTap." },
-      { property: "og:title", content: "Entrar — MenuTap" },
+      { title: "Entrar — Crumb" },
+      { name: "description", content: "Entre ou crie a sua conta Crumb." },
+      { property: "og:title", content: "Entrar — Crumb" },
       { property: "og:description", content: "Aceda ao painel do seu restaurante." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -115,7 +115,7 @@ function AuthPage() {
       <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-2xl">
         <div className="h-1 bg-gradient-to-r from-primary to-primary/60" />
         <div className="px-7 pb-6 pt-6">
-          <Link to="/" aria-label="MenuTap" className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
+          <Link to="/" aria-label="Crumb" className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
             <UtensilsCrossed className="h-5 w-5" aria-hidden="true" />
           </Link>
           <h1 className="mt-4 text-center text-2xl font-bold">{title}</h1>

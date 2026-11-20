@@ -43,7 +43,7 @@ export function AnnouncementsAdmin({ restaurants }: { restaurants: R[] }) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className={`${card} space-y-4`}>
-        <div className="space-y-1.5"><Label>Título</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Novidade no MenuTap" /></div>
+        <div className="space-y-1.5"><Label>Título</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Novidade no Crumb" /></div>
         <div className="space-y-1.5"><Label>Subtítulo</Label><Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="Opcional" /></div>
         <div className="space-y-1.5"><Label>Descrição</Label><Textarea rows={5} value={body} onChange={(e) => setBody(e.target.value)} placeholder="Opcional" /></div>
         <div className="space-y-2">

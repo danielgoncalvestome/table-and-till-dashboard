@@ -22,7 +22,7 @@ import { formatPrice } from "@/lib/menu";
 import { fetchReservations, fillRows, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
 import { DEFAULT_LAYOUT, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
 
-export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Dashboard — MenuTap" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Dashboard — MenuTap" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
+export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Dashboard — Crumb" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Dashboard — Crumb" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
 const TITLES: Record<SectionId, string> = { actions: "Ações rápidas", status: "Estado do serviço", alerts: "Alertas", today: "Reservas de hoje", floor: "Ocupação da sala", orders: "Pedidos ao vivo", views: "Visualizações", kpis: "Indicadores", dishes: "Menu Intelligence", ratings: "Avaliações" };

@@ -20,7 +20,7 @@ import { MENU_KINDS, WEEKDAYS, formatPrice, isMenuActive } from "@/lib/menu";
 type Dish = Database["public"]["Tables"]["dishes"]["Row"];
 type Menu = Database["public"]["Tables"]["menus"]["Row"];
 
-export const Route = createFileRoute("/_authenticated/dashboard/menus")({ head: () => ({ meta: [{ title: "Menus e pratos — MenuTap" }, { name: "description", content: "Gira os menus, pratos e preços do restaurante." }, { property: "og:title", content: "Menus e pratos — MenuTap" }, { property: "og:description", content: "Gira os menus, pratos e preços do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Menus });
+export const Route = createFileRoute("/_authenticated/dashboard/menus")({ head: () => ({ meta: [{ title: "Menus e pratos — Crumb" }, { name: "description", content: "Gira os menus, pratos e preços do restaurante." }, { property: "og:title", content: "Menus e pratos — Crumb" }, { property: "og:description", content: "Gira os menus, pratos e preços do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Menus });
 
 function Menus() {
   const { t, lang } = useI18n();

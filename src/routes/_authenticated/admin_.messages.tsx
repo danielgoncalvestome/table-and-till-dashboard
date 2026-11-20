@@ -9,7 +9,7 @@ import { useIsAdmin } from "@/lib/restaurant";
 import { formatDate } from "@/lib/menu";
 
 export const Route = createFileRoute("/_authenticated/admin_/messages")({
-  head: () => ({ meta: [{ title: "Mensagens — MenuTap" }, { name: "description", content: "Mensagens recebidas pelo formulário de contacto." }, { property: "og:title", content: "Mensagens — MenuTap" }, { property: "og:description", content: "Mensagens recebidas pelo formulário de contacto." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Mensagens — Crumb" }, { name: "description", content: "Mensagens recebidas pelo formulário de contacto." }, { property: "og:title", content: "Mensagens — Crumb" }, { property: "og:description", content: "Mensagens recebidas pelo formulário de contacto." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Messages,
 });
 

@@ -231,3 +231,14 @@ html.panel main h1 { font-weight: 700; }
 @utility tl-ping { animation: tl-ping 1.6s ease-out infinite; }
 
 @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+
+/* Crumb logo morph: full name -> rotated C icon */
+.crumb-morph { transition: width 600ms cubic-bezier(.65,0,.35,1) 250ms; }
+.crumb-morph-c { transform-origin: 50% 50%; transition: transform 600ms cubic-bezier(.65,0,.35,1) 250ms; }
+.crumb-morph-rumb { transition: opacity 300ms ease, clip-path 350ms ease, transform 350ms ease; clip-path: inset(0 0 0 0); }
+.crumb-morph[data-state="icon"] .crumb-morph-c { transform: rotate(90deg); }
+.crumb-morph[data-state="icon"] .crumb-morph-rumb { opacity: 0; clip-path: inset(0 100% 0 0); transform: translateX(-8%); }
+.crumb-morph[data-state="full"] { transition-delay: 0ms; }
+.crumb-morph[data-state="full"] .crumb-morph-c { transition-delay: 0ms; }
+.crumb-morph[data-state="full"] .crumb-morph-rumb { transition-delay: 600ms; }
+@media (prefers-reduced-motion: reduce) { .crumb-morph, .crumb-morph * { transition: none !important; } }

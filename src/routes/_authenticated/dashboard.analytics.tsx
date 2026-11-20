@@ -21,7 +21,7 @@ function downloadCsv(rows: (string | number)[][], name: string) {
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
-export const Route = createFileRoute("/_authenticated/dashboard/analytics")({ head: () => ({ meta: [{ title: "Análise — MenuTap" }, { name: "description", content: "Visitas ao menu, reservas e pedidos com gráficos interativos." }, { property: "og:title", content: "Análise — MenuTap" }, { property: "og:description", content: "Visitas ao menu, reservas e pedidos com gráficos interativos." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Analytics });
+export const Route = createFileRoute("/_authenticated/dashboard/analytics")({ head: () => ({ meta: [{ title: "Análise — Crumb" }, { name: "description", content: "Visitas ao menu, reservas e pedidos com gráficos interativos." }, { property: "og:title", content: "Análise — Crumb" }, { property: "og:description", content: "Visitas ao menu, reservas e pedidos com gráficos interativos." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Analytics });
 
 function Analytics() {
   const { t, lang } = useI18n();
@@ -125,7 +125,7 @@ function Analytics() {
     bars(pt ? "Pratos mais pedidos" : "Most ordered dishes", os.topItems.slice(0, 10));
     bars(t("an.ratings"), (ratings ?? []).map((x) => [`${dn(x.dish_id)} · ${Number(x.avg_stars).toFixed(1)}/5`, Number(x.total)] as [string, number]).sort((a, b) => b[1] - a[1]));
     const n = doc.getNumberOfPages();
-    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(8); doc.setTextColor(140, 140, 140); doc.text(`MenuTap · ${p}/${n}`, W - M, 292, { align: "right" }); }
+    for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(8); doc.setTextColor(140, 140, 140); doc.text(`Crumb · ${p}/${n}`, W - M, 292, { align: "right" }); }
     doc.save(`menutap-${r.slug ?? "relatorio"}-${days}d.pdf`);
   };
   const pct = (x: number) => `${Math.round(x * 100)}%`;

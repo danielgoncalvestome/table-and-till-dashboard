@@ -20,7 +20,7 @@ import { Agenda, Customers, ResStats, Waitlist } from "@/components/res/Panels";
 import { BLOCKING, RES_STATUSES, STATUS_LABEL, dayRange, hhmm, isLate, resError, todayStr, type ResStatus } from "@/lib/reservations";
 
 export const Route = createFileRoute("/_authenticated/dashboard/reservations")({
-  head: () => ({ meta: [{ title: "Reservas e mesas — MenuTap" }, { name: "description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:title", content: "Reservas e mesas — MenuTap" }, { property: "og:description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Reservas e mesas — Crumb" }, { name: "description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:title", content: "Reservas e mesas — Crumb" }, { property: "og:description", content: "Gira reservas, mesas e zonas do restaurante." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   validateSearch: (s: Record<string, unknown>): { nova?: 1; tab?: "wait" } => ({ ...(s.nova ? { nova: 1 as const } : {}), ...(s.tab === "wait" ? { tab: "wait" as const } : {}) }),
   component: Reservations,
 });
@@ -44,7 +44,7 @@ function Reservations() {
   const canEditRoom = canAccess(r.role, r.permissions, "room_edit");
   async function submitPlan() {
     if (!canEditRoom) return;
-    if (!confirm("Enviar a planta atual à MenuTap para contabilizar os dispositivos (1 por mesa ativa)?")) return;
+    if (!confirm("Enviar a planta atual à Crumb para contabilizar os dispositivos (1 por mesa ativa)?")) return;
     const { data, error } = await supabase.rpc("submit_floor_plan", { _restaurant_id: r.id });
     if (error) return toast.error(error.message);
     toast.success(`Planta submetida: ${data} mesas`);

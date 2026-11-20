@@ -5,10 +5,10 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Política de privacidade — MenuTap" },
-      { name: "description", content: "Como o MenuTap trata dados pessoais, em conformidade com o RGPD." },
-      { property: "og:title", content: "Política de privacidade — MenuTap" },
-      { property: "og:description", content: "Privacidade e RGPD no MenuTap." },
+      { title: "Política de privacidade — Crumb" },
+      { name: "description", content: "Como o Crumb trata dados pessoais, em conformidade com o RGPD." },
+      { property: "og:title", content: "Política de privacidade — Crumb" },
+      { property: "og:description", content: "Privacidade e RGPD no Crumb." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,7 +20,7 @@ function Privacy() {
   const { lang, t } = useI18n();
   const body = lang === "pt"
     ? [PRIVACY_PT]
-    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at danielgoncalvestome+menutap@gmail.com.", "The data controller is Daniel Gonçalves Tomé, trading as MenuTap. Payments, subscriptions, invoicing and tax compliance are handled by Paddle.com, our Merchant of Record, which receives the data needed for those purposes.", "We also use service providers (hosting, authentication, cookieless Lovable visitor analytics), professional advisers and authorities where required by law. Data is never sold. You have the rights of access, rectification, erasure, restriction, portability, objection and complaint to the CNPD."];
+    : ["Restaurant guests browse menus without signing up. We only record anonymous events (views, searches, language) tied to a random session identifier, without name, email or IP address.", "Restaurant accounts store the user's email and name for authentication. You can request export or deletion of your data at danielgoncalvestome+menutap@gmail.com.", "The data controller is Daniel Gonçalves Tomé, trading as Crumb. Payments, subscriptions, invoicing and tax compliance are handled by Paddle.com, our Merchant of Record, which receives the data needed for those purposes.", "We also use service providers (hosting, authentication, cookieless Lovable visitor analytics), professional advisers and authorities where required by law. Data is never sold. You have the rights of access, rectification, erasure, restriction, portability, objection and complaint to the CNPD."];
   return (
     <SitePage>
       <PageIntro title={t("footer.privacy")} />
@@ -29,29 +29,29 @@ function Privacy() {
   );
 }
 
-const PRIVACY_PT = `Política de Privacidade — MenuTap
+const PRIVACY_PT = `Política de Privacidade — Crumb
 
 Última atualização: 10/11/2026
 
 1. Introdução
 
-A presente Política de Privacidade explica como o MenuTap recolhe, utiliza, conserva e protege os dados pessoais dos utilizadores do website, dos restaurantes registados na plataforma e dos visitantes dos menus digitais.
+A presente Política de Privacidade explica como o Crumb recolhe, utiliza, conserva e protege os dados pessoais dos utilizadores do website, dos restaurantes registados na plataforma e dos visitantes dos menus digitais.
 
-O MenuTap compromete-se a tratar os dados pessoais de forma transparente, segura e responsável, em conformidade com o Regulamento Geral sobre a Proteção de Dados (Regulamento UE 2016/679 — RGPD) e demais legislação aplicável.
+O Crumb compromete-se a tratar os dados pessoais de forma transparente, segura e responsável, em conformidade com o Regulamento Geral sobre a Proteção de Dados (Regulamento UE 2016/679 — RGPD) e demais legislação aplicável.
 
 2. Responsável pelo tratamento
  
 
-Identificação: Daniel Gonçalves Tomé, que opera o serviço com a designação comercial MenuTap (website: https://menutap.pt).
+Identificação: Daniel Gonçalves Tomé, que opera o serviço com a designação comercial Crumb (website: https://menutap.pt).
 
 Daniel Gonçalves Tomé é o responsável pelo tratamento dos dados pessoais descritos nesta política, determinando as finalidades e os meios desse tratamento.
 
-ATENÇÃO: O website e a plataforma MenuTap são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração.
+ATENÇÃO: O website e a plataforma Crumb são um projeto independente em fase de desenvolvimento e lançamento, dedicado à disponibilização de soluções digitais para estabelecimentos de restauração.
 
  
 3. Que dados pessoais recolhemos?
 
-Dependendo da forma como utiliza o MenuTap, poderemos recolher diferentes categorias de dados.
+Dependendo da forma como utiliza o Crumb, poderemos recolher diferentes categorias de dados.
 
 3.1. Dados de registo e conta
 
@@ -83,7 +83,7 @@ Histórico de pagamentos e subscrições;
 
 Informações relativas às faturas emitidas.
 
-Os pagamentos poderão ser processados por prestadores externos especializados. Os dados bancários ou de cartão de pagamento serão tratados de acordo com as condições e políticas desses prestadores, não sendo necessário que o MenuTap tenha acesso aos dados completos do cartão.
+Os pagamentos poderão ser processados por prestadores externos especializados. Os dados bancários ou de cartão de pagamento serão tratados de acordo com as condições e políticas desses prestadores, não sendo necessário que o Crumb tenha acesso aos dados completos do cartão.
 
 3.3. Dados de utilização da plataforma
 
@@ -117,7 +117,7 @@ Tipo de dispositivo e navegador;
 
 Informação técnica necessária à segurança e funcionamento do serviço.
 
-O MenuTap não exige que os visitantes criem uma conta para consultar os menus digitais.
+O Crumb não exige que os visitantes criem uma conta para consultar os menus digitais.
 
 Não solicitamos deliberadamente dados pessoais sensíveis através da consulta normal dos menus.
 
@@ -135,21 +135,21 @@ Garantir a segurança da plataforma — Interesse legítimo
 Analisar a utilização e melhorar o serviço — Interesse legítimo ou consentimento, conforme a tecnologia utilizada
 Enviar comunicações comerciais — Consentimento ou outra base legal aplicável
 
-O MenuTap não utilizará os dados para finalidades incompatíveis com aquelas para as quais foram recolhidos.
+O Crumb não utilizará os dados para finalidades incompatíveis com aquelas para as quais foram recolhidos.
 
 5. Tratamento de dados em nome dos restaurantes
 
-Os restaurantes que utilizam o MenuTap podem determinar as finalidades e os meios de tratamento de determinados dados relacionados com a utilização dos seus menus.
+Os restaurantes que utilizam o Crumb podem determinar as finalidades e os meios de tratamento de determinados dados relacionados com a utilização dos seus menus.
 
-Nessas situações, o restaurante poderá atuar como responsável pelo tratamento e o MenuTap como subcontratante, tratando os dados por conta do restaurante e de acordo com as respetivas instruções.
+Nessas situações, o restaurante poderá atuar como responsável pelo tratamento e o Crumb como subcontratante, tratando os dados por conta do restaurante e de acordo com as respetivas instruções.
 
-O MenuTap poderá, por exemplo, tratar dados de utilização dos menus para disponibilizar estatísticas e relatórios ao restaurante.
+O Crumb poderá, por exemplo, tratar dados de utilização dos menus para disponibilizar estatísticas e relatórios ao restaurante.
 
-Quando aplicável, a relação entre o MenuTap e o restaurante será regulada por condições específicas de tratamento de dados, nos termos do artigo 28.º do RGPD.
+Quando aplicável, a relação entre o Crumb e o restaurante será regulada por condições específicas de tratamento de dados, nos termos do artigo 28.º do RGPD.
 
 6. Partilha de dados com terceiros
 
-O MenuTap poderá recorrer a prestadores de serviços externos para assegurar o funcionamento da plataforma, incluindo:
+O Crumb poderá recorrer a prestadores de serviços externos para assegurar o funcionamento da plataforma, incluindo:
 
 Alojamento e armazenamento de dados;
 
@@ -169,13 +169,13 @@ Poderemos ainda partilhar dados com consultores profissionais (jurídicos e cont
 
 Estes prestadores apenas terão acesso aos dados necessários à prestação dos respetivos serviços e estarão sujeitos às obrigações contratuais e legais aplicáveis.
 
-O MenuTap não vende dados pessoais a terceiros.
+O Crumb não vende dados pessoais a terceiros.
 
 Os dados poderão ainda ser comunicados a autoridades públicas quando tal seja exigido por lei ou por decisão legítima de uma autoridade competente.
 
 7. Transferências internacionais de dados
 
-Sempre que sejam utilizados prestadores de serviços localizados fora do Espaço Económico Europeu, ou que impliquem transferências internacionais de dados, o MenuTap procurará assegurar que essas transferências cumprem os requisitos previstos no RGPD.
+Sempre que sejam utilizados prestadores de serviços localizados fora do Espaço Económico Europeu, ou que impliquem transferências internacionais de dados, o Crumb procurará assegurar que essas transferências cumprem os requisitos previstos no RGPD.
 
 Poderão ser utilizadas decisões de adequação da Comissão Europeia ou garantias adequadas, incluindo cláusulas contratuais-tipo, quando aplicável.
 
@@ -197,7 +197,7 @@ Após o cancelamento de uma conta, os dados serão eliminados ou anonimizados qu
 
 9. Segurança dos dados
 
-O MenuTap adota medidas técnicas e organizativas adequadas para proteger os dados pessoais contra acesso não autorizado, perda, alteração, divulgação ou destruição.
+O Crumb adota medidas técnicas e organizativas adequadas para proteger os dados pessoais contra acesso não autorizado, perda, alteração, divulgação ou destruição.
 
 Estas medidas poderão incluir mecanismos de autenticação, controlo de acessos, utilização de ligações seguras, cópias de segurança e monitorização técnica.
 
@@ -227,7 +227,7 @@ Em Portugal, a autoridade de controlo é a Comissão Nacional de Proteção de D
 
 Os pedidos relacionados com o exercício destes direitos poderão ser enviados para danielgoncalvestome+menutap@gmail.com.
 
-O MenuTap poderá solicitar informações adicionais para confirmar a identidade do requerente, quando necessário.
+O Crumb poderá solicitar informações adicionais para confirmar a identidade do requerente, quando necessário.
 
 11. Cookies e tecnologias semelhantes
 
@@ -245,17 +245,17 @@ No início de sessão com Google, os dados de autenticação são partilhados co
 
 12. Comunicações comerciais
 
-O MenuTap poderá enviar comunicações relacionadas com a conta, subscrição, segurança e funcionamento do serviço.
+O Crumb poderá enviar comunicações relacionadas com a conta, subscrição, segurança e funcionamento do serviço.
 
 As comunicações de marketing ou promocionais serão enviadas apenas quando exista fundamento legal para o efeito.
 
-Quando aplicável, o utilizador poderá retirar o consentimento ou opor-se à receção dessas comunicações através do mecanismo disponibilizado na própria mensagem ou mediante contacto com o MenuTap.
+Quando aplicável, o utilizador poderá retirar o consentimento ou opor-se à receção dessas comunicações através do mecanismo disponibilizado na própria mensagem ou mediante contacto com o Crumb.
 
 13. Privacidade de menores
 
 A plataforma destina-se principalmente a estabelecimentos comerciais e aos respetivos utilizadores.
 
-O MenuTap não procura recolher deliberadamente dados pessoais de menores para fins de criação de contas ou marketing.
+O Crumb não procura recolher deliberadamente dados pessoais de menores para fins de criação de contas ou marketing.
 
 14. Alterações à Política de Privacidade
 

@@ -15,7 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import logoLight from "@/assets/menutap-logo-light.png.asset.json";
+import logoLight from "@/assets/crumb-logo-light.png.asset.json";
 
 function NotFoundComponent() {
   return (
@@ -25,7 +25,7 @@ function NotFoundComponent() {
         <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
         <div className="mt-6">
           <Link to="/" search={{ p: undefined }} className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-4">
-            <img src={logoLight.url} alt="MenuTap" className="h-12 w-auto" />
+            <img src={logoLight.url} alt="Crumb" className="h-12 w-auto" />
           </Link>
         </div>
       </div>
@@ -59,14 +59,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MenuTap — O seu menu. À distância de um toque." },
+      { title: "Crumb — O seu menu. À distância de um toque." },
       { name: "description", content: "Menus digitais para restaurantes, cafés e bares, com QR code e NFC." },
-      { property: "og:title", content: "MenuTap" },
+      { property: "og:title", content: "Crumb" },
       { property: "og:description", content: "Menus digitais para restaurantes, com QR code e NFC." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#193729" },
-      { name: "apple-mobile-web-app-title", content: "MenuTap" },
+      { name: "apple-mobile-web-app-title", content: "Crumb" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
     ],

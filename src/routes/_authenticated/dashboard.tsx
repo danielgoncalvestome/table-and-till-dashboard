@@ -21,7 +21,7 @@ import { canAccess, type Permission } from "@/lib/team-rules";
 import { useLocation } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Painel — MenuTap" }, { name: "description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:title", content: "Painel — MenuTap" }, { property: "og:description", content: "Gira os restaurantes da sua conta MenuTap." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Painel — Crumb" }, { name: "description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:title", content: "Painel — Crumb" }, { property: "og:description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: DashboardLayout,
 });
 

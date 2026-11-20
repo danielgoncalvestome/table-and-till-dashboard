@@ -14,7 +14,7 @@ import { Floor, NewReservation } from "@/components/res/RoomShared";
 import { todayStr } from "@/lib/reservations";
 
 export const Route = createFileRoute("/_authenticated/dashboard/room")({
-  head: () => ({ meta: [{ title: "Salas — MenuTap" }, { name: "description", content: "Controlo da sala em tempo real: planta, mesas e ações rápidas." }, { property: "og:title", content: "Salas — MenuTap" }, { property: "og:description", content: "Controlo da sala em tempo real: planta, mesas e ações rápidas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Salas — Crumb" }, { name: "description", content: "Controlo da sala em tempo real: planta, mesas e ações rápidas." }, { property: "og:title", content: "Salas — Crumb" }, { property: "og:description", content: "Controlo da sala em tempo real: planta, mesas e ações rápidas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   validateSearch: (s: Record<string, unknown>): { full?: 1 } => (s.full ? { full: 1 } : {}),
   component: Room,
 });
@@ -44,7 +44,7 @@ function Room() {
 
   async function submitPlan() {
     if (!canEditRoom) return;
-    if (!confirm("Enviar a planta atual à MenuTap para contabilizar os dispositivos (1 por mesa ativa)?")) return;
+    if (!confirm("Enviar a planta atual à Crumb para contabilizar os dispositivos (1 por mesa ativa)?")) return;
     const { data, error } = await supabase.rpc("submit_floor_plan", { _restaurant_id: r.id });
     if (error) return toast.error(error.message);
     toast.success(`Planta submetida: ${data} mesas`);

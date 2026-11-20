@@ -9,7 +9,11 @@ export const submitContact = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { error } = await supabaseAdmin.from('contact_submissions').insert(data);
+    const { data: row, error } = await supabaseAdmin.from('contact_submissions').insert(data).select('id').single();
     if (error) { console.error('contact insert failed', error.message); return { ok: false }; }
+    try {
+      const { sendTemplateEmail } = await import('@/lib/email-templates/send-email');
+      await sendTemplateEmail('owner-contact-alert', 'danielgoncalvestome@gmail.com', { templateData: data, idempotencyKey: `owner-contact-${row.id}`, replyTo: data.email });
+    } catch (e) { console.error('contact alert failed', e instanceof Error ? e.message : e); }
     return { ok: true };
   });

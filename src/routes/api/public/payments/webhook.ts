@@ -18,6 +18,19 @@ async function upsert(data: any, env: PaddleEnv) {
     paddle_subscription_id: data.id, paddle_customer_id: data.customerId });
   if (error) throw error;
   await enableOnlineBooking(supabaseAdmin, userId, priceId, data.status);
+  await notifyOwner(supabaseAdmin, data, userId, priceId, env);
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function notifyOwner(supabaseAdmin: any, data: any, userId: string, priceId: string, env: PaddleEnv) {
+  try {
+    const { PLANS } = await import('@/lib/billing-rules');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const plan = (Object.values(PLANS as any) as any[]).find((p) => p?.priceId === priceId || p?.id === priceId)?.name ?? priceId;
+    const { data: u } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const email = u?.user?.email && !String(u.user.email).endsWith('.invalid') ? u.user.email : (u?.user?.user_metadata?.username ?? userId);
+    const { sendTemplateEmail } = await import('@/lib/email-templates/send-email');
+    await sendTemplateEmail('owner-subscription-alert', 'danielgoncalvestome@gmail.com', { templateData: { plan, email, status: data.status, environment: env }, idempotencyKey: `owner-sub-${data.id}` });
+  } catch (e) { console.error('subscription alert failed', e instanceof Error ? e.message : e); }
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function enableOnlineBooking(supabaseAdmin: any, userId: string, priceId: string | undefined, status: string) {

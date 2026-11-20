@@ -17,7 +17,11 @@ export interface TemplateEntry {
  *   import { template as welcomeTemplate } from './welcome'
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
+import { contactAlert, subscriptionAlert } from './owner-alerts'
+
 export const TEMPLATES: Record<string, TemplateEntry> = {
+  'owner-contact-alert': contactAlert,
+  'owner-subscription-alert': subscriptionAlert,
   // Add templates here as they are created, e.g.:
   // 'welcome': welcomeTemplate,
 }

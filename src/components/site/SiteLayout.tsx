@@ -1,7 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Menu as MenuIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,16 +47,29 @@ function useSignedIn() {
 export function SiteHeader() {
   const { t } = useI18n();
   const signedIn = useSignedIn();
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [loginPhase, setLoginPhase] = useState<"idle" | "morph" | "fade">("idle");
+  useEffect(() => {
+    if (loginPhase === "idle") return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(() => {
+      if (loginPhase === "morph") setLoginPhase("fade");
+      else void navigate({ to: "/auth" });
+    }, reducedMotion ? 0 : loginPhase === "morph" ? 900 : 240);
+    return () => window.clearTimeout(timer);
+  }, [loginPhase, navigate]);
   const links = [
     { to: "/pricing", label: t("nav.pricing") },
     { to: "/faq", label: t("nav.faq") },
     { to: "/contact", label: t("nav.contact") },
   ] as const;
   return (
+    <>
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-        <Logo />
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-center px-5 md:justify-between">
+        <div className="flex h-12 w-40 items-center justify-center md:w-auto">
+          <Logo collapsed={loginPhase === "idle" ? undefined : true} />
+        </div>
         <nav className="hidden items-center gap-6 text-sm md:flex">
           <Link
             to="/"
@@ -84,19 +96,21 @@ export function SiteHeader() {
             </>
           )}
         </div>
-        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">{open ? <X /> : <MenuIcon />}</button>
       </div>
-      {open && (
-        <div className="border-t px-5 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
-            <Link to="/" search={{ p: undefined }} onClick={() => setOpen(false)}>{t("nav.features")}</Link>
-            {links.map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>{l.label}</Link>)}
-            <LangSwitch />
-            <Button asChild><Link to={signedIn ? "/dashboard" : "/auth"}>{signedIn ? t("nav.dashboard") : t("nav.login")}</Link></Button>
-          </div>
-        </div>
-      )}
     </header>
+    <Button
+      type="button"
+      size="sm"
+      className="fixed right-4 top-20 z-40 rounded-full px-5 shadow-lg md:hidden"
+      disabled={loginPhase !== "idle"}
+      onClick={() => setLoginPhase("morph")}
+    >
+      {t("nav.login")}
+    </Button>
+    {loginPhase !== "idle" && (
+      <div aria-hidden="true" data-state={loginPhase} className="login-transition-veil fixed inset-0 z-50 bg-background md:hidden" />
+    )}
+    </>
   );
 }
 

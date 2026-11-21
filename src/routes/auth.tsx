@@ -110,7 +110,7 @@ function AuthPage() {
 
   const title = mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.forgot") : "Login";
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-secondary px-4 py-10">
+    <div className="auth-fade-in flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-secondary px-4 py-10">
       <div className="mb-4 flex w-full max-w-sm justify-end"><LangSwitch /></div>
       <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-2xl">
         <div className="h-1 bg-gradient-to-r from-primary to-primary/60" />

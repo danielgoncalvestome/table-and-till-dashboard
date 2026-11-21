@@ -242,3 +242,13 @@ html.panel main h1 { font-weight: 700; }
 .crumb-morph[data-state="full"] .crumb-morph-c { transition-delay: 0ms; }
 .crumb-morph[data-state="full"] .crumb-morph-rumb { transition-delay: 600ms; }
 @media (prefers-reduced-motion: reduce) { .crumb-morph, .crumb-morph * { transition: none !important; } }
+
+/* Mobile login: finish the brand morph, fade out, then reveal the login page. */
+.login-transition-veil { opacity: 0; transition: opacity 240ms ease; }
+.login-transition-veil[data-state="fade"] { opacity: 1; }
+@keyframes auth-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.auth-fade-in { animation: auth-fade-in 320ms ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .login-transition-veil { transition: none; }
+  .auth-fade-in { animation: none; }
+}

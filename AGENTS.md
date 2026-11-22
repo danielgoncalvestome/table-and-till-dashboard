@@ -41,3 +41,4 @@ use the editor.
 - Reservations: availability/booking runs only in SECURITY DEFINER RPCs (staff_book, public_book, move_reservation) that lock the restaurant row; the client never decides table conflicts. Why: prevent double bookings.
 - Room editing uses the explicit room_edit permission for non-owners, enforced by database triggers and the room UI; owners and platform admins retain access. Why: operational reservations access must not allow structural room changes.
 - Admin AI menu import runs in admin-only server functions (has_role check) that write via service role into the chosen restaurant. Why: admins are not restaurant members.
+- Scope workspace styling to `html.panel` and shared control data attributes, including portals; keep public pages on their own theme. Why: one consistent workspace design without changing restaurant-authored menus.

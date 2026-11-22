@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Ctx = createContext<{ dark: boolean; toggle: () => void }>({ dark: false, toggle: () => {} });
 
-/** Applies the white/black panel theme to <html> while the signed-in area is mounted. */
+/** Scope the workspace theme, including portalled controls, to signed-in pages. */
 export function PanelThemeProvider({ children }: { children: ReactNode }) {
   const [dark, setDark] = useState(false);
   useEffect(() => { setDark(localStorage.getItem("mt-panel-theme") === "dark"); }, []);
@@ -20,8 +21,8 @@ export function PanelThemeProvider({ children }: { children: ReactNode }) {
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const { dark, toggle } = useContext(Ctx);
   return (
-    <button type="button" onClick={toggle} aria-label={dark ? "Modo claro" : "Modo escuro"} title={dark ? "Modo claro" : "Modo escuro"} className={`grid h-9 w-9 place-items-center rounded-xl border bg-card text-foreground/80 shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground ${className}`}>
+    <Button variant="outline" size="icon" type="button" onClick={toggle} aria-label={dark ? "Modo claro" : "Modo escuro"} title={dark ? "Modo claro" : "Modo escuro"} className={`rounded-xl bg-card text-foreground/80 ${className}`}>
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
+    </Button>
   );
 }

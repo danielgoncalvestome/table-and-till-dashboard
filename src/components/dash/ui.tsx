@@ -1,13 +1,14 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ChevronDown, TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function PageTitle({ title, sub, action, icon: Icon }: { title: string; sub?: string; action?: ReactNode; icon?: LucideIcon }) {
   return (
     <div className="mb-6 grid grid-cols-1 items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
       <div className="flex min-w-0 items-center gap-3">
-        {Icon && <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-tile)]"><Icon className="h-5 w-5" /></span>}
+        {Icon && <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border bg-card text-primary shadow-[var(--shadow-card)]"><Icon className="h-5 w-5" /></span>}
         <div className="min-w-0">
-          <h1 className="truncate font-sans text-2xl font-bold tracking-tight md:text-[1.7rem]">{title}</h1>
+          <h1 className="break-words font-sans text-2xl font-semibold md:text-[1.7rem]">{title}</h1>
           {sub && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{sub}</p>}
         </div>
       </div>
@@ -26,11 +27,11 @@ export function Panel({ title, children, className = "", icon: Icon, action, col
     <section className={`dash-card p-5 ${className}`}>
       {title && (
         <header className={`flex items-center justify-between gap-2 ${open ? "mb-4" : ""}`}>
-          <button type="button" onClick={collapsible ? toggle : undefined} className="group flex min-w-0 items-center gap-2.5 text-left" aria-expanded={open}>
+          <Button variant="ghost" type="button" onClick={collapsible ? toggle : undefined} className="group h-auto min-w-0 justify-start gap-2.5 p-0 text-left hover:bg-transparent" aria-expanded={open}>
             {Icon && <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80"><Icon className="h-4 w-4" /></span>}
             <h2 className="truncate font-sans text-sm font-semibold">{title}</h2>
             {collapsible && <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:text-foreground ${open ? "" : "-rotate-90"}`} />}
-          </button>
+          </Button>
           {action}
         </header>
       )}
@@ -47,11 +48,11 @@ export function Delta({ value }: { value: number }) {
 
 export function Stat({ label, value, icon: Icon, delta, hint, highlight }: { label: string; value: ReactNode; icon?: LucideIcon; delta?: number; hint?: string; highlight?: boolean }) {
   return (
-    <div className={`dash-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] ${highlight ? "bg-muted/50" : ""}`}>
+    <div className={`dash-card group p-5 transition-shadow hover:shadow-[var(--shadow-card-hover)] ${highlight ? "bg-muted/50" : ""}`}>
       {Icon && <span className={`mb-4 grid h-10 w-10 place-items-center rounded-xl ${highlight ? "bg-primary text-primary-foreground shadow-[var(--shadow-tile)]" : "border bg-muted/60 text-foreground/80"}`}><Icon className="h-4 w-4" /></span>}
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <div className="mt-1.5 flex flex-wrap items-center gap-2">
-        <p className="font-sans text-3xl font-bold tracking-tight">{value}</p>
+        <p className="font-sans text-3xl font-semibold tabular-nums">{value}</p>
         {delta !== undefined && <Delta value={delta} />}
       </div>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}

@@ -84,7 +84,7 @@ function DashboardLayout() {
     const railBtn = "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground";
     const topBtn = "grid h-10 w-full shrink-0 place-items-center rounded-xl border bg-card text-muted-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground";
     return (
-    <aside className="flex h-full flex-col bg-sidebar">
+    <aside className="panel-sidebar flex h-full flex-col bg-sidebar">
       <div className={`flex items-center gap-2 border-b border-sidebar-border p-3 ${m ? "flex-col gap-2 py-3" : ""}`}>
         <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-full w-full object-contain" /> : <UtensilsCrossed className="h-4 w-4 text-primary" />}</span>
         {!m && (list.length > 1 ? (
@@ -96,7 +96,7 @@ function DashboardLayout() {
           </div>
         ) : <span className="min-w-0 flex-1 truncate text-sm font-semibold">{current.name}</span>)}
         {!isMobile && (
-          <button onClick={toggleCollapsed} title={m ? "Expandir menu" : "Recolher menu"} aria-label={m ? "Expandir menu" : "Recolher menu"} aria-expanded={!m} className={railBtn}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</button>
+          <Button variant="ghost" size="icon" onClick={toggleCollapsed} title={m ? "Expandir menu" : "Recolher menu"} aria-label={m ? "Expandir menu" : "Recolher menu"} aria-expanded={!m} className={railBtn}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</Button>
         )}
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3">
@@ -129,8 +129,8 @@ function DashboardLayout() {
       </nav>
       <div className="space-y-2 border-t border-sidebar-border p-3">
         {!m && <LangSwitch className="px-2" />}
-        <button onClick={signOut} title={t("common.signout")} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><LogOut className="h-4 w-4 shrink-0" />{!m && t("common.signout")}</button>
-        {!isMobile && <button onClick={toggleCollapsed} title={m ? "Expandir" : "Recolher"} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <><PanelLeftClose className="h-4 w-4" />Recolher</>}</button>}
+        <Button variant="ghost" onClick={signOut} title={t("common.signout")} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><LogOut className="h-4 w-4 shrink-0" />{!m && t("common.signout")}</Button>
+        {!isMobile && <Button variant="ghost" onClick={toggleCollapsed} title={m ? "Expandir" : "Recolher"} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <><PanelLeftClose className="h-4 w-4" />Recolher</>}</Button>}
       </div>
     </aside>
   );
@@ -143,12 +143,12 @@ function DashboardLayout() {
         <div className={`sticky top-0 hidden h-screen shrink-0 border-r border-sidebar-border transition-[width] duration-200 md:block ${mini ? "w-[68px]" : "w-60"}`}>{sidebar(false)}</div>
         {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-64 border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><button className="flex-1 bg-foreground/30 backdrop-blur-sm" aria-label="Close" onClick={() => setMobileNav(false)} /></div>}
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b bg-background/85 px-3 backdrop-blur-md sm:px-6">
+          <header className="panel-toolbar sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b px-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-              <button className={`${iconBtn} md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></button>
+              <Button variant="outline" size="icon" className={`${iconBtn} md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></Button>
               {active && <span className="hidden h-8 w-8 shrink-0 place-items-center rounded-lg border bg-card sm:grid"><active.icon className="h-4 w-4" /></span>}
               <div className="min-w-0">
-                <p className="truncate text-[15px] font-bold leading-tight">{active?.label ?? current.name}</p>
+                <p className="truncate text-[15px] font-semibold leading-tight">{active?.label ?? current.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{current.name}</p>
               </div>
               <span className={`ml-1 hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold sm:inline-flex ${current.published ? "border-st-free/30 bg-st-free/10 text-st-free" : "bg-muted text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "animate-pulse bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>

@@ -1,5 +1,7 @@
 # Roadmap
-- [ ] Estética iOS/macOS em todo o painel e administração: tipografia, navegação, botões, formulários e janelas; verificar modos claro/escuro e telemóvel
+- [ ] Redesign Apple completo: painel, administração, login, menu e reservas públicos; refinar site institucional preservando identidade
+- [ ] Controlos transparentes, tipografia de sistema, tema escuro mais claro, vidro limitado a superfícies fixas/janelas
+- [ ] Verificar páginas com sessão, interações, claro/escuro, telemóvel e ausência de desfoque em listas
 - [x] Registo sem email obrigatório, username único, associação posterior de email e alteração de palavra-passe (registo, duplicados e mudança de password testados; entrega do email não verificada)
 - [x] Novo logótipo em todas as páginas
 - [x] Alerta no admin: mensagens não lidas / encomendas não em preparação nem enviadas

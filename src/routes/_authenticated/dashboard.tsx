@@ -41,7 +41,7 @@ function DashboardLayout() {
   const { data: extra } = useQuery({
     queryKey: ["admin-managed", currentId],
     enabled: !!isAdmin && !!currentId && !!mine && !mine.some((r) => r.id === currentId),
-    queryFn: async () => (await supabase.from("restaurants").select("*").eq("id", currentId!).maybeSingle()).data,
+    queryFn: async () => currentId ? (await supabase.from("restaurants").select("*").eq("id", currentId).maybeSingle()).data : null,
   });
   const list = extra ? [...(mine ?? []), { role: "owner" as const, ...extra }] : mine;
 
@@ -53,6 +53,7 @@ function DashboardLayout() {
   if (isLoading) return <div className="grid min-h-screen place-items-center text-muted-foreground">{t("common.loading")}</div>;
   if (!list || list.length === 0) return <Onboarding />;
   const current = list.find((r) => r.id === currentId) ?? list[0];
+  if (!current) return <Onboarding />;
 
   async function signOut() {
     await qc.cancelQueries();
@@ -82,10 +83,10 @@ function DashboardLayout() {
   const sidebar = (isMobile: boolean) => {
     const m = mini && !isMobile;
     const railBtn = "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground";
-    const topBtn = "grid h-10 w-full shrink-0 place-items-center rounded-xl border bg-card text-muted-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground";
+    const topBtn = "panel-quick-icon grid h-10 w-full shrink-0 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground";
     return (
     <aside className="panel-sidebar flex h-full flex-col bg-sidebar">
-      <div className={`flex items-center gap-2 border-b border-sidebar-border p-3 ${m ? "flex-col gap-2 py-3" : ""}`}>
+      <div className={`flex items-center gap-2 px-4 pb-3 pt-5 ${m ? "flex-col gap-2 px-2" : ""}`}>
         <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-full w-full object-contain" /> : <UtensilsCrossed className="h-4 w-4 text-primary" />}</span>
         {!m && (list.length > 1 ? (
           <div className="relative min-w-0 flex-1">
@@ -99,7 +100,7 @@ function DashboardLayout() {
           <Button variant="ghost" size="icon" onClick={toggleCollapsed} title={m ? "Expandir menu" : "Recolher menu"} aria-label={m ? "Expandir menu" : "Recolher menu"} aria-expanded={!m} className={railBtn}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</Button>
         )}
       </div>
-      <nav className="flex-1 overflow-y-auto px-2 py-3">
+      <nav className="flex-1 overflow-y-auto px-3 py-3">
         <div className={`mb-2 gap-2 ${m ? "flex flex-col items-center" : "grid grid-cols-4 px-1"}`}>
           <Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }} aria-label={t("dash.settings")} title={t("dash.settings")} className={topBtn}><Settings className="h-5 w-5" /></Link>
           <ThemeToggle className="!h-10 !w-full !rounded-xl text-muted-foreground [&_svg]:!h-5 [&_svg]:!w-5" />
@@ -127,7 +128,8 @@ function DashboardLayout() {
           </div>
         )}
       </nav>
-      <div className="space-y-2 border-t border-sidebar-border p-3">
+      <div className="space-y-1 border-t border-sidebar-border p-3">
+        {!m && <Logo height="h-8" className="mx-3 mb-2 opacity-60" />}
         {!m && <LangSwitch className="px-2" />}
         <Button variant="ghost" onClick={signOut} title={t("common.signout")} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><LogOut className="h-4 w-4 shrink-0" />{!m && t("common.signout")}</Button>
         {!isMobile && <Button variant="ghost" onClick={toggleCollapsed} title={m ? "Expandir" : "Recolher"} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <><PanelLeftClose className="h-4 w-4" />Recolher</>}</Button>}
@@ -136,26 +138,25 @@ function DashboardLayout() {
   );
   };
 
-  const iconBtn = "grid h-9 w-9 shrink-0 place-items-center rounded-xl border bg-card text-foreground/80 shadow-[var(--shadow-card)] transition hover:-translate-y-px hover:text-foreground";
+  const iconBtn = "grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground";
   return (
     <RestaurantProvider restaurant={current}>
-      <div className="flex min-h-screen bg-background">
-        <div className={`sticky top-0 hidden h-screen shrink-0 border-r border-sidebar-border transition-[width] duration-200 md:block ${mini ? "w-[68px]" : "w-60"}`}>{sidebar(false)}</div>
-        {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-64 border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><button className="flex-1 bg-foreground/30 backdrop-blur-sm" aria-label="Close" onClick={() => setMobileNav(false)} /></div>}
+      <div className="workspace-shell flex min-h-screen bg-background">
+        <div className={`sticky top-0 hidden h-dvh shrink-0 border-r border-sidebar-border md:block ${mini ? "w-[76px]" : "w-[236px]"}`}>{sidebar(false)}</div>
+        {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-72 max-w-[85vw] border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><Button variant="ghost" className="!h-full flex-1 !rounded-none !bg-foreground/20" aria-label="Fechar menu" onClick={() => setMobileNav(false)} /></div>}
         <div className="min-w-0 flex-1">
-          <header className="panel-toolbar sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b px-3 sm:px-6">
+          <header className="panel-toolbar sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b px-4 sm:px-8">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Button variant="outline" size="icon" className={`${iconBtn} md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></Button>
-              {active && <span className="hidden h-8 w-8 shrink-0 place-items-center rounded-lg border bg-card sm:grid"><active.icon className="h-4 w-4" /></span>}
               <div className="min-w-0">
                 <p className="truncate text-[15px] font-semibold leading-tight">{active?.label ?? current.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{current.name}</p>
               </div>
-              <span className={`ml-1 hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold sm:inline-flex ${current.published ? "border-st-free/30 bg-st-free/10 text-st-free" : "bg-muted text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "animate-pulse bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>
+              <span className={`ml-2 hidden shrink-0 items-center gap-1.5 text-[11px] font-medium sm:inline-flex ${current.published ? "text-st-free" : "text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>
             </div>
-
+            <div className="flex items-center gap-1"><ThemeToggle /><Button asChild variant="ghost" size="icon" title={t("dash.settings")} aria-label={t("dash.settings")}><Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }}><Settings className="h-4 w-4" /></Link></Button></div>
           </header>
-          <main className="mx-auto max-w-7xl p-4 sm:p-6 md:p-8">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+          <main className="workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
         </div>
       </div>
       <AnnouncementPopup />
@@ -176,7 +177,8 @@ function Onboarding() {
     e.preventDefault();
     setBusy(true);
     const { data: u } = await supabase.auth.getUser();
-    const { data, error } = await supabase.from("restaurants").insert({ ...f, created_by: u.user!.id, languages: en ? ["pt", "en"] : ["pt"] }).select().single();
+    if (!u.user) { setBusy(false); return toast.error(t("common.error")); }
+    const { data, error } = await supabase.from("restaurants").insert({ ...f, created_by: u.user.id, languages: en ? ["pt", "en"] : ["pt"] }).select().single();
     if (error) {
       setBusy(false);
       return toast.error(error.code === "23505" ? (t("f.slug") + " ✕") : error.message);

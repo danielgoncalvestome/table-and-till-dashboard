@@ -65,7 +65,7 @@ export function SiteHeader() {
   ] as const;
   return (
     <>
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
+    <header className="site-toolbar sticky top-0 z-40 border-b bg-background/95">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-center px-5 md:justify-between">
         <div className="flex h-12 w-40 items-center justify-center md:w-auto">
           <Logo collapsed={loginPhase === "idle" ? undefined : true} />
@@ -143,7 +143,7 @@ export function SiteFooter() {
 
 export function SitePage({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen">
+    <div className="site-shell min-h-screen">
       <SiteHeader />
       <main>{children}</main>
       <SiteFooter />

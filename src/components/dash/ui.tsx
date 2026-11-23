@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 
 export function PageTitle({ title, sub, action, icon: Icon }: { title: string; sub?: string; action?: ReactNode; icon?: LucideIcon }) {
   return (
-    <div className="mb-6 grid grid-cols-1 items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
+    <div className="mb-8 grid grid-cols-1 items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
       <div className="flex min-w-0 items-center gap-3">
-        {Icon && <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border bg-card text-primary shadow-[var(--shadow-card)]"><Icon className="h-5 w-5" /></span>}
+        {Icon && <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-muted text-muted-foreground"><Icon className="h-5 w-5" strokeWidth={1.5} /></span>}
         <div className="min-w-0">
           <h1 className="break-words font-sans text-2xl font-semibold md:text-[1.7rem]">{title}</h1>
           {sub && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{sub}</p>}
@@ -49,7 +49,7 @@ export function Delta({ value }: { value: number }) {
 export function Stat({ label, value, icon: Icon, delta, hint, highlight }: { label: string; value: ReactNode; icon?: LucideIcon; delta?: number; hint?: string; highlight?: boolean }) {
   return (
     <div className={`dash-card group p-5 transition-shadow hover:shadow-[var(--shadow-card-hover)] ${highlight ? "bg-muted/50" : ""}`}>
-      {Icon && <span className={`mb-4 grid h-10 w-10 place-items-center rounded-xl ${highlight ? "bg-primary text-primary-foreground shadow-[var(--shadow-tile)]" : "border bg-muted/60 text-foreground/80"}`}><Icon className="h-4 w-4" /></span>}
+      {Icon && <span className={`mb-4 grid h-9 w-9 place-items-center rounded-xl ${highlight ? "bg-accent text-foreground" : "bg-muted text-muted-foreground"}`}><Icon className="h-4 w-4" /></span>}
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <div className="mt-1.5 flex flex-wrap items-center gap-2">
         <p className="font-sans text-3xl font-semibold tabular-nums">{value}</p>
@@ -68,7 +68,7 @@ export function BarList({ items, empty }: { items: [string, number][]; empty: st
       {items.map(([k, v]) => (
         <li key={k} className="group text-sm">
           <div className="flex justify-between gap-2"><span className="truncate">{k}</span><span className="font-semibold tabular-nums">{v}</span></div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-700 group-hover:opacity-80" style={{ width: `${(v / max) * 100}%` }} /></div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-chart-1" style={{ width: `${(v / max) * 100}%` }} /></div>
         </li>
       ))}
     </ul>
@@ -82,7 +82,7 @@ export function Columns({ values, labels }: { values: number[]; labels: string[]
       {values.map((v, i) => (
         <div key={i} className="group flex h-full flex-1 flex-col items-center justify-end gap-1" title={`${labels[i]}: ${v}`}>
           <span className="text-[10px] font-semibold opacity-0 transition-opacity group-hover:opacity-100">{v}</span>
-          <div className="w-full rounded-md bg-primary/70 transition-all group-hover:bg-primary" style={{ height: `${(v / max) * 100}%`, minHeight: v ? 3 : 0 }} />
+          <div className="w-full rounded-md bg-chart-1/80" style={{ height: `${(v / max) * 100}%`, minHeight: v ? 3 : 0 }} />
           <span className="text-[9px] text-muted-foreground">{labels[i]}</span>
         </div>
       ))}

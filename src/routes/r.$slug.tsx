@@ -152,7 +152,7 @@ function PublicMenu() {
   }
 
   return (
-    <div style={style} className="min-h-screen bg-[var(--m-bg)] text-[var(--m-primary)]">
+    <div style={style} className="public-menu min-h-screen bg-[var(--m-bg)] text-[var(--m-primary)] antialiased">
       {r.is_demo && <div className="bg-[var(--m-primary)] py-1.5 text-center text-xs text-[var(--m-bg)]">{u.demo}</div>}
       {r.logo_url && (
         <div className="sticky top-0 z-20 flex items-center justify-center overflow-hidden bg-cover bg-center"
@@ -192,7 +192,7 @@ function PublicMenu() {
         </div>
       )}
 
-      <nav style={{ top: r.logo_url ? HERO_H : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]/95 backdrop-blur">
+      <nav style={{ top: r.logo_url ? HERO_H : 0 }} className="sticky z-10 mt-4 border-y border-[var(--m-primary)]/15 bg-[var(--m-bg)]">
         <div className="mx-auto flex max-w-4xl items-center gap-2 px-3 py-2">
           <button aria-label={u.search} onClick={() => setSearchOpen(!searchOpen)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full"><Search className="h-4 w-4" /></button>
           <div className="flex min-w-0 flex-1 gap-5 overflow-x-auto py-1 text-xs font-semibold uppercase tracking-wider">
@@ -240,7 +240,7 @@ function PublicMenu() {
                       {qtyOf(d.id) > 0 && <span key={qtyOf(d.id)} className="absolute right-1.5 top-1.5 z-[2] grid h-6 min-w-6 animate-in zoom-in-50 place-items-center rounded-full bg-[var(--m-accent)] px-1.5 text-[11px] font-bold text-[var(--m-bg)] shadow duration-300">{qtyOf(d.id)}</span>}
                       </div>
                       <p className="mt-2 text-sm font-semibold leading-snug" style={textStyle(r.text_styles, "dish")}>{tr(d.name, d.name_i18n, lang)}</p>
-                      <div aria-hidden={sel !== d.id} className={`absolute -inset-1 z-[1] flex items-center justify-center gap-3 rounded-md backdrop-blur-[2px] transition-all duration-300 ease-out ${sel === d.id ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"}`} style={{ backgroundColor: `color-mix(in srgb, var(--m-accent) 45%, transparent)` }}>
+                      <div aria-hidden={sel !== d.id} className={`absolute -inset-1 z-[1] flex items-center justify-center gap-3 rounded-md transition-all duration-300 ease-out ${sel === d.id ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"}`} style={{ backgroundColor: `color-mix(in srgb, var(--m-accent) 45%, transparent)` }}>
                         {d.available && <button type="button" aria-label={`Adicionar ${d.name}`} onClick={(e) => { e.stopPropagation(); addDish(d); }} className="grid h-11 w-11 place-items-center rounded-full bg-[var(--m-bg)] text-[var(--m-primary)] shadow-lg transition-transform active:scale-90"><Plus className="h-5 w-5" /></button>}
                         <button type="button" aria-label={`Detalhes ${d.name}`} onClick={(e) => { e.stopPropagation(); setSel(null); openDish(d); }} className="grid h-11 w-11 place-items-center rounded-full bg-[var(--m-bg)] text-[var(--m-primary)] shadow-lg transition-transform active:scale-90"><MoreHorizontal className="h-5 w-5" /></button>
                       </div>
@@ -320,7 +320,7 @@ function DishDetail({ dish: d, data, lang, onOpen, onRated, onClose }: { dish: D
 
   return (
     <div ref={top}>
-      <button onClick={onClose} aria-label="Voltar" className="fixed left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/40 text-white backdrop-blur"><ChevronLeft className="h-5 w-5" /></button>
+      <button onClick={onClose} aria-label="Voltar" className="fixed left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-foreground/50 text-background"><ChevronLeft className="h-5 w-5" /></button>
       <section className="w-full bg-[var(--m-primary)]">
         <div className="mx-auto max-w-3xl px-6 pb-5 pt-16 text-white">
           <h2 className="text-3xl font-bold leading-tight md:text-5xl" style={{ fontFamily: "var(--m-font)" }}>{tr(d.name, d.name_i18n, lang)}</h2>

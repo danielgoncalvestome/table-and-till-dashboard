@@ -44,14 +44,14 @@ function Book() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: d.background_color, color: d.primary_color, fontFamily: fontCss }}>
+    <div className="public-booking min-h-screen antialiased" style={{ background: d.background_color, color: d.primary_color, fontFamily: fontCss }}>
       {(d.cover_url || d.cover_color) && <div className="h-40 bg-cover bg-center" style={{ backgroundImage: d.cover_url ? `url(${d.cover_url})` : undefined, backgroundColor: d.cover_url ? undefined : d.cover_color }} />}
       <div className={`mx-auto max-w-md px-5 ${d.cover_url || d.cover_color ? "-mt-28 pb-10" : "py-10"}`}>
         <div className="mb-8 text-center">
           {d.logo_url ? <img src={d.logo_url} alt={info.name} className="mx-auto h-20 w-auto object-contain" /> : <h1 className="text-3xl" style={textStyle(ts, "name")}>{info.name}</h1>}
           <p className="mt-3 text-sm opacity-70" style={textStyle(ts, "bk_title")}>Reservar mesa · passo {Math.min(step, 3)} de 3</p>
         </div>
-        <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="rounded-[1.5rem] border bg-card p-6 text-card-foreground shadow-lg">
           {step === 1 && (
             <div className="space-y-6">
               <div>

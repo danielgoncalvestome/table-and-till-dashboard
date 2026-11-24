@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] Redesign Apple completo: painel, administração, login, menu e reservas públicos; refinar site institucional preservando identidade
-- [ ] Controlos transparentes, tipografia de sistema, tema escuro mais claro, vidro limitado a superfícies fixas/janelas
+- [x] Redesign Apple completo (1.ª fase): painel, administração, login, menu e reservas públicos; refinar site institucional preservando identidade
+- [x] Controlos transparentes, tipografia de sistema, tema escuro mais claro, vidro limitado a superfícies fixas/janelas
 - [ ] Verificar páginas com sessão, interações, claro/escuro, telemóvel e ausência de desfoque em listas
 - [x] Registo sem email obrigatório, username único, associação posterior de email e alteração de palavra-passe (registo, duplicados e mudança de password testados; entrega do email não verificada)
 - [x] Novo logótipo em todas as páginas

@@ -52,6 +52,7 @@ function AuthPage() {
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => setMode(search.mode ?? "login"), [search.mode]);
+  useEffect(() => { const el = document.documentElement; el.classList.add("panel"); return () => el.classList.remove("panel"); }, []);
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => { if (data.user) navigate({ to: await homeRoute() }); });
   }, [navigate]);
@@ -110,15 +111,14 @@ function AuthPage() {
 
   const title = mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.forgot") : "Login";
   return (
-    <div className="auth-fade-in flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-secondary px-4 py-10">
+    <div className="auth-fade-in flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
       <div className="mb-4 flex w-full max-w-sm justify-end"><LangSwitch /></div>
-      <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-2xl">
-        <div className="h-1 bg-gradient-to-r from-primary to-primary/60" />
+      <div className="w-full max-w-sm overflow-hidden rounded-[1.5rem] border border-border bg-card text-card-foreground shadow-[var(--shadow-window)]">
         <div className="px-7 pb-6 pt-6">
-          <Link to="/" aria-label="Crumb" className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
+          <Link to="/" aria-label="Crumb" className="flex h-11 w-11 items-center justify-center mx-auto rounded-2xl bg-muted text-foreground">
             <UtensilsCrossed className="h-5 w-5" aria-hidden="true" />
           </Link>
-          <h1 className="mt-4 text-center text-2xl font-bold">{title}</h1>
+          <h1 className="mt-4 text-center text-2xl font-semibold">{title}</h1>
           {info ? (
             <p className="mt-6 rounded-md bg-accent p-4 text-sm text-accent-foreground">{info}</p>
           ) : (
@@ -139,7 +139,7 @@ function AuthPage() {
               {mode === "login" && (
                 <div className="flex justify-end"><button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={() => setMode("forgot")}>{t("auth.forgot")}</button></div>
               )}
-              <Button type="submit" className="h-11 w-full bg-gradient-to-r from-primary to-primary/80 font-semibold uppercase tracking-wide shadow-lg" disabled={busy}>{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.sendReset") : t("auth.login")}</Button>
+              <Button type="submit" className="h-11 w-full font-semibold" disabled={busy}>{mode === "signup" ? t("auth.signup") : mode === "forgot" ? t("auth.sendReset") : t("auth.login")}</Button>
             </form>
           )}
           {!info && mode !== "forgot" && (

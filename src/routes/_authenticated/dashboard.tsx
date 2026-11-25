@@ -19,6 +19,16 @@ import { slugify } from "@/lib/menu";
 import { ThemeToggle } from "@/lib/panel-theme";
 import { canAccess, type Permission } from "@/lib/team-rules";
 import { useLocation } from "@tanstack/react-router";
+import { SystemControls } from "@/components/dash/SystemControls";
+import dockDashboard from "@/assets/dock-dashboard.png.asset.json";
+import dockReservas from "@/assets/dock-reservas.png.asset.json";
+import dockSalas from "@/assets/dock-salas.png.asset.json";
+import dockPedidos from "@/assets/dock-pedidos.png.asset.json";
+import dockMenus from "@/assets/dock-menus.png.asset.json";
+import dockDesign from "@/assets/dock-design.png.asset.json";
+import dockAnalise from "@/assets/dock-analise.png.asset.json";
+import dockIntelligence from "@/assets/dock-intelligence.png.asset.json";
+import dockDefinicoes from "@/assets/dock-definicoes.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Crumb" }, { name: "description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:title", content: "Painel — Crumb" }, { property: "og:description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -80,69 +90,76 @@ function DashboardLayout() {
   const active = [...nav, topItem].reverse().find((n) => ("exact" in n ? path === n.to || path === n.to + "/" : path === n.to || path.startsWith(n.to + "/")));
   const mini = collapsed;
 
-  const sidebar = (isMobile: boolean) => {
-    const m = mini && !isMobile;
-    const railBtn = "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground";
-    const topBtn = "panel-quick-icon grid h-10 w-full shrink-0 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground";
-    return (
-    <aside className="panel-sidebar flex h-full flex-col bg-sidebar">
-      <div className={`flex items-center gap-2 px-4 pb-3 pt-5 ${m ? "flex-col gap-2 px-2" : ""}`}>
-        <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">{current.logo_url ? <img src={current.logo_url} alt={current.name} className="h-full w-full object-contain" /> : <UtensilsCrossed className="h-4 w-4 text-primary" />}</span>
-        {!m && (list.length > 1 ? (
-          <div className="relative min-w-0 flex-1">
-            <select aria-label="Restaurante" className="w-full cursor-pointer appearance-none truncate rounded-lg bg-transparent py-1.5 pl-1 pr-6 text-sm font-semibold hover:bg-sidebar-accent" value={current.id} onChange={(e) => { localStorage.setItem("mt-current-restaurant", e.target.value); setCurrentId(e.target.value); }}>
-              {list.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-            </select>
-            <ChevronsUpDown className="pointer-events-none absolute right-1 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          </div>
-        ) : <span className="min-w-0 flex-1 truncate text-sm font-semibold">{current.name}</span>)}
-        {!isMobile && (
-          <Button variant="ghost" size="icon" onClick={toggleCollapsed} title={m ? "Expandir menu" : "Recolher menu"} aria-label={m ? "Expandir menu" : "Recolher menu"} aria-expanded={!m} className={railBtn}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</Button>
-        )}
-      </div>
-      <nav className="flex-1 overflow-y-auto px-3 py-3">
-        <div className={`mb-2 gap-2 ${m ? "flex flex-col items-center" : "grid grid-cols-4 px-1"}`}>
-          <Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }} aria-label={t("dash.settings")} title={t("dash.settings")} className={topBtn}><Settings className="h-5 w-5" /></Link>
-          <ThemeToggle className="!h-10 !w-full !rounded-xl text-muted-foreground [&_svg]:!h-5 [&_svg]:!w-5" />
-          <a href={`https://menutap.pt/r/${current.slug}`} target="_blank" rel="noreferrer" aria-label={t("dash.viewMenu")} title={t("dash.viewMenu")} className={topBtn}><BookOpen className="h-5 w-5" /></a>
-          <a href={`https://menutap.pt/r/${current.slug}/reservar`} target="_blank" rel="noreferrer" aria-label="Página de reservas" title="Página de reservas" className={topBtn}><CalendarPlus className="h-5 w-5" /></a>
+  const imgOf: Record<string, string> = { "/dashboard": dockDashboard.url, "/dashboard/reservations": dockReservas.url, "/dashboard/room": dockSalas.url, "/dashboard/orders": dockPedidos.url, "/dashboard/menus": dockMenus.url, "/dashboard/design": dockDesign.url, "/dashboard/analytics": dockAnalise.url, "/dashboard/intelligence": dockIntelligence.url, "/dashboard/manage": dockDefinicoes.url };
+  const settingsItem = { to: "/dashboard/manage", label: t("dash.settings") } as const;
+  const dockItems = [{ to: topItem.to, label: topItem.label }, ...nav.map((n) => ({ to: n.to, label: n.label })), settingsItem];
+  const isActive = (to: string) => to === "/dashboard" ? path === to || path === to + "/" : path === to || path.startsWith(to + "/");
+  const rowCls = "flex w-full items-center gap-2.5 rounded-md px-2.5 py-[5px] text-[13px] text-sidebar-foreground/85 transition-colors hover:bg-foreground/[0.06]";
+  const activeCls = "!bg-foreground/[0.09] font-medium text-foreground";
+
+  const sidebar = (isMobile: boolean) => (
+    <aside className="panel-sidebar panel-sidebar-frost flex h-full flex-col">
+      {list.length > 1 && (
+        <div className="relative mx-3 mt-4">
+          <select aria-label="Restaurante" className="w-full cursor-pointer appearance-none truncate rounded-md bg-transparent py-1 pl-2 pr-6 text-[13px] font-semibold hover:bg-foreground/[0.06]" value={current.id} onChange={(e) => { localStorage.setItem("mt-current-restaurant", e.target.value); setCurrentId(e.target.value); }}>
+            {list.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </select>
+          <ChevronsUpDown className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         </div>
-        <Link to={topItem.to} title={topItem.label} onClick={() => setMobileNav(false)} activeOptions={{ exact: true }} className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`} activeProps={{ className: "bg-card font-semibold text-foreground shadow-[var(--shadow-card)] ring-1 ring-border" }}>
-          <topItem.icon className="h-4 w-4 shrink-0" />{!m && <span className="truncate">{topItem.label}</span>}
+      )}
+      <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-5">
+        <Link to={topItem.to} onClick={() => setMobileNav(false)} activeOptions={{ exact: true }} className={rowCls} activeProps={{ className: activeCls }}>
+          <img src={imgOf[topItem.to]} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{topItem.label}</span>
         </Link>
-        <div className={`my-2 h-px bg-sidebar-border ${m ? "mx-auto w-6" : "mx-3"}`} />
-        {groups.map((g, gi) => (
-          <div key={g} className="mb-3">
-            {m ? gi > 0 && <div className="mx-auto mb-2 h-px w-6 bg-sidebar-border" /> : <p className="px-3 pb-1 pt-1 text-[11px] font-semibold text-muted-foreground">{g}</p>}
+        {groups.map((g) => (
+          <div key={g} className="mt-4">
+            <p className="px-2.5 pb-1 text-[11px] font-semibold text-muted-foreground/80">{g}</p>
             {nav.filter((n) => n.group === g).map((n) => (
-              <Link key={n.to} to={n.to} title={n.label} onClick={() => setMobileNav(false)} activeOptions={{ exact: "exact" in n }} className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`} activeProps={{ className: "bg-card font-semibold text-foreground shadow-[var(--shadow-card)] ring-1 ring-border" }}>
-                <n.icon className="h-4 w-4 shrink-0" />{!m && <span className="truncate">{n.label}</span>}
+              <Link key={n.to} to={n.to} onClick={() => setMobileNav(false)} className={rowCls} activeProps={{ className: activeCls }}>
+                <img src={imgOf[n.to]} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{n.label}</span>
               </Link>
             ))}
           </div>
         ))}
-        {isAdmin && (
-          <div className="mb-3">
-            {m ? <div className="mx-auto mb-2 h-px w-6 bg-sidebar-border" /> : <p className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground">Plataforma</p>}
-            <Link to="/admin" title={t("dash.admin")} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/75 hover:bg-sidebar-accent ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><Shield className="h-4 w-4 shrink-0" />{!m && <>{t("dash.admin")}<AdminBadge /></>}</Link>
-          </div>
-        )}
+        <div className="mt-4">
+          <p className="px-2.5 pb-1 text-[11px] font-semibold text-muted-foreground/80">Conta</p>
+          <Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }} onClick={() => setMobileNav(false)} className={rowCls} activeProps={{ className: activeCls }}>
+            <img src={dockDefinicoes.url} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{t("dash.settings")}</span>
+          </Link>
+          {isAdmin && <Link to="/admin" className={rowCls}><Shield className="h-5 w-5 shrink-0 p-0.5 text-muted-foreground" /><span className="truncate">{t("dash.admin")}</span><AdminBadge /></Link>}
+        </div>
       </nav>
-      <div className="space-y-1 border-t border-sidebar-border p-3">
-        {!m && <Logo height="h-8" className="mx-3 mb-2 opacity-60" />}
-        {!m && <LangSwitch className="px-2" />}
-        <Button variant="ghost" onClick={signOut} title={t("common.signout")} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}><LogOut className="h-4 w-4 shrink-0" />{!m && t("common.signout")}</Button>
-        {!isMobile && <Button variant="ghost" onClick={toggleCollapsed} title={m ? "Expandir" : "Recolher"} className={`flex w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground ${m ? "mx-auto h-10 w-10 justify-center px-0" : ""}`}>{m ? <PanelLeftOpen className="h-4 w-4" /> : <><PanelLeftClose className="h-4 w-4" />Recolher</>}</Button>}
+      <div className="space-y-0.5 px-3 pb-4 pt-2">
+        <SystemControls variant="list" onSignOut={signOut} onCollapse={isMobile ? undefined : toggleCollapsed} />
       </div>
     </aside>
   );
-  };
+
+  const dock = (
+    <div className="dock-wrap group/dock fixed inset-x-0 bottom-3 z-40 hidden justify-center md:flex pointer-events-none">
+      <div className="relative pointer-events-auto">
+        <div className="dock-mini absolute -top-10 right-1 flex items-center gap-0.5 rounded-full px-1.5 py-1 opacity-0 transition-opacity duration-200 group-hover/dock:opacity-100 focus-within:opacity-100">
+          <SystemControls variant="mini" onSignOut={signOut} onCollapse={toggleCollapsed} />
+        </div>
+        <nav aria-label="Navegação" className="dock-bar flex items-end gap-1.5 rounded-[22px] px-2 pb-1.5 pt-2">
+          {dockItems.map((d) => (
+            <button key={d.to} type="button" onClick={() => navigate({ to: d.to as "/dashboard" })} title={d.label} aria-label={d.label} className="dock-item relative flex flex-col items-center">
+              <img src={imgOf[d.to]} alt="" className="h-12 w-12" />
+              <span className={`mt-0.5 h-1 w-1 rounded-full ${isActive(d.to) ? "bg-foreground/70" : "bg-transparent"}`} />
+            </button>
+          ))}
+          {isAdmin && <><span className="mx-1 mb-3 h-10 w-px bg-foreground/15" /><Link to="/admin" title={t("dash.admin")} aria-label={t("dash.admin")} className="dock-item mb-1.5 grid h-12 w-12 place-items-center rounded-xl bg-card"><Shield className="h-6 w-6 text-muted-foreground" /></Link></>}
+        </nav>
+      </div>
+    </div>
+  );
 
   const iconBtn = "grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground";
   return (
     <RestaurantProvider restaurant={current}>
       <div className="workspace-shell flex min-h-screen bg-background">
-        <div className={`sticky top-0 hidden h-dvh shrink-0 border-r border-sidebar-border md:block ${mini ? "w-[76px]" : "w-[236px]"}`}>{sidebar(false)}</div>
+        {!mini && <div className="sticky top-0 hidden h-dvh w-[236px] shrink-0 border-r border-sidebar-border md:block">{sidebar(false)}</div>}
+        {mini && dock}
         {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-72 max-w-[85vw] border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><Button variant="ghost" className="!h-full flex-1 !rounded-none !bg-foreground/20" aria-label="Fechar menu" onClick={() => setMobileNav(false)} /></div>}
         <div className="min-w-0 flex-1">
           <header className="panel-toolbar sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b px-4 sm:px-8">
@@ -156,7 +173,7 @@ function DashboardLayout() {
             </div>
             <div className="flex items-center gap-1"><ThemeToggle /><Button asChild variant="ghost" size="icon" title={t("dash.settings")} aria-label={t("dash.settings")}><Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }}><Settings className="h-4 w-4" /></Link></Button></div>
           </header>
-          <main className="workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10">{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+          <main className={`workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10 ${mini ? "md:pb-32" : ""}`}>{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
         </div>
       </div>
       <AnnouncementPopup />

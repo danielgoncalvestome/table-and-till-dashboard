@@ -26,3 +26,5 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     </Button>
   );
 }
+
+export const usePanelTheme = () => useContext(Ctx);

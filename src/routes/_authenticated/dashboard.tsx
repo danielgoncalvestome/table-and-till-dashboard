@@ -136,12 +136,12 @@ function DashboardLayout() {
   );
 
   const dock = (
-    <div className="dock-wrap group/dock fixed inset-x-0 bottom-3 z-40 hidden justify-center md:flex pointer-events-none">
+    <div className="dock-wrap group/dock fixed inset-x-0 bottom-3 z-40 flex justify-center pointer-events-none">
       <div className="relative pointer-events-auto">
         <div className="dock-mini absolute -top-10 right-1 flex items-center gap-0.5 rounded-full px-1.5 py-1 opacity-0 transition-opacity duration-200 group-hover/dock:opacity-100 focus-within:opacity-100">
           <SystemControls variant="mini" onSignOut={signOut} onCollapse={toggleCollapsed} />
         </div>
-        <nav aria-label="Navegação" className="dock-bar flex items-end gap-1.5 rounded-[22px] px-2 pb-1.5 pt-2">
+        <nav aria-label="Navegação" className="dock-bar flex max-w-[calc(100vw-1.5rem)] items-end gap-1.5 overflow-x-auto rounded-[22px] px-2 pb-1.5 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {dockItems.map((d) => (
             <button key={d.to} type="button" onClick={() => navigate({ to: d.to as "/dashboard" })} title={d.label} aria-label={d.label} className="dock-item relative flex flex-col items-center">
               <img src={imgOf[d.to]} alt="" className="h-12 w-12" />

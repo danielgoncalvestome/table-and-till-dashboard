@@ -1,6 +1,7 @@
+import { IconDashboard, IconReservas, IconSalas, IconPedidos, IconMenus, IconDesign, IconAnalise, IconIntelligence, IconDefinicoes } from "@/components/dash/DockIcons";
 import { AlertDot, useAdminAlerts } from "@/hooks/use-admin-alerts";
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -20,15 +21,6 @@ import { ThemeToggle } from "@/lib/panel-theme";
 import { canAccess, type Permission } from "@/lib/team-rules";
 import { useLocation } from "@tanstack/react-router";
 import { SystemControls } from "@/components/dash/SystemControls";
-import dockDashboard from "@/assets/dock-dashboard.png.asset.json";
-import dockReservas from "@/assets/dock-reservas.png.asset.json";
-import dockSalas from "@/assets/dock-salas.png.asset.json";
-import dockPedidos from "@/assets/dock-pedidos.png.asset.json";
-import dockMenus from "@/assets/dock-menus.png.asset.json";
-import dockDesign from "@/assets/dock-design.png.asset.json";
-import dockAnalise from "@/assets/dock-analise.png.asset.json";
-import dockIntelligence from "@/assets/dock-intelligence.png.asset.json";
-import dockDefinicoes from "@/assets/dock-definicoes.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Crumb" }, { name: "description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:title", content: "Painel — Crumb" }, { property: "og:description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -90,7 +82,8 @@ function DashboardLayout() {
   const active = [...nav, topItem].reverse().find((n) => ("exact" in n ? path === n.to || path === n.to + "/" : path === n.to || path.startsWith(n.to + "/")));
   const mini = collapsed;
 
-  const imgOf: Record<string, string> = { "/dashboard": dockDashboard.url, "/dashboard/reservations": dockReservas.url, "/dashboard/room": dockSalas.url, "/dashboard/orders": dockPedidos.url, "/dashboard/menus": dockMenus.url, "/dashboard/design": dockDesign.url, "/dashboard/analytics": dockAnalise.url, "/dashboard/intelligence": dockIntelligence.url, "/dashboard/manage": dockDefinicoes.url };
+  const imgOf: Record<string, ComponentType<{ className?: string }>> = { "/dashboard": IconDashboard, "/dashboard/reservations": IconReservas, "/dashboard/room": IconSalas, "/dashboard/orders": IconPedidos, "/dashboard/menus": IconMenus, "/dashboard/design": IconDesign, "/dashboard/analytics": IconAnalise, "/dashboard/intelligence": IconIntelligence, "/dashboard/manage": IconDefinicoes };
+  const DockImg = ({ to, className }: { to: string; className?: string }) => { const C = imgOf[to]; return C ? <C className={className} /> : null; };
   const settingsItem = { to: "/dashboard/manage", label: t("dash.settings") } as const;
   const dockItems = [{ to: topItem.to, label: topItem.label }, ...nav.map((n) => ({ to: n.to, label: n.label })), settingsItem];
   const isActive = (to: string) => to === "/dashboard" ? path === to || path === to + "/" : path === to || path.startsWith(to + "/");
@@ -109,14 +102,14 @@ function DashboardLayout() {
       )}
       <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-5">
         <Link to={topItem.to} onClick={() => setMobileNav(false)} activeOptions={{ exact: true }} className={rowCls} activeProps={{ className: activeCls }}>
-          <img src={imgOf[topItem.to]} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{topItem.label}</span>
+          <DockImg to={topItem.to} className="h-5 w-5 shrink-0" /><span className="truncate">{topItem.label}</span>
         </Link>
         {groups.map((g) => (
           <div key={g} className="mt-4">
             <p className="px-2.5 pb-1 text-[11px] font-semibold text-muted-foreground/80">{g}</p>
             {nav.filter((n) => n.group === g).map((n) => (
               <Link key={n.to} to={n.to} onClick={() => setMobileNav(false)} className={rowCls} activeProps={{ className: activeCls }}>
-                <img src={imgOf[n.to]} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{n.label}</span>
+                <DockImg to={n.to} className="h-5 w-5 shrink-0" /><span className="truncate">{n.label}</span>
               </Link>
             ))}
           </div>
@@ -124,7 +117,7 @@ function DashboardLayout() {
         <div className="mt-4">
           <p className="px-2.5 pb-1 text-[11px] font-semibold text-muted-foreground/80">Conta</p>
           <Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }} onClick={() => setMobileNav(false)} className={rowCls} activeProps={{ className: activeCls }}>
-            <img src={dockDefinicoes.url} alt="" className="h-5 w-5 shrink-0" /><span className="truncate">{t("dash.settings")}</span>
+            <IconDefinicoes className="h-5 w-5 shrink-0" /><span className="truncate">{t("dash.settings")}</span>
           </Link>
           {isAdmin && <Link to="/admin" className={rowCls}><Shield className="h-5 w-5 shrink-0 p-0.5 text-muted-foreground" /><span className="truncate">{t("dash.admin")}</span><AdminBadge /></Link>}
         </div>
@@ -141,10 +134,10 @@ function DashboardLayout() {
         <div className="dock-mini absolute -top-10 right-1 flex items-center gap-0.5 rounded-full px-1.5 py-1 opacity-0 transition-opacity duration-200 group-hover/dock:opacity-100 focus-within:opacity-100">
           <SystemControls variant="mini" onSignOut={signOut} onCollapse={toggleCollapsed} />
         </div>
-        <nav aria-label="Navegação" className="dock-bar flex max-w-[calc(100vw-1.5rem)] items-end gap-1.5 overflow-x-auto rounded-[22px] px-2 pb-1.5 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav aria-label="Navegação" className="dock-bar flex max-w-[calc(100vw-1.5rem)] items-end gap-1.5 overflow-x-auto overflow-y-visible rounded-[22px] px-2 pb-1.5 pt-2 md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {dockItems.map((d) => (
             <button key={d.to} type="button" onClick={() => navigate({ to: d.to as "/dashboard" })} title={d.label} aria-label={d.label} className="dock-item relative flex flex-col items-center">
-              <img src={imgOf[d.to]} alt="" className="h-12 w-12" />
+              <DockImg to={d.to} className="h-12 w-12" />
               <span className={`mt-0.5 h-1 w-1 rounded-full ${isActive(d.to) ? "bg-foreground/70" : "bg-transparent"}`} />
             </button>
           ))}

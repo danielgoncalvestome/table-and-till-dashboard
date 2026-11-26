@@ -362,7 +362,9 @@ html.panel .dash-card { backdrop-filter: none; }
 
 /* Finder-style frosted sidebar and macOS Dock (fixed surfaces only: blur allowed) */
 html.panel .panel-sidebar-frost { background: color-mix(in oklab, var(--sidebar) 72%, transparent); backdrop-filter: blur(28px) saturate(160%); }
-html.panel .dock-bar, html.panel .dock-mini { background: color-mix(in oklab, var(--card) 62%, transparent); backdrop-filter: blur(24px) saturate(170%); border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent); box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.25); }
+html.panel .dock-bar, html.panel .dock-mini { background: color-mix(in oklab, var(--card) 45%, transparent); backdrop-filter: blur(30px) saturate(180%); border: 1px solid color-mix(in oklab, #fff 45%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 12px 34px -12px rgb(0 0 0 / 0.3); }
+html.dark.panel .dock-bar, html.dark.panel .dock-mini { border-color: rgb(255 255 255 / 0.14); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 12px 34px -12px rgb(0 0 0 / 0.5); }
+html.panel .dock-item, html.panel .dock-item:hover, html.panel .dock-item:active, html.panel .dock-item:focus { background: transparent !important; box-shadow: none !important; }
 html.panel .dock-item { transform-origin: bottom center; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
 html.panel .dock-item:hover { transform: translateY(-6px) scale(1.22); }
 html.panel .dock-item:hover + .dock-item, html.panel .dock-item:has(+ .dock-item:hover) { transform: translateY(-2px) scale(1.08); }

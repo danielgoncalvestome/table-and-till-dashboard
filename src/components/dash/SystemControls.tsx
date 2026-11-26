@@ -10,7 +10,7 @@ function useClock() {
 }
 
 /** Theme, notifications, clock, sign-out and sidebar/dock switch, as a list (sidebar) or mini bar (dock). */
-export function SystemControls({ variant, onSignOut, onCollapse }: { variant: "list" | "mini"; onSignOut: () => void; onCollapse?: () => void }) {
+export function SystemControls({ variant, onSignOut, onCollapse, dockActive }: { variant: "list" | "mini"; onSignOut: () => void; onCollapse?: () => void; dockActive?: boolean }) {
   const { dark, toggle } = usePanelTheme();
   const time = useClock();
   const ThemeIcon = dark ? Sun : Moon;
@@ -33,7 +33,11 @@ export function SystemControls({ variant, onSignOut, onCollapse }: { variant: "l
       <Link to="/dashboard" className={r}><Bell className="h-4 w-4" />Notificações</Link>
       <div className={`${r} pointer-events-none`}><Clock className="h-4 w-4" /><span className="tabular-nums">{time}</span></div>
       <button type="button" onClick={onSignOut} className={r}><LogOut className="h-4 w-4" />Sair</button>
-      {onCollapse && <button type="button" onClick={onCollapse} className={r}><PanelBottom className="h-4 w-4" />Mudar para Dock</button>}
+      {onCollapse && (dockActive ? (
+        <button type="button" onClick={onCollapse} className={r}><PanelLeftOpen className="h-4 w-4" />Mudar para menu lateral</button>
+      ) : (
+        <button type="button" onClick={onCollapse} className={r}><PanelBottom className="h-4 w-4" />Mudar para Dock</button>
+      ))}
     </>
   );
 }

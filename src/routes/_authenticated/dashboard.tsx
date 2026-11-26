@@ -123,7 +123,7 @@ function DashboardLayout() {
         </div>
       </nav>
       <div className="space-y-0.5 px-3 pb-4 pt-2">
-        <SystemControls variant="list" onSignOut={signOut} onCollapse={isMobile ? undefined : toggleCollapsed} />
+        <SystemControls variant="list" onSignOut={signOut} dockActive={mini} onCollapse={() => { if (isMobile) setMobileNav(false); toggleCollapsed(); }} />
       </div>
     </aside>
   );
@@ -166,7 +166,7 @@ function DashboardLayout() {
             </div>
             <div className="flex items-center gap-1"><ThemeToggle /><Button asChild variant="ghost" size="icon" title={t("dash.settings")} aria-label={t("dash.settings")}><Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }}><Settings className="h-4 w-4" /></Link></Button></div>
           </header>
-          <main className={`workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10 ${mini ? "md:pb-32" : ""}`}>{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+          <main className={`workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10 ${mini ? "pb-28 md:pb-32" : ""}`}>{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
         </div>
       </div>
       <AnnouncementPopup />

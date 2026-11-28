@@ -30,13 +30,17 @@ const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Glob
 
 function Box({ id, children, action, className = "", tight = false }: { id: SectionId; children: ReactNode; action?: ReactNode; className?: string; tight?: boolean }) {
   const Icon = ICONS[id];
+  const heading = <><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80"><Icon className="h-4 w-4" /></span><span className="truncate font-sans text-sm font-semibold">{WIDGET_TITLES[id]}</span></>;
+  if (id === "actions") return (
+    <section className={`dash-card flex h-full min-w-0 items-center gap-4 p-3 ${className}`}>
+      <header className="hidden w-40 shrink-0 items-center gap-2.5 sm:flex">{heading}</header>
+      <div className="overview-widget-content min-w-0 flex-1">{children}</div>
+    </section>
+  );
   return (
     <section className={`dash-card flex h-full min-w-0 flex-col ${tight ? "p-3" : "p-4"} ${className}`}>
       <header className={`flex shrink-0 items-center justify-between gap-2 ${tight ? "mb-2" : "mb-3"}`}>
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80"><Icon className="h-4 w-4" /></span>
-          <span className="truncate font-sans text-sm font-semibold">{WIDGET_TITLES[id]}</span>
-        </div>
+        <div className="flex min-w-0 items-center gap-2.5">{heading}</div>
         {action}
       </header>
       <div className="overview-widget-content min-w-0 flex-1">{children}</div>

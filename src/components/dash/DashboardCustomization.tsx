@@ -38,7 +38,10 @@ export function DashboardCustomizationProvider({ children }: { children: ReactNo
     queryKey: ["default-overview-layout"],
     queryFn: async () => (await supabase.rpc("default_overview_layout")).data ?? null,
   });
-  const baseLayout = useMemo(() => platformDefault ? normalizeLayout(platformDefault) : DEFAULT_LAYOUT, [platformDefault]);
+  const baseLayout = useMemo(() => {
+    const modern = Array.isArray(platformDefault) && platformDefault.some((x) => x && typeof x === "object" && "w" in x);
+    return modern ? normalizeLayout(platformDefault) : DEFAULT_LAYOUT;
+  }, [platformDefault]);
 
   useEffect(() => {
     if (platformDefault === undefined) return;

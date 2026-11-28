@@ -22,7 +22,7 @@ import { canAccess, type Permission } from "@/lib/team-rules";
 import { useLocation } from "@tanstack/react-router";
 import { SystemControls } from "@/components/dash/SystemControls";
 import { DashboardCustomizationProvider } from "@/components/dash/DashboardCustomization";
-import { DockConfigurator, DockQuickActions } from "@/components/dash/DockQuickActions";
+import { DockConfigurator, DockMiniConfigurator, DockQuickActions } from "@/components/dash/DockQuickActions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Crumb" }, { name: "description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:title", content: "Painel — Crumb" }, { property: "og:description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -135,6 +135,7 @@ function DashboardLayout() {
       <div className="relative pointer-events-auto">
         <div className="dock-mini absolute -top-10 right-1 flex items-center gap-0.5 rounded-full px-1.5 py-1 opacity-0 transition-opacity duration-200 group-hover/dock:opacity-100 focus-within:opacity-100">
           <SystemControls variant="mini" onSignOut={signOut} onCollapse={toggleCollapsed} />
+          <DockMiniConfigurator />
         </div>
         <nav aria-label="Navegação" className="dock-bar flex max-w-[calc(100vw-1.5rem)] items-end gap-1.5 overflow-x-auto overflow-y-visible rounded-[22px] px-2 pb-1.5 pt-2 md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {dockItems.map((d) => (

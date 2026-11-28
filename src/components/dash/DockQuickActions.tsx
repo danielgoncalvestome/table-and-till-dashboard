@@ -41,6 +41,11 @@ export function DockQuickActions() {
   })}</>;
 }
 
+export function DockMiniConfigurator() {
+  const { setConfigOpen } = useDashboardCustomization();
+  return <button type="button" onClick={() => setConfigOpen(true)} className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.08] hover:text-foreground" title="Personalizar Dock e widgets" aria-label="Personalizar pela mini-Dock"><Settings2 className="h-3.5 w-3.5" /></button>;
+}
+
 export function DockConfigurator() {
   const { configOpen, setConfigOpen, actions, toggleAction, layout, patchWidget, editing, setEditing, resetLayout, setAsDefault, isAdmin } = useDashboardCustomization();
   const [tab, setTab] = useState<"actions" | "widgets">("actions");

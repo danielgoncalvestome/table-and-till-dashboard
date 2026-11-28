@@ -21,6 +21,8 @@ import { ThemeToggle } from "@/lib/panel-theme";
 import { canAccess, type Permission } from "@/lib/team-rules";
 import { useLocation } from "@tanstack/react-router";
 import { SystemControls } from "@/components/dash/SystemControls";
+import { DashboardCustomizationProvider } from "@/components/dash/DashboardCustomization";
+import { DockConfigurator, DockQuickActions } from "@/components/dash/DockQuickActions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Painel — Crumb" }, { name: "description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:title", content: "Painel — Crumb" }, { property: "og:description", content: "Gira os restaurantes da sua conta Crumb." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -141,35 +143,43 @@ function DashboardLayout() {
               <span className={`mt-0.5 h-1 w-1 rounded-full ${isActive(d.to) ? "bg-foreground/70" : "bg-transparent"}`} />
             </button>
           ))}
-          {isAdmin && <><span className="mx-1 mb-3 h-10 w-px bg-foreground/15" /><Link to="/admin" title={t("dash.admin")} aria-label={t("dash.admin")} className="dock-item mb-1.5 grid h-12 w-12 place-items-center rounded-xl bg-card"><Shield className="h-6 w-6 text-muted-foreground" /></Link></>}
+          <span className="mx-1 mb-3 h-10 w-px shrink-0 bg-foreground/15" />
+          <DockQuickActions />
+          <DockConfigurator />
+          {isAdmin && <><span className="mx-1 mb-3 h-10 w-px shrink-0 bg-foreground/15" /><Link to="/admin" title={t("dash.admin")} aria-label={t("dash.admin")} className="dock-item mb-1.5 grid h-12 w-12 place-items-center rounded-xl bg-card"><Shield className="h-6 w-6 text-muted-foreground" /></Link></>}
         </nav>
       </div>
     </div>
   );
 
   const iconBtn = "grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground";
+  const overview = path === "/dashboard" || path === "/dashboard/";
   return (
     <RestaurantProvider restaurant={current}>
-      <div className="workspace-shell flex min-h-screen bg-background">
-        {!mini && <div className="sticky top-0 hidden h-dvh w-[236px] shrink-0 border-r border-sidebar-border md:block">{sidebar(false)}</div>}
-        {mini && dock}
-        {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-72 max-w-[85vw] border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><Button variant="ghost" className="!h-full flex-1 !rounded-none !bg-foreground/20" aria-label="Fechar menu" onClick={() => setMobileNav(false)} /></div>}
-        <div className="min-w-0 flex-1">
-          <header className="panel-toolbar sticky top-0 z-40 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b px-4 sm:px-8">
-            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-              <Button variant="outline" size="icon" className={`${iconBtn} md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></Button>
-              <div className="min-w-0">
-                <p className="truncate text-[15px] font-semibold leading-tight">{active?.label ?? current.name}</p>
-                <p className="truncate text-xs text-muted-foreground">{current.name}</p>
+      <DashboardCustomizationProvider>
+        <div className="workspace-shell flex min-h-screen bg-background">
+          {!mini && <div className="sticky top-0 hidden h-dvh w-[236px] shrink-0 border-r border-sidebar-border md:block">{sidebar(false)}</div>}
+          {mini && dock}
+          {mobileNav && <div className="fixed inset-0 z-50 flex md:hidden"><div className="w-72 max-w-[85vw] border-r border-sidebar-border shadow-xl">{sidebar(true)}</div><Button variant="ghost" className="!h-full flex-1 !rounded-none !bg-foreground/20" aria-label="Fechar menu" onClick={() => setMobileNav(false)} /></div>}
+          <div className="min-w-0 flex-1">
+            <header className="panel-menubar sticky top-0 z-40 flex items-center justify-between gap-2 border-b px-2 sm:px-3">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <Button variant="ghost" size="icon" className={`${iconBtn} !h-7 !w-7 md:hidden`} onClick={() => setMobileNav(true)} aria-label="Menu"><MenuIcon className="h-4 w-4" /></Button>
+                <Link to="/dashboard" className="px-1.5 text-[13px] font-bold">Crumb</Link>
+                <span className="truncate px-1.5 text-xs font-medium">{active?.label ?? current.name}</span>
+                <span className="hidden truncate px-2 text-xs text-muted-foreground lg:inline">{current.name}</span>
               </div>
-              <span className={`ml-2 hidden shrink-0 items-center gap-1.5 text-[11px] font-medium sm:inline-flex ${current.published ? "text-st-free" : "text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>
-            </div>
-            <div className="flex items-center gap-1"><ThemeToggle /><Button asChild variant="ghost" size="icon" title={t("dash.settings")} aria-label={t("dash.settings")}><Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }}><Settings className="h-4 w-4" /></Link></Button></div>
-          </header>
-          <main className={`workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10 ${mini ? "pb-28 md:pb-32" : ""}`}>{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+              <div className="flex shrink-0 items-center gap-0.5">
+                <span className={`mr-1 hidden items-center gap-1 text-[11px] sm:inline-flex ${current.published ? "text-st-free" : "text-muted-foreground"}`}><span className={`h-1.5 w-1.5 rounded-full ${current.published ? "bg-st-free" : "bg-muted-foreground"}`} />{current.published ? t("dash.published") : t("dash.unpublished")}</span>
+                <SystemControls variant="bar" onSignOut={signOut} />
+                <Button asChild variant="ghost" size="icon" className="!h-7 !w-7" title={t("dash.settings")} aria-label={t("dash.settings")}><Link to="/dashboard/manage" search={{ s: undefined, checkout: undefined }}><Settings className="h-3.5 w-3.5" /></Link></Button>
+              </div>
+            </header>
+            <main className={overview ? "overview-main" : `workspace-content mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 lg:px-10 ${mini ? "pb-28 md:pb-32" : ""}`}>{blocked ? <p className="py-20 text-center text-muted-foreground">Não tem permissão para aceder a esta página. Peça ao proprietário do restaurante.</p> : <Outlet />}</main>
+          </div>
         </div>
-      </div>
-      <AnnouncementPopup />
+        <AnnouncementPopup />
+      </DashboardCustomizationProvider>
     </RestaurantProvider>
   );
 }

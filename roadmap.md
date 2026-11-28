@@ -27,3 +27,10 @@
 - [x] Visão Geral: secções lado a lado com altura igual e altura máxima limitada
 - [x] Análise: horas do eixo x dos gráficos de barras sempre visíveis e sem o "h" (21 horas confirmadas nos três gráficos)
 - [x] Análise: gráficos circulares refeitos em SVG (anel 96px, legenda colada ao nome, sem cortes nem sobreposições)
+
+## Dashboard macOS e Dock personalizável
+- [ ] Barra de menu fina e baça com página, restaurante, estado, tema, notificações e relógio
+- [ ] Grelha de widgets sem scroll vertical, com catálogo, ordem, visibilidade e tamanho editáveis dentro dos limites do ecrã
+- [ ] Novos widgets operacionais de menu, pratos, salas, reservas e pedidos
+- [ ] Ações rápidas escolhidas pelo restaurante na Dock, com ícones invertidos e janela de configuração
+- [ ] Validar claro/escuro, computador e telemóvel com sessão real

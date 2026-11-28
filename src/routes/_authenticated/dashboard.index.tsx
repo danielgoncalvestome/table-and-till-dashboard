@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type CSSProperties, type ReactNode, type 
 import { toast } from "sonner";
 import {
   AlertTriangle, ChevronDown, ArrowUpRight, BarChart3, Brain, BookOpen, CalendarPlus, CalendarDays, Check, CheckCircle2, ChefHat, Eye, EyeOff,
-  Globe, GripVertical, LayoutGrid, MoveDiagonal2, Palette, Pencil, Plus, RotateCcw, Sparkles, Star, Users, Utensils, type LucideIcon,
+  Globe, GripVertical, LayoutGrid, MoveDiagonal2, Palette, Pencil, Plus, RotateCcw, Sparkles, Star, Users, Utensils, Clock3, CircleCheck, CircleOff, ListFilter, Table2, type LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useIsAdmin, useRestaurant } from "@/lib/restaurant";
@@ -19,32 +19,27 @@ import { useResData } from "@/components/res/data";
 import { BLOCKING, STATUS_LABEL, hhmm, isLate, tableState, todayStr, type ResStatus } from "@/lib/reservations";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL, type CartLine } from "@/lib/orders";
 import { formatPrice } from "@/lib/menu";
-import { fetchReservations, fillRows, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
-import { DEFAULT_LAYOUT, normalizeLayout, type LayoutItem, type SectionId } from "@/lib/overview-layout";
+import { fetchReservations, menuInsights, reservationInsights, summarizeReservations } from "@/lib/insights";
+import { OVERVIEW_COLUMNS, OVERVIEW_ROWS, WIDGET_TITLES, type LayoutItem, type SectionId } from "@/lib/overview-layout";
+import { useDashboardCustomization } from "@/components/dash/DashboardCustomization";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ head: () => ({ meta: [{ title: "Dashboard — Crumb" }, { name: "description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:title", content: "Dashboard — Crumb" }, { property: "og:description", content: "Reservas, pedidos, alertas e atalhos do restaurante num só ecrã." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: Overview });
 
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon" }).format(d);
-const TITLES: Record<SectionId, string> = { actions: "Ações rápidas", status: "Estado do serviço", alerts: "Alertas", today: "Reservas de hoje", floor: "Ocupação da sala", orders: "Pedidos ao vivo", views: "Visualizações", kpis: "Indicadores", dishes: "Menu Intelligence", ratings: "Avaliações" };
-const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Globe, alerts: AlertTriangle, today: CalendarDays, floor: Users, orders: ChefHat, views: BarChart3, kpis: Eye, dishes: Sparkles, ratings: Star };
+const ICONS: Record<SectionId, LucideIcon> = { actions: LayoutGrid, status: Globe, alerts: AlertTriangle, today: CalendarDays, floor: Users, orders: ChefHat, views: BarChart3, kpis: Eye, dishes: Sparkles, ratings: Star, service: Clock3, menu: BookOpen, availability: CircleOff, categories: ListFilter, week: CalendarDays, orderSummary: CircleCheck, tables: Table2 };
 
 function Box({ id, children, action, className = "", tight = false }: { id: SectionId; children: ReactNode; action?: ReactNode; className?: string; tight?: boolean }) {
   const Icon = ICONS[id];
-  const k = `mt-box-${id}`;
-  const [open, setOpen] = useState(true);
-  useEffect(() => { setOpen(localStorage.getItem(k) !== "0"); }, [k]);
-  const toggle = () => { const v = !open; setOpen(v); localStorage.setItem(k, v ? "1" : "0"); };
   return (
-    <section className={`dash-card flex h-full min-w-0 flex-col ${tight ? "p-3" : "p-4"} transition-shadow hover:shadow-[var(--shadow-card-hover)] sm:p-5 ${className}`}>
-      <header className={`flex items-center justify-between gap-2 ${open ? (tight ? "mb-2 sm:mb-4" : "mb-4") : ""}`}>
-        <button type="button" onClick={toggle} aria-expanded={open} className="group flex min-w-0 items-center gap-2.5 text-left">
-          <span className={`grid ${tight ? "h-7 w-7" : "h-8 w-8"} shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80 transition group-hover:bg-primary group-hover:text-primary-foreground sm:h-8 sm:w-8`}><Icon className="h-4 w-4" /></span>
-          <span className="truncate font-sans text-sm font-semibold">{TITLES[id]}</span>
-          <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "" : "-rotate-90"}`} />
-        </button>
-        {open && action}
+    <section className={`dash-card flex h-full min-w-0 flex-col ${tight ? "p-3" : "p-4"} ${className}`}>
+      <header className={`flex shrink-0 items-center justify-between gap-2 ${tight ? "mb-2" : "mb-3"}`}>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border bg-muted/60 text-foreground/80"><Icon className="h-4 w-4" /></span>
+          <span className="truncate font-sans text-sm font-semibold">{WIDGET_TITLES[id]}</span>
+        </div>
+        {action}
       </header>
-      {open && <div className="min-w-0 max-h-[26rem] flex-1 overflow-y-auto animate-in fade-in-0 duration-200">{children}</div>}
+      <div className="overview-widget-content min-w-0 flex-1">{children}</div>
     </section>
   );
 }
@@ -79,50 +74,35 @@ function Overview() {
   const pt = lang === "pt";
   const qc = useQueryClient();
   const { restaurant: r, refresh } = useRestaurant();
-  const storeKey = `mt-overview-layout-${r.id}`;
-  const [layout, setLayout] = useState<LayoutItem[]>(DEFAULT_LAYOUT);
-  const [editing, setEditing] = useState(false);
-  const { data: isAdmin } = useIsAdmin();
-  const { data: platformDefault, refetch: refetchDefault } = useQuery({ queryKey: ["default-overview-layout"], queryFn: async () => (await supabase.rpc("default_overview_layout")).data ?? null });
-  const baseLayout = platformDefault ? normalizeLayout(platformDefault) : DEFAULT_LAYOUT;
-  useEffect(() => {
-    if (platformDefault === undefined) return;
-    const raw = localStorage.getItem(storeKey);
-    try { setLayout(raw ? normalizeLayout(JSON.parse(raw)) : baseLayout); } catch { setLayout(baseLayout); }
-    // First admin visit with no platform default: capture this admin's current layout as the default.
-    if (isAdmin && platformDefault === null && raw) void setAsDefault(normalizeLayout(JSON.parse(raw)), true);
-  }, [storeKey, platformDefault, isAdmin]);
-  async function setAsDefault(l: LayoutItem[], silent = false) {
-    const { error } = await supabase.from("platform_settings").update({ overview_layout: l as never, updated_at: new Date().toISOString() }).eq("id", 1);
-    if (error) return toast.error(error.message);
-    if (!silent) toast.success("Disposição definida como predefinida para todos os restaurantes");
-    refetchDefault();
-  }
-  const saveLayout = (l: LayoutItem[]) => { setLayout(l); localStorage.setItem(storeKey, JSON.stringify(l)); };
+  const { layout, editing, setEditing, saveLayout, patchWidget, moveWidget, resetLayout, setAsDefault, isAdmin, setConfigOpen } = useDashboardCustomization();
   const [dragId, setDragId] = useState<SectionId | null>(null);
   const [overId, setOverId] = useState<SectionId | null>(null);
-  const moveTo = (from: SectionId, to: SectionId) => { if (from === to) return; const l = [...layout]; const a = l.findIndex((x) => x.id === from); const [it] = l.splice(a, 1); const b = l.findIndex((x) => x.id === to); l.splice(a <= b ? b + 1 : b, 0, it); saveLayout(l); };
-  const startResize = (e: RPointerEvent, i: number) => {
+  const startResize = (e: RPointerEvent, item: LayoutItem) => {
     e.preventDefault(); e.stopPropagation();
-    const box = (e.currentTarget as HTMLElement).parentElement!; const grid = box.parentElement!;
-    const r0 = box.getBoundingClientRect(); const gw = grid.getBoundingClientRect().width; const x0 = e.clientX, y0 = e.clientY;
-    let cur = layout[i];
+    const box = (e.currentTarget as HTMLElement).parentElement!;
+    const grid = box.parentElement!;
+    const bounds = grid.getBoundingClientRect();
+    const x0 = e.clientX, y0 = e.clientY;
+    const next = [...layout];
     const onMove = (ev: PointerEvent) => {
-      const w = r0.width + ev.clientX - x0; const h = Math.max(120, Math.round(r0.height + ev.clientY - y0));
-      cur = { ...cur, wide: window.innerWidth >= 1024 ? w > gw * 0.7 : cur.wide, h };
-      setLayout((l) => l.map((x, k) => (k === i ? cur : x)));
+      const dw = Math.round((ev.clientX - x0) / Math.max(1, bounds.width / OVERVIEW_COLUMNS));
+      const dh = Math.round((ev.clientY - y0) / Math.max(1, bounds.height / OVERVIEW_ROWS));
+      const w = Math.min(OVERVIEW_COLUMNS, Math.max(2, item.w + dw));
+      const h = Math.min(OVERVIEW_ROWS, Math.max(1, item.h + dh));
+      const i = next.findIndex((x) => x.id === item.id);
+      if (i >= 0) next[i] = { ...next[i]!, w, h };
+      saveLayout(next);
     };
-    const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); setLayout((l) => { localStorage.setItem(storeKey, JSON.stringify(l)); return l; }); };
+    const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
     window.addEventListener("pointermove", onMove); window.addEventListener("pointerup", onUp);
   };
-  const patch = (i: number, p: Partial<LayoutItem>) => saveLayout(layout.map((x, k) => (k === i ? { ...x, ...p } : x)));
 
   const { data: ev } = useQuery({ queryKey: ["events", r.id], queryFn: () => fetchEvents(r.id) });
   const { data: cat } = useCatalog(r.id);
   const { data: ratings } = useQuery({ queryKey: ["rating-summary", r.id], queryFn: async () => (await supabase.rpc("dish_rating_summary", { _restaurant_id: r.id })).data ?? [] });
   const { data: paid } = useQuery({ queryKey: ["own-paid", r.created_by], enabled: !!r.created_by, queryFn: async () => ((await supabase.from("account_subscriptions").select("status").eq("user_id", r.created_by!).eq("environment", "live").in("status", ["active", "trialing", "past_due"])).data ?? []).length > 0 });
   const { data: orders, refetch: refetchOrders } = useQuery({ queryKey: ["orders", r.id], refetchInterval: 15000, queryFn: async () => (await supabase.from("table_orders").select("*").eq("restaurant_id", r.id).eq("cleared", false).order("created_at", { ascending: false })).data ?? [] });
-  const { tables, res } = useResData(todayStr());
+  const { tables, res, zones } = useResData(todayStr());
   const { data: res30 } = useQuery({ queryKey: ["res-intel", r.id], queryFn: () => fetchReservations(r.id, 30) });
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(t); }, []);
@@ -153,6 +133,16 @@ function Overview() {
   const hours = Array.from({ length: 12 }, (_, i) => i + 12);
   const perHour = hours.map((h) => todayRes.filter((x) => new Date(x.starts_at).getHours() === h).reduce((a, x) => a + x.party, 0));
   const openOrders = (orders ?? []).filter((o) => o.status !== "delivered" && o.status !== "cancelled");
+  const nextWeek = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(now + i * 864e5);
+    const key = dayKey(date);
+    const rows = (res30 ?? []).filter((x) => dayKey(new Date(x.starts_at)) === key && x.status !== "cancelled");
+    return { key, label: date.toLocaleDateString(pt ? "pt-PT" : "en-GB", { weekday: "short" }).replace(".", ""), count: rows.length, covers: rows.reduce((a, x) => a + x.party, 0) };
+  });
+  const servicePeak = hours[perHour.indexOf(Math.max(...perHour))] ?? 20;
+  const unavailable = dishes.filter((d) => !d.available);
+  const avgPrice = dishes.length ? dishes.reduce((a, d) => a + Number(d.price), 0) / dishes.length : 0;
+  const tableStates = active.map((t) => ({ ...t, state: tableState(t.id, res, r.late_tolerance_minutes ?? 15, now).state }));
 
   const alerts: { text: string; to?: "/dashboard/menus" | "/dashboard/design" | "/dashboard/subscription" | "/dashboard/reservations" | "/dashboard/orders"; level: "high" | "low" }[] = [];
   const tw = paid === undefined || r.is_demo ? null : trialWarning(r.trial_ends_at, paid);
@@ -309,50 +299,65 @@ function Overview() {
         </ul>
       </div>
     ) : <p className="text-sm text-muted-foreground">Ainda sem avaliações.</p>,
+    service: (
+      <div className="grid h-full content-center gap-3 sm:grid-cols-2">
+        <div><p className="font-display text-4xl tabular-nums">{new Date(now).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" })}</p><p className="text-xs text-muted-foreground">{new Date(now).getHours() < 16 ? "Serviço de almoço" : "Serviço de jantar"}</p></div>
+        <div className="rounded-xl bg-muted/60 p-3"><p className="text-xs text-muted-foreground">Pico previsto hoje</p><p className="mt-1 text-xl font-semibold">{servicePeak}:00</p><p className="text-xs text-muted-foreground">{Math.max(...perHour)} pessoas reservadas</p></div>
+      </div>
+    ),
+    menu: (
+      <div className="grid grid-cols-2 gap-2">
+        {[["Pratos ativos", dishes.length], ["Disponíveis", dishes.length - unavailable.length], ["Sem fotografia", noImg], ["Preço médio", formatPrice(avgPrice)]].map(([label, value]) => <div key={String(label)} className="rounded-xl bg-muted/60 p-3"><p className="text-xl font-semibold">{value}</p><p className="text-[11px] text-muted-foreground">{label}</p></div>)}
+        <Link to="/dashboard/menus" className="col-span-2 inline-flex items-center gap-1 text-xs text-primary hover:underline">Gerir menu e pratos <ArrowUpRight className="h-3 w-3" /></Link>
+      </div>
+    ),
+    availability: unavailable.length ? (
+      <ul className="space-y-1.5">{unavailable.slice(0, 8).map((d) => <li key={d.id} className="flex items-center gap-2 rounded-lg bg-muted/50 px-2.5 py-2 text-sm"><CircleOff className="h-3.5 w-3.5 shrink-0 text-st-reserved" /><span className="min-w-0 flex-1 truncate">{d.name}</span><span className="text-xs text-muted-foreground">{formatPrice(Number(d.price))}</span></li>)}</ul>
+    ) : <p className="flex items-center gap-2 text-sm text-muted-foreground"><CircleCheck className="h-4 w-4 text-st-free" />Todos os pratos estão disponíveis.</p>,
+    categories: (
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">{cat?.menus.length ?? 0} menu(s) · {cat?.cats.length ?? 0} categoria(s)</p>
+        <ul className="space-y-1">{(cat?.cats ?? []).slice(0, 7).map((c) => <li key={c.id} className="flex items-center gap-2 text-sm"><span className="min-w-0 flex-1 truncate">{c.name}</span><span className="rounded-full bg-muted px-2 py-0.5 text-xs">{dishes.filter((d) => d.category_id === c.id).length}</span></li>)}</ul>
+      </div>
+    ),
+    week: (
+      <div className="flex h-full min-h-28 items-end gap-2">{nextWeek.map((d, i) => <div key={d.key} className="flex h-full flex-1 flex-col items-center justify-end gap-1"><span className="text-[10px] tabular-nums text-muted-foreground">{d.covers}</span><div className={`w-full max-w-8 rounded-t-md ${i === 0 ? "bg-primary" : "bg-primary/25"}`} style={{ height: `${Math.max(4, (d.covers / Math.max(1, ...nextWeek.map((x) => x.covers))) * 70)}%` }} /><span className="text-[10px] capitalize text-muted-foreground">{d.label}</span></div>)}</div>
+    ),
+    orderSummary: (
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{ORDER_STATUSES.slice(0, 4).map((status) => <div key={status} className="rounded-xl bg-muted/60 p-3"><p className="text-2xl font-semibold">{(orders ?? []).filter((o) => o.status === status).length}</p><p className="text-[11px] text-muted-foreground">{ORDER_STATUS_LABEL.pt[status]}</p></div>)}</div>
+    ),
+    tables: active.length ? (
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">{tableStates.map((t) => <Link to="/dashboard/room" key={t.id} className="rounded-xl border p-2.5 text-center hover:bg-muted"><span className={`mx-auto mb-1 block h-2 w-2 rounded-full ${t.state === "free" ? "bg-st-free" : t.state === "seated" ? "bg-st-seated" : "bg-st-reserved"}`} /><span className="block truncate text-sm font-medium">{t.label}</span><span className="block text-[10px] text-muted-foreground">{t.seats} lugares · {zones.find((z) => z.id === t.zone_id)?.name ?? "Sem sala"}</span></Link>)}</div>
+    ) : <p className="text-sm text-muted-foreground">Ainda não existem mesas configuradas.</p>,
   };
 
-  const shown = editing ? layout : layout.filter((x) => !x.hidden);
-  const full = fillRows(shown);
-  const dateLabel = new Date().toLocaleDateString(pt ? "pt-PT" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
-
+  const shown = layout.filter((x) => !x.hidden);
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <p className="eyebrow capitalize">{dateLabel}</p>
-          <h1 className="mt-1 text-2xl md:text-4xl">Dashboard</h1>
-        </div>
-        <div className="flex gap-2">
-          {editing && <Button size="sm" variant="ghost" onClick={() => saveLayout(baseLayout)}><RotateCcw className="h-4 w-4" />Repor</Button>}
-          {editing && isAdmin && <Button size="sm" variant="ghost" onClick={() => setAsDefault(layout)}>Definir como predefinição</Button>}
-          <Button size="sm" variant={editing ? "default" : "outline"} onClick={() => setEditing(!editing)} aria-label="Editar disposição">{editing ? <><Check className="h-4 w-4" />Concluir</> : <><Pencil className="h-4 w-4" />Editar</>}</Button>
+    <div className="flex h-full min-h-0 flex-col gap-2">
+      <div className="flex h-8 shrink-0 items-center justify-between gap-2">
+        <p className="truncate text-xs text-muted-foreground">{shown.length} widgets · {editing ? "Arraste para reordenar e puxe o canto para dimensionar" : "Área de trabalho em tempo real"}</p>
+        <div className="flex shrink-0 items-center gap-1">
+          {editing && <Button size="sm" variant="ghost" className="!h-8" onClick={() => setConfigOpen(true)}><Plus className="h-4 w-4" />Widgets</Button>}
+          {editing && <Button size="sm" variant="ghost" className="!h-8" onClick={resetLayout}><RotateCcw className="h-4 w-4" />Repor</Button>}
+          {editing && isAdmin && <Button size="sm" variant="ghost" className="!h-8 hidden sm:inline-flex" onClick={() => void setAsDefault()}>Predefinição</Button>}
+          <Button size="sm" variant="ghost" className="!h-8" onClick={() => setEditing(!editing)} aria-label="Editar disposição">{editing ? <><Check className="h-4 w-4" />Concluir</> : <><Pencil className="h-4 w-4" />Editar</>}</Button>
         </div>
       </div>
-      {editing && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground">Arraste um cartão para o mudar de lugar. Puxe o canto inferior direito para ajustar a largura e a altura. O olho mostra/esconde e a seta circular repõe a altura automática.</p>}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {shown.map((item, si) => {
-          const i = layout.findIndex((x) => x.id === item.id);
-          return (
-            <div key={item.id} draggable={editing}
-              onDragStart={(e) => { setDragId(item.id); e.dataTransfer.effectAllowed = "move"; }}
-              onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverId(item.id); } }}
-              onDragLeave={() => setOverId((o) => (o === item.id ? null : o))}
-              onDrop={(e) => { e.preventDefault(); if (dragId) moveTo(dragId, item.id); setDragId(null); setOverId(null); }}
-              onDragEnd={() => { setDragId(null); setOverId(null); }}
-              style={item.h ? ({ "--dash-h": `${item.h}px` } as CSSProperties) : undefined}
-              className={`relative min-w-0 ${item.h ? "dash-h" : ""} ${full[si] ? "lg:col-span-2" : ""} ${editing ? "cursor-grab rounded-2xl ring-2 ring-primary/30 ring-offset-2 ring-offset-background active:cursor-grabbing" : ""} ${overId === item.id && dragId !== item.id ? "ring-4 ring-primary" : ""} ${dragId === item.id ? "opacity-50" : ""} ${item.hidden ? "opacity-40" : ""}`}>
-              {editing && (
-                <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-lg border bg-background p-1 shadow-sm">
-                  <span className="grid h-7 w-7 place-items-center text-muted-foreground" title="Arrastar"><GripVertical className="h-3.5 w-3.5" /></span>
-                  {item.h && <EditBtn label="Altura automática" onClick={() => patch(i, { h: undefined })} icon={RotateCcw} />}
-                  <EditBtn label={item.hidden ? "Mostrar" : "Esconder"} onClick={() => patch(i, { hidden: !item.hidden })} icon={item.hidden ? EyeOff : Eye} />
-                </div>
-              )}
-              <div className={`h-full ${item.h ? "overflow-auto" : ""} ${editing ? "pointer-events-none select-none" : ""}`}><Box id={item.id} tight={item.id === "actions"}>{sections[item.id]}</Box></div>
-              {editing && <div role="separator" aria-label="Redimensionar" title="Puxe para redimensionar" onPointerDown={(e) => startResize(e, i)} className="absolute -bottom-1 -right-1 z-10 grid h-6 w-6 cursor-nwse-resize touch-none place-items-center rounded-md border bg-background text-muted-foreground shadow-sm hover:bg-primary hover:text-primary-foreground"><MoveDiagonal2 className="h-3.5 w-3.5" /></div>}
-            </div>
-          );
-        })}
+      <div className="overview-grid min-h-0 flex-1" aria-label="Widgets do dashboard">
+        {shown.map((item) => (
+          <div key={item.id} draggable={editing}
+            onDragStart={(e) => { setDragId(item.id); e.dataTransfer.effectAllowed = "move"; }}
+            onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverId(item.id); } }}
+            onDragLeave={() => setOverId((o) => (o === item.id ? null : o))}
+            onDrop={(e) => { e.preventDefault(); if (dragId) moveWidget(dragId, item.id); setDragId(null); setOverId(null); }}
+            onDragEnd={() => { setDragId(null); setOverId(null); }}
+            style={{ "--widget-w": item.w, "--widget-h": item.h } as CSSProperties}
+            className={`overview-widget relative ${editing ? "cursor-grab rounded-2xl ring-2 ring-primary/30 active:cursor-grabbing" : ""} ${overId === item.id && dragId !== item.id ? "ring-4 ring-primary" : ""} ${dragId === item.id ? "opacity-50" : ""}`}>
+            {editing && <span className="absolute right-3 top-3 z-10 grid h-7 w-7 place-items-center rounded-lg bg-background text-muted-foreground shadow-sm" title="Arrastar"><GripVertical className="h-3.5 w-3.5" /></span>}
+            <div className={`h-full ${editing ? "pointer-events-none select-none" : ""}`}><Box id={item.id} tight={item.id === "actions"}>{sections[item.id]}</Box></div>
+            {editing && <div role="separator" aria-label={`Redimensionar ${WIDGET_TITLES[item.id]}`} title="Puxe para redimensionar" onPointerDown={(e) => startResize(e, item)} className="absolute -bottom-1 -right-1 z-10 hidden h-6 w-6 cursor-nwse-resize touch-none place-items-center rounded-md border bg-background text-muted-foreground shadow-sm hover:bg-primary hover:text-primary-foreground md:grid"><MoveDiagonal2 className="h-3.5 w-3.5" /></div>}
+          </div>
+        ))}
       </div>
     </div>
   );
